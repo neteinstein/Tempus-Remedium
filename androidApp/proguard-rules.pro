@@ -26,3 +26,13 @@
 # let R8 widen visibility to inline across package boundaries.
 -repackageclasses ''
 -allowaccessmodification
+
+# ── Room (WorkManager's database) ────────────────────────────────────────────
+# Glance brings in WorkManager, whose WorkManagerInitializer runs at startup and opens WorkDatabase.
+# Room finds the generated WorkDatabase_Impl by name and calls its no-arg constructor reflectively.
+# Room's own consumer rule (`-keep class * extends androidx.room.RoomDatabase`) keeps the class but,
+# in R8 full mode, not that constructor, so the release build crashed on launch with
+# NoSuchMethodException. scripts/verify-obfuscation.sh checks the constructor survives.
+-keepclassmembers class * extends androidx.room.RoomDatabase {
+    <init>();
+}
