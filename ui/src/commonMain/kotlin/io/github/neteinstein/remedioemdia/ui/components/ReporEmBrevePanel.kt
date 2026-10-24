@@ -19,22 +19,26 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import io.github.neteinstein.remedioemdia.core.model.StockDisplay
 import io.github.neteinstein.remedioemdia.core.schedule.LowStockItem
-import io.github.neteinstein.remedioemdia.ui.pill.Jar
+import io.github.neteinstein.remedioemdia.ui.pill.StockIcon
 import io.github.neteinstein.remedioemdia.ui.resources.Res
 import io.github.neteinstein.remedioemdia.ui.resources.medications_count
 import io.github.neteinstein.remedioemdia.ui.resources.refill_soon
 import io.github.neteinstein.remedioemdia.ui.resources.units_left
-import io.github.neteinstein.remedioemdia.ui.theme.RemedioColors
-import io.github.neteinstein.remedioemdia.ui.theme.RemedioType
+import io.github.neteinstein.remedioemdia.ui.theme.RemedioTheme
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
-/** The REPOR EM BREVE panel of docs/design/reference/repor-em-breve.png. */
+/**
+ * The REPOR EM BREVE panel of docs/design/reference/repor-em-breve.png. [display] switches
+ * the jars of the reference for blister packs.
+ */
 @Composable
 fun ReporEmBrevePanel(
     items: List<LowStockItem>,
     modifier: Modifier = Modifier,
+    display: StockDisplay = StockDisplay.JARS,
     onItemClick: ((LowStockItem) -> Unit)? = null,
 ) {
     Column(modifier) {
@@ -43,14 +47,15 @@ fun ReporEmBrevePanel(
             meta = pluralStringResource(Res.plurals.medications_count, items.size, items.size),
         )
         Spacer(Modifier.height(8.dp))
-        Box(Modifier.fillMaxWidth().height(1.dp).background(RemedioColors.Divider))
+        Box(Modifier.fillMaxWidth().height(1.dp).background(RemedioTheme.colors.line))
         Spacer(Modifier.height(10.dp))
         Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
             items.chunked(2).forEach { row ->
                 Row(Modifier.fillMaxWidth()) {
                     row.forEach { item ->
-                        JarCard(
+                        StockCard(
                             item = item,
+                            display = display,
                             onClick = onItemClick?.let { { it(item) } },
                             modifier = Modifier.weight(1f),
                         )
@@ -63,8 +68,9 @@ fun ReporEmBrevePanel(
 }
 
 @Composable
-private fun JarCard(
+private fun StockCard(
     item: LowStockItem,
+    display: StockDisplay,
     onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
@@ -77,9 +83,9 @@ private fun JarCard(
             .padding(vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Jar(item.medication.shape, item.medication.color, item.remaining, height = 122.dp)
+        StockIcon(item.medication.shape, item.medication.color, item.remaining, height = 122.dp, display = display)
         Spacer(Modifier.height(8.dp))
-        Text(item.medication.name, style = RemedioType.JarName, color = RemedioColors.TextPrimary, maxLines = 1)
-        Text(count, style = RemedioType.JarCount, color = RemedioColors.Amber)
+        Text(item.medication.name, style = RemedioTheme.type.jarName, color = RemedioTheme.colors.ink, maxLines = 1)
+        Text(count, style = RemedioTheme.type.jarCount, color = RemedioTheme.colors.stock)
     }
 }

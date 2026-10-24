@@ -27,11 +27,9 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -52,7 +50,9 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.github.neteinstein.remedioemdia.core.model.Frequency
 import io.github.neteinstein.remedioemdia.core.model.Medication
 import io.github.neteinstein.remedioemdia.core.model.PillColor
@@ -62,10 +62,14 @@ import io.github.neteinstein.remedioemdia.core.model.Stock
 import io.github.neteinstein.remedioemdia.core.model.TimeSlot
 import io.github.neteinstein.remedioemdia.core.model.newMedicationId
 import io.github.neteinstein.remedioemdia.ui.PlatformBackHandler
+import io.github.neteinstein.remedioemdia.ui.components.BrandButton
+import io.github.neteinstein.remedioemdia.ui.components.brandBackground
 import io.github.neteinstein.remedioemdia.ui.components.glass
 import io.github.neteinstein.remedioemdia.ui.components.label
 import io.github.neteinstein.remedioemdia.ui.components.shortLabel
 import io.github.neteinstein.remedioemdia.ui.pill.PillIcon
+import io.github.neteinstein.remedioemdia.ui.pill.PillInk
+import io.github.neteinstein.remedioemdia.ui.pill.edge
 import io.github.neteinstein.remedioemdia.ui.pill.fill
 import io.github.neteinstein.remedioemdia.ui.resources.Res
 import io.github.neteinstein.remedioemdia.ui.resources.action_back
@@ -88,13 +92,14 @@ import io.github.neteinstein.remedioemdia.ui.resources.field_when
 import io.github.neteinstein.remedioemdia.ui.resources.frequency_daily
 import io.github.neteinstein.remedioemdia.ui.resources.frequency_every_n_days
 import io.github.neteinstein.remedioemdia.ui.resources.frequency_weekdays
-import io.github.neteinstein.remedioemdia.ui.theme.RemedioColors
-import io.github.neteinstein.remedioemdia.ui.theme.RemedioType
+import io.github.neteinstein.remedioemdia.ui.theme.RemedioTheme
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
 private enum class FrequencyKind { DAILY, WEEKDAYS, EVERY_N_DAYS }
+
+private val FieldShape = RoundedCornerShape(14.dp)
 
 /** Full-screen form for a new ([medication] == null) or existing medication. */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -175,16 +180,29 @@ fun MedicationEditor(
             archived = medication?.archived ?: false,
         )
 
-    Column(modifier.fillMaxSize().background(RemedioColors.Background)) {
+    Column(modifier.fillMaxSize().brandBackground(RemedioTheme.colors)) {
         TopAppBar(
-            title = { Text(stringResource(if (medication == null) Res.string.editor_new else Res.string.editor_edit)) },
+            title = {
+                Text(
+                    stringResource(if (medication == null) Res.string.editor_new else Res.string.editor_edit),
+                    style = RemedioTheme.type.title.copy(fontSize = 21.sp),
+                    color = RemedioTheme.colors.ink,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
             navigationIcon = {
                 IconButton(onClick = onClose) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.action_back))
                 }
             },
             actions = {
-                TextButton(onClick = { onSave(build()) }, enabled = canSave) { Text(stringResource(Res.string.action_save)) }
+                BrandButton(
+                    stringResource(Res.string.action_save),
+                    onClick = { onSave(build()) },
+                    enabled = canSave,
+                    modifier = Modifier.padding(end = 12.dp),
+                )
             },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         )
@@ -200,6 +218,7 @@ fun MedicationEditor(
                 onValueChange = { name = it },
                 label = { Text(stringResource(Res.string.field_name)) },
                 singleLine = true,
+                shape = FieldShape,
                 modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(
@@ -207,6 +226,7 @@ fun MedicationEditor(
                 onValueChange = { strength = it },
                 label = { Text(stringResource(Res.string.field_strength)) },
                 singleLine = true,
+                shape = FieldShape,
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -224,7 +244,8 @@ fun MedicationEditor(
                         Spacer(Modifier.height(6.dp))
                         Text(
                             description,
-                            style = MaterialTheme.typography.labelSmall,
+                            style = RemedioTheme.type.bodySmall.copy(fontSize = 11.5.sp, lineHeight = 14.sp),
+                            color = RemedioTheme.colors.inkSoft,
                             minLines = 2,
                             maxLines = 2,
                             textAlign = TextAlign.Center,
@@ -243,15 +264,18 @@ fun MedicationEditor(
                             .size(40.dp)
                             .clip(CircleShape)
                             .background(option.fill)
-                            .border(if (selected) 3.dp else 0.dp, RemedioColors.TextPrimary, CircleShape)
-                            .clickable { color = option }
+                            .border(
+                                if (selected) 3.dp else 1.dp,
+                                if (selected) RemedioTheme.colors.accent else option.edge.copy(alpha = 0.5f),
+                                CircleShape,
+                            ).clickable { color = option }
                             .semantics {
                                 contentDescription = description
                                 this.selected = selected
                             },
                         contentAlignment = Alignment.Center,
                     ) {
-                        if (selected) Icon(Icons.Filled.Check, contentDescription = null, tint = RemedioColors.Ink)
+                        if (selected) Icon(Icons.Filled.Check, contentDescription = null, tint = PillInk)
                     }
                 }
             }
@@ -306,7 +330,8 @@ fun MedicationEditor(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     stringResource(Res.string.field_track_stock),
-                    style = MaterialTheme.typography.titleMedium,
+                    style = RemedioTheme.type.rowTitle,
+                    color = RemedioTheme.colors.ink,
                     modifier = Modifier.weight(1f),
                 )
                 Switch(checked = trackStock, onCheckedChange = { trackStock = it })
@@ -317,6 +342,7 @@ fun MedicationEditor(
                     onValueChange = { remaining = it.filter(Char::isDigit).take(4) },
                     label = { Text(stringResource(Res.string.field_units_left)) },
                     singleLine = true,
+                    shape = FieldShape,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -325,6 +351,7 @@ fun MedicationEditor(
                     onValueChange = { threshold = it.filter(Char::isDigit).take(4) },
                     label = { Text(stringResource(Res.string.field_low_threshold)) },
                     singleLine = true,
+                    shape = FieldShape,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -335,12 +362,13 @@ fun MedicationEditor(
                 onValueChange = { notes = it },
                 label = { Text(stringResource(Res.string.field_notes)) },
                 minLines = 2,
+                shape = FieldShape,
                 modifier = Modifier.fillMaxWidth(),
             )
 
             if (medication != null) {
-                OutlinedButton(onClick = { confirmDelete = true }, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(Res.string.action_delete), color = MaterialTheme.colorScheme.error)
+                TextButton(onClick = { confirmDelete = true }, modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(Res.string.action_delete), style = RemedioTheme.type.button, color = RemedioTheme.colors.danger)
                 }
             }
             Spacer(Modifier.height(24.dp))
@@ -363,7 +391,7 @@ fun MedicationEditor(
 
 @Composable
 private fun FieldTitle(text: String) {
-    Text(text.uppercase(), style = RemedioType.SectionTitle, color = RemedioColors.TextSecondary)
+    Text(text.uppercase(), style = RemedioTheme.type.eyebrow, color = RemedioTheme.colors.inkMute, modifier = Modifier.padding(top = 4.dp))
 }
 
 @Composable
@@ -378,13 +406,13 @@ private fun SelectableTile(
     Column(
         modifier
             .clip(shape)
-            .glass(shape)
-            .border(if (selected) 2.dp else 0.dp, if (selected) RemedioColors.Amber else Color.Transparent, shape)
+            .glass(shape, RemedioTheme.colors, strong = selected)
+            .border(if (selected) 2.dp else 0.dp, if (selected) RemedioTheme.colors.accent else Color.Transparent, shape)
             .clickable(onClick = onClick)
             .semantics(mergeDescendants = true) {
                 contentDescription = description
                 this.selected = selected
-            }.padding(vertical = 12.dp, horizontal = 4.dp),
+            }.padding(vertical = 12.dp, horizontal = 2.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) { content() }
 }
@@ -397,15 +425,35 @@ private fun QuantityRow(
     range: IntRange = 0..9,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-        OutlinedButton(onClick = { onChange((quantity - 1).coerceIn(range)) }, enabled = quantity > range.first) { Text("−") }
+        Text(label, style = RemedioTheme.type.rowTitle, color = RemedioTheme.colors.ink, modifier = Modifier.weight(1f))
+        StepButton("−", enabled = quantity > range.first) { onChange((quantity - 1).coerceIn(range)) }
         Text(
             quantity.toString(),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.width(40.dp).padding(horizontal = 8.dp),
+            style = RemedioTheme.type.title,
+            color = RemedioTheme.colors.ink,
+            modifier = Modifier.width(44.dp).padding(horizontal = 8.dp),
             textAlign = TextAlign.Center,
         )
-        OutlinedButton(onClick = { onChange((quantity + 1).coerceIn(range)) }, enabled = quantity < range.last) { Text("+") }
+        StepButton("+", enabled = quantity < range.last) { onChange((quantity + 1).coerceIn(range)) }
+    }
+}
+
+@Composable
+private fun StepButton(
+    text: String,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    val palette = RemedioTheme.colors
+    Box(
+        Modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .background(if (enabled) palette.accentSoft else palette.line)
+            .clickable(enabled = enabled, onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(text, style = RemedioTheme.type.title, color = if (enabled) palette.accent else palette.inkMute)
     }
 }
 
@@ -415,5 +463,16 @@ private fun FrequencyChip(
     selected: Boolean,
     onClick: () -> Unit,
 ) {
-    FilterChip(selected = selected, onClick = onClick, label = { Text(label) })
+    val palette = RemedioTheme.colors
+    Text(
+        label,
+        style = RemedioTheme.type.button,
+        color = if (selected) Color.White else palette.inkSoft,
+        modifier =
+            Modifier
+                .clip(CircleShape)
+                .then(if (selected) Modifier.background(palette.brandBrush) else Modifier.glass(CircleShape, palette))
+                .clickable(onClick = onClick)
+                .padding(horizontal = 16.dp, vertical = 9.dp),
+    )
 }

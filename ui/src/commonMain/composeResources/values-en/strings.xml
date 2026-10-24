@@ -61,7 +61,7 @@
     <string name="refill_dialog_units">Units to add</string>
 
     <string name="empty_title">No medications yet</string>
-    <string name="empty_body">Add the first one to see today\'s doses here.</string>
+    <string name="empty_body">Add the first one to see today’s doses here.</string>
 
     <string name="editor_new">New medication</string>
     <string name="editor_edit">Edit medication</string>
@@ -119,4 +119,47 @@
     <string name="settings_exact_alarms_body">Without this permission reminders may arrive a few minutes late.</string>
     <string name="settings_widgets_hint">Add the Today and Refill soon widgets to your home screen.</string>
     <string name="widget_nothing_low">Nothing to refill for now.</string>
+
+    <string name="weekday_full_monday">Monday</string>
+    <string name="weekday_full_tuesday">Tuesday</string>
+    <string name="weekday_full_wednesday">Wednesday</string>
+    <string name="weekday_full_thursday">Thursday</string>
+    <string name="weekday_full_friday">Friday</string>
+    <string name="weekday_full_saturday">Saturday</string>
+    <string name="weekday_full_sunday">Sunday</string>
+    <string name="month_january">January</string>
+    <string name="month_february">February</string>
+    <string name="month_march">March</string>
+    <string name="month_april">April</string>
+    <string name="month_may">May</string>
+    <string name="month_june">June</string>
+    <string name="month_july">July</string>
+    <string name="month_august">August</string>
+    <string name="month_september">September</string>
+    <string name="month_october">October</string>
+    <string name="month_november">November</string>
+    <string name="month_december">December</string>
+    <string name="long_date">%1$s, %2$d %3$s</string>
+    <string name="greeting_morning">Good morning,</string>
+    <string name="greeting_afternoon">Good afternoon,</string>
+    <string name="greeting_evening">Good evening,</string>
+    <plurals name="greeting_pending">
+        <item quantity="one">%1$d dose to go.</item>
+        <item quantity="other">%1$d doses to go.</item>
+    </plurals>
+    <string name="greeting_done">you’re all caught up.</string>
+    <string name="greeting_nothing">no doses today.</string>
+    <string name="history_rate_caption">of doses taken in the last 30 days</string>
+    <string name="settings_stock_display">Show stock as</string>
+    <string name="stock_display_jars">Jars</string>
+    <string name="stock_display_blisters">Blisters</string>
+    <string name="settings_theme">Appearance</string>
+    <string name="theme_system">Automatic</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="settings_about">About</string>
+    <string name="about_author">by Dr Maria Cortês Ferreira</string>
+    <string name="about_author_role">Family doctor</string>
+    <string name="about_site">mariacf.pt</string>
+    <string name="about_disclaimer">For support only. It does not replace advice from your doctor or pharmacist.</string>
 </resources>

@@ -5,16 +5,15 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import io.github.neteinstein.remedioemdia.core.model.PillColor
 import io.github.neteinstein.remedioemdia.core.model.PillShape
-import io.github.neteinstein.remedioemdia.ui.theme.RemedioColors
+import io.github.neteinstein.remedioemdia.ui.theme.JarColors
 
-/** Width / height of a jar as drawn in the REPOR EM BREVE reference. */
+/** Width / height of a jar (and of a blister pack, so both fill the same space). */
 const val JAR_ASPECT_RATIO = 0.68f
 
 /** Pills drawn in a jar: 3 per row, at most 4 rows. */
@@ -36,6 +35,7 @@ fun DrawScope.drawJar(
     shape: PillShape,
     color: PillColor,
     count: Int,
+    colors: JarColors,
     size: Size = this.size,
 ) {
     val w = size.width
@@ -51,13 +51,13 @@ fun DrawScope.drawJar(
             bottomLeft = CornerRadius(w * 0.2f),
         )
     val bodyPath = Path().apply { addRoundRect(body) }
-    drawPath(bodyPath, Color.Black.copy(alpha = 0.16f))
-    drawPath(bodyPath, Color.White.copy(alpha = 0.5f), style = Stroke(width = (w * 0.013f).coerceAtLeast(1f)))
+    drawPath(bodyPath, colors.body)
+    drawPath(bodyPath, colors.stroke, style = Stroke(width = (w * 0.013f).coerceAtLeast(1f)))
 
     // Reflection on the left side of the glass.
     val highlightWidth = w * 0.042f
     drawRoundRect(
-        Color.White.copy(alpha = 0.3f),
+        colors.highlight,
         topLeft = Offset(w * 0.065f, bodyTop + h * 0.085f),
         size = Size(highlightWidth, h * 0.63f),
         cornerRadius = CornerRadius(highlightWidth / 2),
@@ -94,16 +94,17 @@ fun DrawScope.drawJar(
             cornerRadius = CornerRadius(w * 0.05f),
         )
     val lidPath = Path().apply { addRoundRect(lid) }
-    drawPath(lidPath, RemedioColors.LidBase)
+    drawPath(lidPath, colors.lidBase)
     clipPath(lidPath) {
         val stripes = 13
         val stripePitch = lidWidth / stripes
         repeat(stripes) { i ->
             drawRect(
-                RemedioColors.LidStripe,
+                colors.lidStripe,
                 topLeft = Offset(lid.left + stripePitch * i + stripePitch * 0.3f, 0f),
                 size = Size(stripePitch * 0.45f, lidHeight),
             )
         }
     }
+    drawPath(lidPath, colors.lidStroke, style = Stroke(width = (w * 0.01f).coerceAtLeast(1f)))
 }

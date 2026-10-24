@@ -123,4 +123,48 @@
     <string name="settings_exact_alarms_body">Sem esta permissão, os lembretes podem chegar alguns minutos depois.</string>
     <string name="settings_widgets_hint">Adicione os widgets Hoje e Repor em breve ao ecrã principal.</string>
     <string name="widget_nothing_low">Nada a repor por agora.</string>
+
+    <!-- Retheme (mariacf.pt): header, settings and about -->
+    <string name="weekday_full_monday">segunda-feira</string>
+    <string name="weekday_full_tuesday">terça-feira</string>
+    <string name="weekday_full_wednesday">quarta-feira</string>
+    <string name="weekday_full_thursday">quinta-feira</string>
+    <string name="weekday_full_friday">sexta-feira</string>
+    <string name="weekday_full_saturday">sábado</string>
+    <string name="weekday_full_sunday">domingo</string>
+    <string name="month_january">janeiro</string>
+    <string name="month_february">fevereiro</string>
+    <string name="month_march">março</string>
+    <string name="month_april">abril</string>
+    <string name="month_may">maio</string>
+    <string name="month_june">junho</string>
+    <string name="month_july">julho</string>
+    <string name="month_august">agosto</string>
+    <string name="month_september">setembro</string>
+    <string name="month_october">outubro</string>
+    <string name="month_november">novembro</string>
+    <string name="month_december">dezembro</string>
+    <string name="long_date">%1$s, %2$d de %3$s</string>
+    <string name="greeting_morning">Bom dia,</string>
+    <string name="greeting_afternoon">Boa tarde,</string>
+    <string name="greeting_evening">Boa noite,</string>
+    <plurals name="greeting_pending">
+        <item quantity="one">falta %1$d dose.</item>
+        <item quantity="other">faltam %1$d doses.</item>
+    </plurals>
+    <string name="greeting_done">está tudo em dia.</string>
+    <string name="greeting_nothing">hoje não há doses.</string>
+    <string name="history_rate_caption">das doses tomadas nos últimos 30 dias</string>
+    <string name="settings_stock_display">Mostrar stock como</string>
+    <string name="stock_display_jars">Frascos</string>
+    <string name="stock_display_blisters">Blisters</string>
+    <string name="settings_theme">Aspeto</string>
+    <string name="theme_system">Automático</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Escuro</string>
+    <string name="settings_about">Sobre</string>
+    <string name="about_author">por Dra. Maria Cortês Ferreira</string>
+    <string name="about_author_role">Médica de família</string>
+    <string name="about_site">mariacf.pt</string>
+    <string name="about_disclaimer">Informação de apoio. Não substitui o aconselhamento do seu médico ou farmacêutico.</string>
 </resources>

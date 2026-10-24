@@ -1,5 +1,6 @@
 package io.github.neteinstein.remedioemdia.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,11 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,20 +25,20 @@ import io.github.neteinstein.remedioemdia.core.model.Frequency
 import io.github.neteinstein.remedioemdia.core.model.Medication
 import io.github.neteinstein.remedioemdia.core.model.TimeSlot
 import io.github.neteinstein.remedioemdia.core.schedule.Inventory
-import io.github.neteinstein.remedioemdia.ui.components.SectionHeader
+import io.github.neteinstein.remedioemdia.ui.components.BrandButton
+import io.github.neteinstein.remedioemdia.ui.components.ScreenHeader
 import io.github.neteinstein.remedioemdia.ui.components.glass
 import io.github.neteinstein.remedioemdia.ui.components.label
 import io.github.neteinstein.remedioemdia.ui.components.shortLabel
-import io.github.neteinstein.remedioemdia.ui.pill.PillIcon
 import io.github.neteinstein.remedioemdia.ui.resources.Res
 import io.github.neteinstein.remedioemdia.ui.resources.action_add_medication
-import io.github.neteinstein.remedioemdia.ui.resources.empty_title
+import io.github.neteinstein.remedioemdia.ui.resources.empty_body
 import io.github.neteinstein.remedioemdia.ui.resources.frequency_daily
 import io.github.neteinstein.remedioemdia.ui.resources.frequency_every_n_days
 import io.github.neteinstein.remedioemdia.ui.resources.medications_count
 import io.github.neteinstein.remedioemdia.ui.resources.nav_medications
 import io.github.neteinstein.remedioemdia.ui.resources.units_left
-import io.github.neteinstein.remedioemdia.ui.theme.RemedioColors
+import io.github.neteinstein.remedioemdia.ui.theme.RemedioTheme
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -55,21 +51,22 @@ fun MedicationsScreen(
 ) {
     Box(modifier.fillMaxSize()) {
         LazyColumn(
-            contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 96.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
+            contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 112.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item {
-                SectionHeader(
+                ScreenHeader(
+                    eyebrow = pluralStringResource(Res.plurals.medications_count, medications.size, medications.size),
                     title = stringResource(Res.string.nav_medications),
-                    meta = pluralStringResource(Res.plurals.medications_count, medications.size, medications.size),
-                    modifier = Modifier.padding(bottom = 6.dp),
+                    modifier = Modifier.padding(bottom = 12.dp),
                 )
             }
             if (medications.isEmpty()) {
                 item {
                     Text(
-                        stringResource(Res.string.empty_title),
-                        color = RemedioColors.TextSecondary,
+                        stringResource(Res.string.empty_body),
+                        style = RemedioTheme.type.bodyText,
+                        color = RemedioTheme.colors.inkSoft,
                         modifier = Modifier.padding(8.dp),
                     )
                 }
@@ -78,11 +75,10 @@ fun MedicationsScreen(
                 MedicationRow(medication, onClick = { onEdit(medication) })
             }
         }
-        ExtendedFloatingActionButton(
+        BrandButton(
+            text = "+  " + stringResource(Res.string.action_add_medication),
             onClick = onAdd,
-            icon = { Icon(Icons.Filled.Add, contentDescription = null) },
-            text = { Text(stringResource(Res.string.action_add_medication)) },
-            modifier = Modifier.align(Alignment.BottomEnd).padding(24.dp),
+            modifier = Modifier.align(Alignment.BottomCenter).padding(24.dp),
         )
     }
 }
@@ -92,28 +88,35 @@ private fun MedicationRow(
     medication: Medication,
     onClick: () -> Unit,
 ) {
-    val shape = RoundedCornerShape(18.dp)
+    val palette = RemedioTheme.colors
+    val shape = RoundedCornerShape(22.dp)
     Row(
         Modifier
             .fillMaxWidth()
+            .glass(shape, palette, elevation = 6.dp)
             .clip(shape)
-            .glass(shape)
             .clickable(onClick = onClick)
-            .padding(16.dp),
+            .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        PillIcon(medication.shape, medication.color, height = 28.dp)
-        Spacer(Modifier.width(16.dp))
+        PillChip(medication)
+        Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f)) {
-            Text(medication.displayName, style = MaterialTheme.typography.titleMedium, color = RemedioColors.TextPrimary)
-            Text(scheduleSummary(medication), style = MaterialTheme.typography.bodyMedium, color = RemedioColors.TextSecondary)
-            medication.stock?.let { stock ->
-                Text(
-                    pluralStringResource(Res.plurals.units_left, stock.remaining, stock.remaining),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = if (Inventory.isLow(medication)) RemedioColors.Amber else RemedioColors.TextSecondary,
-                )
-            }
+            Text(medication.displayName, style = RemedioTheme.type.rowTitle, color = palette.ink)
+            Text(scheduleSummary(medication), style = RemedioTheme.type.bodySmall, color = palette.inkMute)
+        }
+        medication.stock?.let { stock ->
+            Spacer(Modifier.width(8.dp))
+            val low = Inventory.isLow(medication)
+            Text(
+                pluralStringResource(Res.plurals.units_left, stock.remaining, stock.remaining),
+                style = RemedioTheme.type.bodySmall,
+                color = if (low) palette.stock else palette.inkMute,
+                modifier =
+                    Modifier
+                        .then(if (low) Modifier.background(palette.stockSoft, RoundedCornerShape(50)) else Modifier)
+                        .padding(horizontal = 10.dp, vertical = 4.dp),
+            )
         }
     }
 }
@@ -146,5 +149,5 @@ private fun scheduleSummary(medication: Medication): String {
                 stringResource(Res.string.frequency_every_n_days, frequency.interval)
             }
         }
-    return (slots.joinToString(", ") + " · " + frequency)
+    return slots.joinToString(", ") + " · " + frequency
 }
