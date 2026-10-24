@@ -1,4 +1,4 @@
-rootProject.name = "RemedioEmDia"
+rootProject.name = "TempusRemedium"
 
 pluginManagement {
     repositories {

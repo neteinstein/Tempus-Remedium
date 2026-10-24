@@ -7,12 +7,12 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
-        android:name=".RemedioApplication"
+        android:name=".TempusRemediumApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Remedio">
+        android:theme="@style/Theme.TempusRemedium">
 
         <activity
             android:name=".MainActivity"

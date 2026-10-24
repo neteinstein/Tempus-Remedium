@@ -101,13 +101,13 @@ jobs:
         run: |
           VERSION_UNDERSCORE="${VERSION_NAME//./_}"
 
-          APK_PATH="androidApp/build/outputs/apk/release/RemedioEmDia_version${VERSION_UNDERSCORE}.apk"
+          APK_PATH="androidApp/build/outputs/apk/release/TempusRemedium_version${VERSION_UNDERSCORE}.apk"
           mv androidApp/build/outputs/apk/release/androidApp-release.apk "$APK_PATH"
           APK_SHA1=$(sha1sum "$APK_PATH" | awk '{print $1}')
           echo "apk_path=$APK_PATH" >> "$GITHUB_OUTPUT"
           echo "apk_sha1=$APK_SHA1" >> "$GITHUB_OUTPUT"
 
-          AAB_PATH="androidApp/build/outputs/bundle/release/RemedioEmDia_version${VERSION_UNDERSCORE}.aab"
+          AAB_PATH="androidApp/build/outputs/bundle/release/TempusRemedium_version${VERSION_UNDERSCORE}.aab"
           mv androidApp/build/outputs/bundle/release/androidApp-release.aab "$AAB_PATH"
           AAB_SHA1=$(sha1sum "$AAB_PATH" | awk '{print $1}')
           echo "aab_path=$AAB_PATH" >> "$GITHUB_OUTPUT"
@@ -119,7 +119,7 @@ jobs:
           # the Play Console de-obfuscates by itself. Copied rather than moved: mapping.txt is an
           # output of the R8 task, and removing it would make Gradle re-run minification during the
           # Play publish step below, producing a different mapping for the bundle it uploads.
-          MAPPING_PATH="$RUNNER_TEMP/RemedioEmDia_version${VERSION_UNDERSCORE}-mapping.txt"
+          MAPPING_PATH="$RUNNER_TEMP/TempusRemedium_version${VERSION_UNDERSCORE}-mapping.txt"
           cp androidApp/build/outputs/mapping/release/mapping.txt "$MAPPING_PATH"
           echo "mapping_path=$MAPPING_PATH" >> "$GITHUB_OUTPUT"
 

@@ -11,14 +11,14 @@ kotlin {
 }
 
 android {
-    namespace = "io.github.neteinstein.remedioemdia.android"
+    namespace = "org.mariacf.tempusremedium.android"
     compileSdk =
         libs.versions.android.compileSdk
             .get()
             .toInt()
 
     defaultConfig {
-        applicationId = "io.github.neteinstein.remedioemdia"
+        applicationId = "org.mariacf.tempusremedium"
         minSdk =
             libs.versions.android.minSdk
                 .get()

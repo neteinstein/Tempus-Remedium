@@ -1,4 +1,4 @@
-# Remédio em Dia
+# Tempus Remedium
 
 **Por [Dra. Maria Cortês Ferreira](https://mariacf.pt)**, médica de família · [mariacf.pt](https://mariacf.pt)
 
@@ -17,6 +17,10 @@ calm blues, frosted cards, and a light and a dark theme.
   <img src="androidApp/src/test/screenshots/screen_medications.png" width="250" alt="Medicamentos">
   <img src="androidApp/src/test/screenshots/screen_history.png" width="250" alt="Histórico">
   <img src="androidApp/src/test/screenshots/screen_settings_dark.png" width="250" alt="Definições">
+</p>
+<p>
+  <img src="docs/images/web_today.png" width="380" alt="Versão web (claro)">
+  <img src="docs/images/web_today_dark.png" width="380" alt="Versão web (escuro)">
 </p>
 
 ## Features

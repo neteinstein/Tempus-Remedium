@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidance for coding agents (and humans) working on **Remédio em Dia**, a medication and dose
+Guidance for coding agents (and humans) working on **Tempus Remedium**, a medication and dose
 manager in European Portuguese by **Dra. Maria Cortês Ferreira** ([mariacf.pt](https://mariacf.pt)).
 Android is the primary platform; the web build is a reduced version of the same app.
 `CLAUDE.md` imports this file.
@@ -12,7 +12,7 @@ Kotlin Multiplatform + Compose Multiplatform. Gradle modules:
 | Module | Targets | What lives there |
 | --- | --- | --- |
 | `core` | JVM, Wasm | Model (`Medication`, `Schedule`, `DoseLog`, `AppData`), the day plan, stock, adherence, reminder maths, the JSON repository and storage (`FileDocumentStorage` on JVM/Android, `LocalStorageDocumentStorage` on the web), `ReferenceFixtures`. Pure Kotlin, fully unit-tested. |
-| `ui` | Android, Wasm | Theme (`RemedioTheme`, light and dark `RemedioPalette`), pill, jar and blister painters, the HOJE and REPOR EM BREVE panels, all screens, `App`, `AppViewModel`, string resources (`composeResources/values` = pt-PT, `values-en` = English), the Fraunces and Plus Jakarta Sans fonts. |
+| `ui` | Android, Wasm | Theme (`TempusTheme`, light and dark `TempusPalette`), pill, jar and blister painters, the HOJE and REPOR EM BREVE panels, all screens, `App`, `AppViewModel`, string resources (`composeResources/values` = pt-PT, `values-en` = English), the Fraunces and Plus Jakarta Sans fonts. |
 | `androidApp` | Android | `MainActivity`, `AppContainer`, reminders (`AlarmManager`, notification actions, reschedule on boot/time change), Glance widgets, Android-only settings, Robolectric and Roborazzi tests. |
 | `webApp` | Wasm | `main()` with `ComposeViewport`, `index.html`. |
 
@@ -33,13 +33,13 @@ Key ideas:
   Keep the credit wherever the app presents itself.
 - The theme follows her site, **mariacf.pt**: Fraunces (display, with an italic accent in the
   headline) and Plus Jakarta Sans (body); calm blues with the brand gradient `#026A9F → #125A98 → #00668B`;
-  frosted surfaces on a near-white ground with soft blobs; a dark variant. `RemedioPalette.Light` and
-  `RemedioPalette.Dark` mirror the CSS custom properties of `https://mariacf.pt/assets/css/styles.css`
+  frosted surfaces on a near-white ground with soft blobs; a dark variant. `TempusPalette.Light` and
+  `TempusPalette.Dark` mirror the CSS custom properties of `https://mariacf.pt/assets/css/styles.css`
   (`--bg`, `--ink*`, `--surface*`, `--teal` → `accent`, `--blob-*`, `--brand-*`). Re-read that file
   before changing tokens; it was reachable from the agent container.
 - Pill colours, the amber of "Restam N" and the panel layouts stay those of the design reference.
-- Never use `RemedioPalette`/fonts directly in composables: read `RemedioTheme.colors` and
-  `RemedioTheme.type`. Widgets draw bitmaps, so they pick a palette with `WidgetStyle.palette(context)`.
+- Never use `TempusPalette`/fonts directly in composables: read `TempusTheme.colors` and
+  `TempusTheme.type`. Widgets draw bitmaps, so they pick a palette with `WidgetStyle.palette(context)`.
 
 ## Commands
 

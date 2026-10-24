@@ -2,7 +2,7 @@
 <resources>
     <color name="background">#FFF9FAFC</color>
 
-    <style name="Theme.Remedio" parent="android:Theme.Material.NoActionBar">
+    <style name="Theme.TempusRemedium" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">@color/background</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
