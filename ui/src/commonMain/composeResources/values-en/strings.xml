@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- English is derived from pt-PT (values/strings.xml), which is the source of truth. -->
+<resources>
+    <string name="app_name">Remédio em Dia</string>
+
+    <string name="today">Today</string>
+    <string name="today_meta">%1$s · %2$s</string>
+    <string name="day_label">%1$s %2$d</string>
+    <string name="slot_morning">Morning</string>
+    <string name="slot_midday">Midday</string>
+    <string name="slot_evening">Evening</string>
+    <string name="slot_bedtime">Bedtime</string>
+    <string name="weekday_monday">Mon</string>
+    <string name="weekday_tuesday">Tue</string>
+    <string name="weekday_wednesday">Wed</string>
+    <string name="weekday_thursday">Thu</string>
+    <string name="weekday_friday">Fri</string>
+    <string name="weekday_saturday">Sat</string>
+    <string name="weekday_sunday">Sun</string>
+    <plurals name="doses">
+        <item quantity="one">%1$d dose</item>
+        <item quantity="other">%1$d doses</item>
+    </plurals>
+
+    <string name="refill_soon">Refill soon</string>
+    <plurals name="medications_count">
+        <item quantity="one">%1$d medication</item>
+        <item quantity="other">%1$d medications</item>
+    </plurals>
+    <plurals name="units_left">
+        <item quantity="one">%1$d left</item>
+        <item quantity="other">%1$d left</item>
+    </plurals>
+
+    <string name="nav_today">Today</string>
+    <string name="nav_medications">Medications</string>
+    <string name="nav_history">History</string>
+    <string name="nav_settings">Settings</string>
+
+    <string name="action_taken">Taken</string>
+    <string name="action_take_all">Took all</string>
+    <string name="action_skip">Skip</string>
+    <string name="action_undo">Undo</string>
+    <string name="action_refill">Refill</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_back">Back</string>
+    <string name="action_add_medication">Add medication</string>
+
+    <string name="status_taken_at">Taken at %1$s</string>
+    <string name="status_skipped">Skipped</string>
+    <string name="slot_sheet_title">%1$s · %2$s</string>
+    <string name="slot_empty">Nothing to take at this time.</string>
+    <plurals name="units">
+        <item quantity="one">%1$d unit</item>
+        <item quantity="other">%1$d units</item>
+    </plurals>
+
+    <string name="refill_dialog_title">Refill %1$s</string>
+    <string name="refill_dialog_units">Units to add</string>
+
+    <string name="empty_title">No medications yet</string>
+    <string name="empty_body">Add the first one to see today\'s doses here.</string>
+
+    <string name="editor_new">New medication</string>
+    <string name="editor_edit">Edit medication</string>
+    <string name="field_name">Name</string>
+    <string name="field_strength">Strength (e.g. 500mg)</string>
+    <string name="field_shape">Shape</string>
+    <string name="field_color">Colour</string>
+    <string name="field_when">When to take</string>
+    <string name="field_frequency">Frequency</string>
+    <string name="frequency_daily">Every day</string>
+    <string name="frequency_weekdays">Days of the week</string>
+    <string name="frequency_every_n_days">Every %1$d days</string>
+    <string name="field_track_stock">Track stock</string>
+    <string name="field_units_left">Units left</string>
+    <string name="field_low_threshold">Warn when left (empty = 7 days)</string>
+    <string name="field_notes">Notes</string>
+    <string name="editor_delete_confirm">Delete %1$s and its history?</string>
+
+    <string name="shape_round_scored">Round</string>
+    <string name="shape_square">Square</string>
+    <string name="shape_capsule">Capsule</string>
+    <string name="shape_softgel">Softgel</string>
+    <string name="color_teal">Teal</string>
+    <string name="color_pink">Pink</string>
+    <string name="color_peach">Peach</string>
+    <string name="color_blue">Blue</string>
+    <string name="color_yellow">Yellow</string>
+    <string name="color_lavender">Lavender</string>
+    <string name="color_green">Green</string>
+    <string name="color_white">White</string>
+
+    <string name="history_title">Last 30 days</string>
+    <string name="history_rate">%1$d% of doses taken</string>
+    <string name="history_no_data">No doses logged yet.</string>
+    <string name="history_day">%1$d of %2$d taken</string>
+
+    <string name="settings_times">Times</string>
+    <string name="settings_browser_storage">Your data is stored only in this browser.</string>
+    <string name="settings_web_reduced">The web version has no reminders, widgets or lock screen.</string>
+
+    <string name="channel_reminders">Dose reminders</string>
+    <string name="channel_low_stock">Low stock</string>
+    <string name="notification_slot_title">%1$s · %2$s</string>
+    <plurals name="notification_hidden_body">
+        <item quantity="one">%1$d dose to take</item>
+        <item quantity="other">%1$d doses to take</item>
+    </plurals>
+    <string name="notification_snooze">Snooze 10 min</string>
+    <string name="notification_low_stock_body">%1$s · %2$s</string>
+    <string name="settings_reminders">Reminders</string>
+    <string name="settings_reminders_body">A notification at each time with doses.</string>
+    <string name="settings_hide_names">Hide names on the lock screen</string>
+    <string name="settings_notifications_permission">Allow notifications</string>
+    <string name="settings_exact_alarms">On-time reminders</string>
+    <string name="settings_exact_alarms_body">Without this permission reminders may arrive a few minutes late.</string>
+    <string name="settings_widgets_hint">Add the Today and Refill soon widgets to your home screen.</string>
+    <string name="widget_nothing_low">Nothing to refill for now.</string>
+</resources>
