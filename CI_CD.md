@@ -58,7 +58,8 @@ On every push to `main`:
 
 ### Deploy Web (GitHub Pages)
 
-Builds the Wasm distribution and publishes it with `actions/deploy-pages`.
+Builds the Wasm distribution and publishes it with `actions/deploy-pages` to
+https://neteinstein.github.io/Tempus-Remedium/.
 **One-time setup:** *Settings → Pages → Build and deployment → Source* = **GitHub Actions**.
 
 ### PR title
