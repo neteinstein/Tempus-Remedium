@@ -1,6 +1,5 @@
 package io.github.neteinstein.remedioemdia.android.screenshots
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,11 +11,12 @@ import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.neteinstein.remedioemdia.core.ReferenceFixtures
+import io.github.neteinstein.remedioemdia.core.model.StockDisplay
 import io.github.neteinstein.remedioemdia.core.schedule.lowStock
 import io.github.neteinstein.remedioemdia.core.schedule.planFor
 import io.github.neteinstein.remedioemdia.ui.components.HojePanel
 import io.github.neteinstein.remedioemdia.ui.components.ReporEmBrevePanel
-import io.github.neteinstein.remedioemdia.ui.theme.RemedioColors
+import io.github.neteinstein.remedioemdia.ui.components.brandBackground
 import io.github.neteinstein.remedioemdia.ui.theme.RemedioTheme
 import org.junit.Rule
 import org.junit.Test
@@ -25,9 +25,10 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * Renders the reference panels with [ReferenceFixtures] on a 360dp/xxhdpi screen,
- * the same 1080px width as docs/design/reference/\*.png, so the output can be
- * compared with the reference side by side (see .claude/skills/match-reference-design).
+ * Renders the reference panels with [ReferenceFixtures] on a 360dp/xxhdpi screen, the same
+ * 1080px width as docs/design/reference/\*.png, so the output can be compared with the
+ * reference side by side (see .claude/skills/match-reference-design). The dark variants are
+ * the closest to the reference's dark photo background.
  */
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -37,27 +38,40 @@ class ReferenceScreenshotTest {
     val composeRule = createComposeRule()
 
     @Test
-    fun hojePanel() =
-        capture("hoje_panel") {
-            HojePanel(ReferenceFixtures.data.planFor(ReferenceFixtures.date))
+    fun hojePanel() = capture("hoje_panel", dark = false) { HojePanel(ReferenceFixtures.data.planFor(ReferenceFixtures.date)) }
+
+    @Test
+    fun hojePanelDark() = capture("hoje_panel_dark", dark = true) { HojePanel(ReferenceFixtures.data.planFor(ReferenceFixtures.date)) }
+
+    @Test
+    fun reporEmBrevePanel() = capture("repor_em_breve_panel", dark = false) { ReporEmBrevePanel(ReferenceFixtures.data.lowStock()) }
+
+    @Test
+    fun reporEmBrevePanelDark() = capture("repor_em_breve_panel_dark", dark = true) { ReporEmBrevePanel(ReferenceFixtures.data.lowStock()) }
+
+    @Test
+    fun reporEmBreveBlisters() =
+        capture("repor_em_breve_blisters", dark = false) {
+            ReporEmBrevePanel(ReferenceFixtures.data.lowStock(), display = StockDisplay.BLISTERS)
         }
 
     @Test
-    fun reporEmBrevePanel() =
-        capture("repor_em_breve_panel") {
-            ReporEmBrevePanel(ReferenceFixtures.data.lowStock())
+    fun reporEmBreveBlistersDark() =
+        capture("repor_em_breve_blisters_dark", dark = true) {
+            ReporEmBrevePanel(ReferenceFixtures.data.lowStock(), display = StockDisplay.BLISTERS)
         }
 
     private fun capture(
         name: String,
+        dark: Boolean,
         content: @Composable () -> Unit,
     ) {
         composeRule.setContent {
-            RemedioTheme {
+            RemedioTheme(darkTheme = dark) {
                 Box(
                     Modifier
                         .fillMaxWidth()
-                        .background(RemedioColors.Background)
+                        .brandBackground(RemedioTheme.colors)
                         .padding(horizontal = 24.dp, vertical = 16.dp),
                 ) { content() }
             }

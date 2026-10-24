@@ -9,8 +9,11 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.neteinstein.remedioemdia.core.ReferenceFixtures
 import io.github.neteinstein.remedioemdia.core.model.AppData
+import io.github.neteinstein.remedioemdia.core.model.Settings
+import io.github.neteinstein.remedioemdia.core.model.StockDisplay
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
@@ -52,6 +55,21 @@ class WidgetContentTest {
             onNode(hasText("Restam 3")).assertExists()
             onNode(hasText("Metformina")).assertExists()
         }
+    }
+
+    @Test
+    fun reporWidgetFollowsTheBlisterSetting() {
+        val jars = runBlocking { ReporWidgetUi.build(context, ReferenceFixtures.data) }
+        val blisters =
+            runBlocking {
+                ReporWidgetUi.build(
+                    context,
+                    ReferenceFixtures.data.copy(settings = Settings(stockDisplay = StockDisplay.BLISTERS)),
+                )
+            }
+        // Same footprint, different drawing.
+        assertEquals(jars.jars[0].bitmap.width, blisters.jars[0].bitmap.width)
+        assertFalse(jars.jars[0].bitmap.sameAs(blisters.jars[0].bitmap))
     }
 
     @Test
