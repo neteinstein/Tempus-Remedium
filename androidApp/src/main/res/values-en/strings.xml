@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_hoje_label">Today</string>
+    <string name="widget_hoje_description">Today\'s doses at each time of day.</string>
+    <string name="widget_repor_label">Refill soon</string>
+    <string name="widget_repor_description">Medications that are running out.</string>
+</resources>

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- pt-PT is the source of truth (docs/design/REFERENCE.md). Keep these strings exactly as in the reference. -->
+<resources>
+    <string name="app_name">Remédio em Dia</string>
+
+    <!-- HOJE panel -->
+    <string name="today">Hoje</string>
+    <string name="today_meta">%1$s · %2$s</string>
+    <string name="day_label">%1$s, %2$d</string>
+    <string name="slot_morning">Manhã</string>
+    <string name="slot_midday">Meio-dia</string>
+    <string name="slot_evening">Noite</string>
+    <string name="slot_bedtime">Deitar</string>
+    <string name="weekday_monday">seg.</string>
+    <string name="weekday_tuesday">ter.</string>
+    <string name="weekday_wednesday">qua.</string>
+    <string name="weekday_thursday">qui.</string>
+    <string name="weekday_friday">sex.</string>
+    <string name="weekday_saturday">sáb.</string>
+    <string name="weekday_sunday">dom.</string>
+    <plurals name="doses">
+        <item quantity="one">%1$d dose</item>
+        <item quantity="other">%1$d doses</item>
+    </plurals>
+
+    <!-- REPOR EM BREVE panel -->
+    <string name="refill_soon">Repor em breve</string>
+    <plurals name="medications_count">
+        <item quantity="one">%1$d medicamento</item>
+        <item quantity="other">%1$d medicamentos</item>
+    </plurals>
+    <plurals name="units_left">
+        <item quantity="one">Resta %1$d</item>
+        <item quantity="other">Restam %1$d</item>
+    </plurals>
+
+    <!-- Product additions (not in the reference) -->
+    <string name="nav_today">Hoje</string>
+    <string name="nav_medications">Medicamentos</string>
+    <string name="nav_history">Histórico</string>
+    <string name="nav_settings">Definições</string>
+
+    <string name="action_taken">Tomei</string>
+    <string name="action_take_all">Tomei todas</string>
+    <string name="action_skip">Saltar</string>
+    <string name="action_undo">Desfazer</string>
+    <string name="action_refill">Repor</string>
+    <string name="action_save">Guardar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_delete">Apagar</string>
+    <string name="action_back">Voltar</string>
+    <string name="action_add_medication">Adicionar medicamento</string>
+
+    <string name="status_taken_at">Tomado às %1$s</string>
+    <string name="status_skipped">Saltado</string>
+    <string name="slot_sheet_title">%1$s · %2$s</string>
+    <string name="slot_empty">Nada para tomar a esta hora.</string>
+    <plurals name="units">
+        <item quantity="one">%1$d unidade</item>
+        <item quantity="other">%1$d unidades</item>
+    </plurals>
+
+    <string name="refill_dialog_title">Repor %1$s</string>
+    <string name="refill_dialog_units">Unidades a adicionar</string>
+
+    <string name="empty_title">Ainda não há medicamentos</string>
+    <string name="empty_body">Adicione o primeiro para ver aqui as doses de hoje.</string>
+
+    <string name="editor_new">Novo medicamento</string>
+    <string name="editor_edit">Editar medicamento</string>
+    <string name="field_name">Nome</string>
+    <string name="field_strength">Dosagem (ex.: 500mg)</string>
+    <string name="field_shape">Forma</string>
+    <string name="field_color">Cor</string>
+    <string name="field_when">Quando tomar</string>
+    <string name="field_frequency">Frequência</string>
+    <string name="frequency_daily">Todos os dias</string>
+    <string name="frequency_weekdays">Dias da semana</string>
+    <string name="frequency_every_n_days">A cada %1$d dias</string>
+    <string name="field_track_stock">Controlar stock</string>
+    <string name="field_units_left">Unidades restantes</string>
+    <string name="field_low_threshold">Avisar quando restarem (vazio = 7 dias)</string>
+    <string name="field_notes">Notas</string>
+    <string name="editor_delete_confirm">Apagar %1$s e o seu histórico?</string>
+
+    <string name="shape_round_scored">Redondo</string>
+    <string name="shape_square">Quadrado</string>
+    <string name="shape_capsule">Cápsula</string>
+    <string name="shape_softgel">Cápsula mole</string>
+    <string name="color_teal">Turquesa</string>
+    <string name="color_pink">Rosa</string>
+    <string name="color_peach">Pêssego</string>
+    <string name="color_blue">Azul</string>
+    <string name="color_yellow">Amarelo</string>
+    <string name="color_lavender">Lilás</string>
+    <string name="color_green">Verde</string>
+    <string name="color_white">Branco</string>
+
+    <string name="history_title">Últimos 30 dias</string>
+    <string name="history_rate">%1$d% das doses tomadas</string>
+    <string name="history_no_data">Ainda sem doses registadas.</string>
+    <string name="history_day">%1$d de %2$d tomadas</string>
+
+    <string name="settings_times">Horários</string>
+    <string name="settings_browser_storage">Os dados ficam guardados apenas neste navegador.</string>
+    <string name="settings_web_reduced">Na versão web não há lembretes, widgets nem ecrã de bloqueio.</string>
+
+    <!-- Android only: reminders and settings -->
+    <string name="channel_reminders">Lembretes de doses</string>
+    <string name="channel_low_stock">Stock baixo</string>
+    <string name="notification_slot_title">%1$s · %2$s</string>
+    <plurals name="notification_hidden_body">
+        <item quantity="one">%1$d dose para tomar</item>
+        <item quantity="other">%1$d doses para tomar</item>
+    </plurals>
+    <string name="notification_snooze">Adiar 10 min</string>
+    <string name="notification_low_stock_body">%1$s · %2$s</string>
+    <string name="settings_reminders">Lembretes</string>
+    <string name="settings_reminders_body">Notificação a cada horário com doses.</string>
+    <string name="settings_hide_names">Ocultar nomes no ecrã de bloqueio</string>
+    <string name="settings_notifications_permission">Permitir notificações</string>
+    <string name="settings_exact_alarms">Lembretes à hora certa</string>
+    <string name="settings_exact_alarms_body">Sem esta permissão, os lembretes podem chegar alguns minutos depois.</string>
+    <string name="settings_widgets_hint">Adicione os widgets Hoje e Repor em breve ao ecrã principal.</string>
+    <string name="widget_nothing_low">Nada a repor por agora.</string>
+
+    <!-- Retheme (mariacf.pt): header, settings and about -->
+    <string name="weekday_full_monday">segunda-feira</string>
+    <string name="weekday_full_tuesday">terça-feira</string>
+    <string name="weekday_full_wednesday">quarta-feira</string>
+    <string name="weekday_full_thursday">quinta-feira</string>
+    <string name="weekday_full_friday">sexta-feira</string>
+    <string name="weekday_full_saturday">sábado</string>
+    <string name="weekday_full_sunday">domingo</string>
+    <string name="month_january">janeiro</string>
+    <string name="month_february">fevereiro</string>
+    <string name="month_march">março</string>
+    <string name="month_april">abril</string>
+    <string name="month_may">maio</string>
+    <string name="month_june">junho</string>
+    <string name="month_july">julho</string>
+    <string name="month_august">agosto</string>
+    <string name="month_september">setembro</string>
+    <string name="month_october">outubro</string>
+    <string name="month_november">novembro</string>
+    <string name="month_december">dezembro</string>
+    <string name="long_date">%1$s, %2$d de %3$s</string>
+    <string name="greeting_morning">Bom dia,</string>
+    <string name="greeting_afternoon">Boa tarde,</string>
+    <string name="greeting_evening">Boa noite,</string>
+    <plurals name="greeting_pending">
+        <item quantity="one">falta %1$d dose.</item>
+        <item quantity="other">faltam %1$d doses.</item>
+    </plurals>
+    <string name="greeting_done">está tudo em dia.</string>
+    <string name="greeting_nothing">hoje não há doses.</string>
+    <string name="history_rate_caption">das doses tomadas nos últimos 30 dias</string>
+    <string name="settings_stock_display">Mostrar stock como</string>
+    <string name="stock_display_jars">Frascos</string>
+    <string name="stock_display_blisters">Blisters</string>
+    <string name="settings_theme">Aspeto</string>
+    <string name="theme_system">Automático</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Escuro</string>
+    <string name="settings_about">Sobre</string>
+    <string name="about_author">por Dra. Maria Cortês Ferreira</string>
+    <string name="about_author_role">Médica de família</string>
+    <string name="about_site">mariacf.pt</string>
+    <string name="about_disclaimer">Informação de apoio. Não substitui o aconselhamento do seu médico ou farmacêutico.</string>
+</resources>

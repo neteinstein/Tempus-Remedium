@@ -1,0 +1,294 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    types: [ opened, synchronize, reopened ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  # 21, not 17: Robolectric's android-all jars for SDK 35+ (the screenshot and notification
+  # tests run on SDK 36) are Java 21 bytecode, and the Gradle toolchains ask for 21 too.
+  JAVA_VERSION: '21'
+  JAVA_DISTRIBUTION: 'temurin'
+
+jobs:
+  # ─── Lint ───────────────────────────────────────────────────────────────────
+  lint:
+    name: ktlint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v6
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Run ktlint
+        run: ./gradlew ktlintCheck --console=plain --no-daemon --stacktrace
+
+      # Android Lint runs here too: it caught real manifest and receiver issues during development.
+      - name: Run Android Lint
+        run: ./gradlew :androidApp:lintDebug --no-daemon --stacktrace
+
+      - name: Upload lint reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-reports
+          path: |
+            **/build/reports/ktlint/
+            androidApp/build/reports/lint-results-debug.*
+          if-no-files-found: warn
+
+  # ─── Compile ────────────────────────────────────────────────────────────────
+  compile:
+    name: Compile
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v6
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Compile debug
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk
+          path: androidApp/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+  # ─── Minified Release ───────────────────────────────────────────────────────
+  # `assembleDebug` above never runs R8, so a broken keep rule in androidApp/proguard-rules.pro is
+  # invisible to it and would only surface in .github/workflows/release.yml, after the merge to
+  # main. This job builds the same minified/obfuscated/resource-shrunk output the release workflow
+  # does and asserts on R8's mapping file that obfuscation happened and that the manifest
+  # components and the data serializers survived it.
+  # No signing secrets are needed: androidApp/build.gradle.kts falls back to debug signing when
+  # KEYSTORE_FILE is unset, and shrinking is identical either way.
+  minified-release:
+    name: Minified Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v6
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build minified release APK
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: Verify obfuscation
+        run: ./scripts/verify-obfuscation.sh
+
+      # The mapping file is the only way to read a stack trace from these builds, and it is what a
+      # reviewer needs to inspect what R8 renamed or removed on this PR.
+      - name: Upload R8 mapping files
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r8-mapping-files
+          path: androidApp/build/outputs/mapping/release/
+          # Not "error": this step runs with always(), so a build that failed before R8 ran has
+          # nothing to upload and should report the build failure, not an artifact one.
+          if-no-files-found: warn
+
+  # ─── Unit Tests ─────────────────────────────────────────────────────────────
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v6
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      # core's domain tests on the JVM, then androidApp's Robolectric tests (reminders,
+      # notifications, widgets) with the Roborazzi screenshots compared against the committed
+      # goldens in androidApp/src/test/screenshots.
+      - name: Run unit tests
+        run: ./gradlew :core:jvmTest :androidApp:testDebugUnitTest :androidApp:verifyRoborazziDebug --no-daemon --stacktrace
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: |
+            **/build/test-results/**/*.xml
+            androidApp/build/outputs/roborazzi/
+          if-no-files-found: warn
+
+      - name: Publish unit test results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: '**/build/test-results/**/*.xml'
+          comment_title: '🧪 Unit Test Results'
+
+  # ─── Web (wasmJs) Compile ───────────────────────────────────────────────────
+  # deploy-pages.yml runs this same task on every push to main, but only after the merge - this
+  # job catches a broken wasmJs build before that, on the PR itself.
+  compile-web:
+    name: Compile Web
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v6
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build wasmJs production distribution
+        run: ./gradlew :webApp:wasmJsBrowserDistribution --no-daemon --stacktrace
+
+  # ─── iOS Compile ────────────────────────────────────────────────────────────
+  # Needs a macOS runner for the Kotlin/Native iOS toolchain (Xcode). There is no iOS app yet:
+  # core and ui target iosArm64/iosSimulatorArm64 so the shared code keeps compiling for iOS.
+  # iosSimulatorArm64Test compiles core and runs its commonTest suite on the simulator; ui has no
+  # tests, so its simulator compilation is requested explicitly.
+  compile-ios:
+    name: Compile iOS
+    runs-on: macos-latest
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v6
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build and test for iOS simulator
+        run: ./gradlew iosSimulatorArm64Test :ui:compileKotlinIosSimulatorArm64 --no-daemon --stacktrace
+
+  # ─── Code Coverage ──────────────────────────────────────────────────────────
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v6
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      # Kover covers core (JVM target) and androidApp, merged at the root project via the
+      # `kover(project(...))` dependencies in the root build.gradle.kts. The test tasks run
+      # explicitly rather than relying on the report tasks' own dependencies (AGP 9.x can leave
+      # Kover's report tasks without a real dependency on them, Kotlin/kotlinx-kover#785).
+      # koverVerify enforces the thresholds: core >= 85 % lines, merged >= 70 %.
+      - name: Run tests with coverage
+        run: ./gradlew :core:jvmTest :androidApp:testDebugUnitTest koverXmlReport koverHtmlReport koverVerify :core:koverVerify --no-daemon --stacktrace
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            build/reports/kover/
+            core/build/reports/kover/
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v6
+        with:
+          files: 'build/reports/kover/report.xml'
+          # Optional: set CODECOV_TOKEN once the repository is added on codecov.io.
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+          verbose: true
