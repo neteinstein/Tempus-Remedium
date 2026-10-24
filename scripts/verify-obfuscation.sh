@@ -28,6 +28,13 @@ readonly PRESENT_CLASSES=(
     "org.mariacf.tempusremedium.core.model.AppData\$\$serializer"
 )
 
+# Classes whose no-arg constructor is called reflectively. WorkManager (pulled in by Glance) opens
+# its Room database at startup through WorkDatabase_Impl's constructor; without it every launch
+# crashes. androidApp/proguard-rules.pro keeps it.
+readonly REFLECTIVE_CONSTRUCTORS=(
+    "androidx.work.impl.WorkDatabase_Impl"
+)
+
 failures=0
 
 fail() {
@@ -76,6 +83,21 @@ verify_mapping() {
             echo "  $variant: present $present"
         else
             fail "$variant: $present was removed - stored data could not be read. Check kotlinx.serialization's R8 rules."
+        fi
+    done
+
+    # The class must keep its name and, within its block of indented member lines, its "<init>()".
+    local reflective
+    for reflective in "${REFLECTIVE_CONSTRUCTORS[@]}"; do
+        if awk -v cls="$reflective -> $reflective:" '
+            $0 == cls { inside = 1; next }
+            inside && /^[^ #]/ { exit }
+            inside && /[ :]void <init>\(\)[: ]/ { found = 1; exit }
+            END { exit !found }
+        ' "$mapping"; then
+            echo "  $variant: kept $reflective.<init>()"
+        else
+            fail "$variant: $reflective or its no-arg constructor was renamed or removed - the app crashes on launch. Check the Room rule in androidApp/proguard-rules.pro."
         fi
     done
 }
