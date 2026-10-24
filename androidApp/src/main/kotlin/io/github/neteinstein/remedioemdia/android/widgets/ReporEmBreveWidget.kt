@@ -70,6 +70,7 @@ data class ReporWidgetUi(
             data: AppData,
         ): ReporWidgetUi {
             val density = context.resources.displayMetrics.density
+            val palette = WidgetStyle.palette(context)
             val items = data.lowStock()
             return ReporWidgetUi(
                 title = WidgetStyle.spaced(getString(Res.string.refill_soon)),
@@ -79,7 +80,16 @@ data class ReporWidgetUi(
                     items.take(MAX_JARS).map { item ->
                         Jar(
                             medicationId = item.medication.id,
-                            bitmap = PillBitmaps.jar(item.medication.shape, item.medication.color, item.remaining, JAR_DP, density),
+                            bitmap =
+                                PillBitmaps.stock(
+                                    item.medication.shape,
+                                    item.medication.color,
+                                    item.remaining,
+                                    data.settings.stockDisplay,
+                                    palette,
+                                    JAR_DP,
+                                    density,
+                                ),
                             name = item.medication.name,
                             count = getPluralString(Res.plurals.units_left, item.remaining, item.remaining),
                         )

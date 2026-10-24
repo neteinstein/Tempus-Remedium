@@ -12,10 +12,13 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import io.github.neteinstein.remedioemdia.core.model.PillColor
 import io.github.neteinstein.remedioemdia.core.model.PillShape
+import io.github.neteinstein.remedioemdia.core.model.StockDisplay
 import io.github.neteinstein.remedioemdia.ui.pill.JAR_ASPECT_RATIO
 import io.github.neteinstein.remedioemdia.ui.pill.aspectRatio
+import io.github.neteinstein.remedioemdia.ui.pill.drawBlister
 import io.github.neteinstein.remedioemdia.ui.pill.drawJar
 import io.github.neteinstein.remedioemdia.ui.pill.drawPill
+import io.github.neteinstein.remedioemdia.ui.theme.RemedioPalette
 import kotlin.math.roundToInt
 
 /**
@@ -51,15 +54,23 @@ object PillBitmaps {
         }
     }
 
-    fun jar(
+    /** A jar or a blister pack, following the user's [display] setting. */
+    fun stock(
         shape: PillShape,
         color: PillColor,
         count: Int,
+        display: StockDisplay,
+        palette: RemedioPalette,
         heightDp: Float,
         density: Float,
     ): Bitmap {
         val height = heightDp * scale(density)
-        return render(height * JAR_ASPECT_RATIO, height) { drawJar(shape, color, count) }
+        return render(height * JAR_ASPECT_RATIO, height) {
+            when (display) {
+                StockDisplay.JARS -> drawJar(shape, color, count, palette.jar)
+                StockDisplay.BLISTERS -> drawBlister(shape, color, count, palette.blister)
+            }
+        }
     }
 
     private fun render(
