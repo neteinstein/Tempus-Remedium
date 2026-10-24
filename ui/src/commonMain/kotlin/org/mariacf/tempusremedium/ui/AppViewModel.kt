@@ -19,9 +19,11 @@ import org.mariacf.tempusremedium.core.model.Medication
 import org.mariacf.tempusremedium.core.model.Settings
 import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.core.schedule.deleteMedication
+import org.mariacf.tempusremedium.core.schedule.logCourseDose
 import org.mariacf.tempusremedium.core.schedule.logDose
 import org.mariacf.tempusremedium.core.schedule.logSlot
 import org.mariacf.tempusremedium.core.schedule.refill
+import org.mariacf.tempusremedium.core.schedule.undoCourseDose
 import org.mariacf.tempusremedium.core.schedule.undoDose
 import org.mariacf.tempusremedium.core.schedule.upsertMedication
 import kotlin.time.Clock
@@ -63,6 +65,17 @@ class AppViewModel(
         date: LocalDate,
         slot: TimeSlot,
     ) = update { it.logSlot(date, slot, DoseStatus.TAKEN, nowMillis()) }
+
+    fun logCourseDose(
+        medicationId: String,
+        index: Int,
+        status: DoseStatus,
+    ) = update { it.logCourseDose(medicationId, index, status, nowMillis()) }
+
+    fun undoCourseDose(
+        medicationId: String,
+        index: Int,
+    ) = update { it.undoCourseDose(medicationId, index) }
 
     fun refill(
         medicationId: String,

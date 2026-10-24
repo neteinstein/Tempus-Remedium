@@ -7,27 +7,48 @@ import kotlinx.datetime.plus
 import org.mariacf.tempusremedium.core.model.AppData
 import org.mariacf.tempusremedium.core.model.TimeSlot
 
-/** A slot of a given day that should trigger a reminder. */
-data class ReminderSlot(
+/**
+ * What the next reminder alarm is for: a HOJE [slot] with pending doses, course doses due at
+ * [at], or both when they fall at the same minute.
+ */
+data class Reminder(
     val date: LocalDate,
-    val slot: TimeSlot,
+    /** Null when only course doses are due. */
+    val slot: TimeSlot?,
     val at: LocalDateTime,
+    val courseDoses: List<CourseDose> = emptyList(),
 )
 
 /**
- * The first slot strictly after [after] that still has pending doses, looking at
- * most [horizonDays] days ahead. Null when reminders are off or nothing is due.
+ * The first slot strictly after [after] that still has pending doses (looking at most
+ * [horizonDays] days ahead) or the next pending course dose, whichever comes first.
+ * Null when reminders are off or nothing is due.
  */
 fun AppData.nextReminder(
     after: LocalDateTime,
     horizonDays: Int = 8,
-): ReminderSlot? {
+): Reminder? {
     if (!settings.remindersEnabled) return null
+    val slot = nextSlotReminder(after, horizonDays)
+    val courseDoses = nextCourseDoses(after)
+    val courseAt = courseDoses.firstOrNull()?.at
+    return when {
+        courseAt == null -> slot
+        slot == null || courseAt < slot.at -> Reminder(courseAt.date, null, courseAt, courseDoses)
+        courseAt == slot.at -> slot.copy(courseDoses = courseDoses)
+        else -> slot
+    }
+}
+
+private fun AppData.nextSlotReminder(
+    after: LocalDateTime,
+    horizonDays: Int,
+): Reminder? {
     for (offset in 0..horizonDays) {
         val date = after.date.plus(DatePeriod(days = offset))
         for (slot in planFor(date).slots) {
             val at = LocalDateTime(date, slot.time)
-            if (at > after && slot.doses.any { it.status == null }) return ReminderSlot(date, slot.slot, at)
+            if (at > after && slot.doses.any { it.status == null }) return Reminder(date, slot.slot, at)
         }
     }
     return null

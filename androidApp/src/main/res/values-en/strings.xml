@@ -4,4 +4,6 @@
     <string name="widget_hoje_description">Today\'s doses at each time of day.</string>
     <string name="widget_repor_label">Refill soon</string>
     <string name="widget_repor_description">Medications that are running out.</string>
+    <string name="widget_course_label">Course</string>
+    <string name="widget_course_description">The next dose and what is left of the course under way.</string>
 </resources>

@@ -26,6 +26,7 @@ internal object WidgetStyle {
     val slotTime = TextStyle(color = ink, fontSize = 13.sp, fontWeight = FontWeight.Medium)
     val legend = TextStyle(color = ink, fontSize = 13.sp, fontWeight = FontWeight.Medium)
     val jarName = TextStyle(color = ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+    val courseNext = TextStyle(color = accent, fontSize = 13.sp, fontWeight = FontWeight.Medium)
     val jarCount = TextStyle(color = stock, fontSize = 13.sp, fontWeight = FontWeight.Medium)
 
     /** "HOJE" -> "H O J E" with hair spaces, standing in for the reference's letter spacing. */

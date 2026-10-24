@@ -12,6 +12,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mariacf.tempusremedium.core.CourseFixtures
 import org.mariacf.tempusremedium.core.ReferenceFixtures
 import org.mariacf.tempusremedium.core.model.AppData
 import org.mariacf.tempusremedium.core.model.Settings
@@ -70,6 +71,33 @@ class WidgetContentTest {
         // Same footprint, different drawing.
         assertEquals(jars.jars[0].bitmap.width, blisters.jars[0].bitmap.width)
         assertFalse(jars.jars[0].bitmap.sameAs(blisters.jars[0].bitmap))
+    }
+
+    @Test
+    fun courseWidgetShowsTheNextDoseAndWhatIsLeft() {
+        val ui = runBlocking { CourseWidgetUi.build(context, CourseFixtures.data, ReferenceFixtures.now) }
+        assertEquals(WidgetStyle.spaced("Tratamento"), ui.title)
+        val item = ui.courses.single()
+        assertEquals("Amoxicilina 250 mg/5 mL", item.name)
+        assertEquals("Próxima toma hoje às 16:00 · 6 mL", item.next)
+        assertEquals("Faltam 20 tomas · 8 dias", item.remaining)
+
+        runGlanceAppWidgetUnitTest {
+            setAppWidgetSize(DpSize(320.dp, 140.dp))
+            setContext(context)
+            provideComposable { CourseWidgetContent(ui) }
+            onNode(hasText("Próxima toma hoje às 16:00 · 6 mL")).assertExists()
+        }
+    }
+
+    @Test
+    fun courseWidgetSaysWhenNoCourseIsUnderWay() {
+        val ui = runBlocking { CourseWidgetUi.build(context, ReferenceFixtures.data, ReferenceFixtures.now) }
+        runGlanceAppWidgetUnitTest {
+            setContext(context)
+            provideComposable { CourseWidgetContent(ui) }
+            onNode(hasText("Nenhum tratamento em curso.")).assertExists()
+        }
     }
 
     @Test

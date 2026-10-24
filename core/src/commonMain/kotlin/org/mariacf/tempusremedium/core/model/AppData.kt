@@ -56,6 +56,7 @@ data class AppData(
     val medications: List<Medication> = emptyList(),
     val logs: List<DoseLog> = emptyList(),
     val settings: Settings = Settings(),
+    val courseLogs: List<CourseDoseLog> = emptyList(),
 ) {
     val activeMedications: List<Medication>
         get() = medications.filterNot { it.archived }
@@ -67,6 +68,11 @@ data class AppData(
         date: LocalDate,
         slot: TimeSlot,
     ): DoseLog? = logs.firstOrNull { it.medicationId == medicationId && it.date == date && it.slot == slot }
+
+    fun courseLog(
+        medicationId: String,
+        index: Int,
+    ): CourseDoseLog? = courseLogs.firstOrNull { it.medicationId == medicationId && it.index == index }
 
     companion object {
         const val CURRENT_SCHEMA_VERSION = 1

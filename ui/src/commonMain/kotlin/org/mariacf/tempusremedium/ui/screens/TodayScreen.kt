@@ -41,6 +41,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -50,6 +51,7 @@ import org.mariacf.tempusremedium.core.model.PillColor
 import org.mariacf.tempusremedium.core.model.PillShape
 import org.mariacf.tempusremedium.core.model.StockDisplay
 import org.mariacf.tempusremedium.core.model.TimeSlot
+import org.mariacf.tempusremedium.core.schedule.CourseProgress
 import org.mariacf.tempusremedium.core.schedule.DayPlan
 import org.mariacf.tempusremedium.core.schedule.LowStockItem
 import org.mariacf.tempusremedium.core.schedule.PlannedDose
@@ -60,12 +62,15 @@ import org.mariacf.tempusremedium.ui.components.GroupDivider
 import org.mariacf.tempusremedium.ui.components.HojePanel
 import org.mariacf.tempusremedium.ui.components.ReporEmBrevePanel
 import org.mariacf.tempusremedium.ui.components.SoftButton
+import org.mariacf.tempusremedium.ui.components.doseLabel
 import org.mariacf.tempusremedium.ui.components.hhmm
 import org.mariacf.tempusremedium.ui.components.label
 import org.mariacf.tempusremedium.ui.components.longDateLabel
+import org.mariacf.tempusremedium.ui.components.relativeDay
 import org.mariacf.tempusremedium.ui.pill.PillIcon
 import org.mariacf.tempusremedium.ui.pill.fill
 import org.mariacf.tempusremedium.ui.resources.Res
+import org.mariacf.tempusremedium.ui.resources.action_add_course
 import org.mariacf.tempusremedium.ui.resources.action_add_medication
 import org.mariacf.tempusremedium.ui.resources.action_cancel
 import org.mariacf.tempusremedium.ui.resources.action_refill
@@ -73,6 +78,10 @@ import org.mariacf.tempusremedium.ui.resources.action_skip
 import org.mariacf.tempusremedium.ui.resources.action_take_all
 import org.mariacf.tempusremedium.ui.resources.action_taken
 import org.mariacf.tempusremedium.ui.resources.action_undo
+import org.mariacf.tempusremedium.ui.resources.course_next
+import org.mariacf.tempusremedium.ui.resources.course_remaining
+import org.mariacf.tempusremedium.ui.resources.courses_title
+import org.mariacf.tempusremedium.ui.resources.days_count
 import org.mariacf.tempusremedium.ui.resources.empty_body
 import org.mariacf.tempusremedium.ui.resources.empty_title
 import org.mariacf.tempusremedium.ui.resources.greeting_afternoon
@@ -87,8 +96,10 @@ import org.mariacf.tempusremedium.ui.resources.slot_empty
 import org.mariacf.tempusremedium.ui.resources.slot_sheet_title
 import org.mariacf.tempusremedium.ui.resources.status_skipped
 import org.mariacf.tempusremedium.ui.resources.status_taken_at
+import org.mariacf.tempusremedium.ui.resources.takes_count
 import org.mariacf.tempusremedium.ui.resources.units
 import org.mariacf.tempusremedium.ui.theme.TempusTheme
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
 /** Opens part of the Today screen on launch, e.g. from a widget or a reminder. */
@@ -117,6 +128,10 @@ fun TodayScreen(
     stockDisplay: StockDisplay = StockDisplay.JARS,
     launchRequest: LaunchRequest? = null,
     onConsumeLaunchRequest: () -> Unit = {},
+    courses: List<CourseProgress> = emptyList(),
+    onLogCourseDose: (Medication, Int, DoseStatus) -> Unit = { _, _, _ -> },
+    onUndoCourseDose: (Medication, Int) -> Unit = { _, _ -> },
+    onAddCourse: () -> Unit = {},
 ) {
     var openSlot by rememberSaveable { mutableStateOf<TimeSlot?>(null) }
     var refillId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -140,7 +155,7 @@ fun TodayScreen(
         Greeting(now, plan)
         Spacer(Modifier.height(28.dp))
         if (medications.isEmpty()) {
-            EmptyState(onAddMedication)
+            EmptyState(onAddMedication, onAddCourse)
             return@Column
         }
         HojePanel(
@@ -148,6 +163,10 @@ fun TodayScreen(
             highlight = plan.slots.firstOrNull { slot -> slot.doses.any { it.status == null } }?.slot,
             onSlotClick = { openSlot = it },
         )
+        if (courses.isNotEmpty()) {
+            Spacer(Modifier.height(36.dp))
+            CoursesCard(courses, now, onLogCourseDose, onUndoCourseDose)
+        }
         if (lowStock.isNotEmpty()) {
             Spacer(Modifier.height(36.dp))
             ReporEmBrevePanel(lowStock, display = stockDisplay, onItemClick = { refillId = it.medication.id })
@@ -195,10 +214,10 @@ private fun Greeting(
                 else -> Res.string.greeting_evening
             },
         )
-    val pending = plan.slots.sumOf { slot -> slot.doses.count { it.status == null } }
+    val pending = plan.slots.sumOf { slot -> slot.doses.count { it.status == null } } + plan.courseDoses.count { it.status == null }
     val status =
         when {
-            plan.doseCount == 0 -> stringResource(Res.string.greeting_nothing)
+            plan.doseCount == 0 && plan.courseDoses.isEmpty() -> stringResource(Res.string.greeting_nothing)
             pending == 0 -> stringResource(Res.string.greeting_done)
             else -> pluralStringResource(Res.plurals.greeting_pending, pending, pending)
         }
@@ -227,7 +246,10 @@ private fun Greeting(
 }
 
 @Composable
-private fun EmptyState(onAddMedication: () -> Unit) {
+private fun EmptyState(
+    onAddMedication: () -> Unit,
+    onAddCourse: () -> Unit,
+) {
     GroupCard {
         Column(
             Modifier.fillMaxWidth().padding(24.dp),
@@ -243,6 +265,7 @@ private fun EmptyState(onAddMedication: () -> Unit) {
             Text(stringResource(Res.string.empty_body), style = TempusTheme.type.bodyText, color = TempusTheme.colors.inkSoft)
             Spacer(Modifier.height(4.dp))
             BrandButton(stringResource(Res.string.action_add_medication), onClick = onAddMedication)
+            SoftButton(stringResource(Res.string.action_add_course), onClick = onAddCourse)
         }
     }
 }
@@ -326,6 +349,84 @@ private fun DoseRow(
         }
     }
 }
+
+/** "TRATAMENTOS": courses taken every few hours, outside the HOJE panel. */
+@Composable
+private fun CoursesCard(
+    courses: List<CourseProgress>,
+    now: LocalDateTime,
+    onLogCourseDose: (Medication, Int, DoseStatus) -> Unit,
+    onUndoCourseDose: (Medication, Int) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Eyebrow(stringResource(Res.string.courses_title), modifier = Modifier.padding(horizontal = 8.dp))
+        GroupCard {
+            courses.forEachIndexed { index, progress ->
+                if (index > 0) GroupDivider()
+                CourseRow(progress, now, onLogCourseDose, onUndoCourseDose)
+            }
+        }
+    }
+}
+
+@Composable
+private fun CourseRow(
+    progress: CourseProgress,
+    now: LocalDateTime,
+    onLogCourseDose: (Medication, Int, DoseStatus) -> Unit,
+    onUndoCourseDose: (Medication, Int) -> Unit,
+) {
+    val palette = TempusTheme.colors
+    val medication = progress.medication
+    val course = medication.course ?: return
+    val next = progress.next ?: return
+    // A dose can be logged from an hour before it is due.
+    val due = next.at <= now.plusMinutes(TAKE_EARLY_MINUTES)
+    val lastLogged = progress.lastLogged
+    Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            PillChip(medication)
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f)) {
+                Text(medication.displayName, style = TempusTheme.type.rowTitle, color = palette.ink)
+                Text(
+                    stringResource(Res.string.course_next, relativeDay(next.at.date, now.date), next.at.time.hhmm(), course.doseLabel()),
+                    style = TempusTheme.type.bodySmall,
+                    color = if (due) palette.accent else palette.inkMute,
+                )
+                Text(
+                    stringResource(
+                        Res.string.course_remaining,
+                        pluralStringResource(Res.plurals.takes_count, progress.remaining, progress.remaining),
+                        pluralStringResource(Res.plurals.days_count, progress.remainingDays(now.date), progress.remainingDays(now.date)),
+                    ),
+                    style = TempusTheme.type.bodySmall,
+                    color = palette.inkMute,
+                )
+            }
+        }
+        if (due || lastLogged != null) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                if (due) {
+                    TextButton(onClick = { onLogCourseDose(medication, next.index, DoseStatus.SKIPPED) }) {
+                        Text(stringResource(Res.string.action_skip), style = TempusTheme.type.button, color = palette.inkSoft)
+                    }
+                    BrandButton(
+                        stringResource(Res.string.action_taken),
+                        onClick = { onLogCourseDose(medication, next.index, DoseStatus.TAKEN) },
+                    )
+                } else if (lastLogged != null) {
+                    SoftButton(stringResource(Res.string.action_undo), onClick = { onUndoCourseDose(medication, lastLogged.index) })
+                }
+            }
+        }
+    }
+}
+
+private const val TAKE_EARLY_MINUTES = 60
+
+private fun LocalDateTime.plusMinutes(minutes: Int): LocalDateTime =
+    toInstant(TimeZone.UTC).plus(minutes.minutes).toLocalDateTime(TimeZone.UTC)
 
 /** A pill on a soft disc of its own colour, like the icon chips on mariacf.pt. */
 @Composable

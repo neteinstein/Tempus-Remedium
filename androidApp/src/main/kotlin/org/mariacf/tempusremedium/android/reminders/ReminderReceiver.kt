@@ -6,10 +6,12 @@ import android.content.Context
 import android.content.Intent
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import org.mariacf.tempusremedium.android.container
 import org.mariacf.tempusremedium.android.widgets.Widgets
 import org.mariacf.tempusremedium.core.model.DoseStatus
 import org.mariacf.tempusremedium.core.model.TimeSlot
+import org.mariacf.tempusremedium.core.schedule.logCourseDosesAt
 import org.mariacf.tempusremedium.core.schedule.logSlot
 import kotlin.time.Clock
 
@@ -22,6 +24,7 @@ class ReminderReceiver : BroadcastReceiver() {
         val container = context.container
         val date = intent.getStringExtra(EXTRA_DATE)?.let(LocalDate::parse)
         val slot = intent.getStringExtra(EXTRA_SLOT)?.let(TimeSlot::valueOf)
+        val at = intent.getStringExtra(EXTRA_AT)?.let(LocalDateTime::parse)
         val result = goAsync()
         container.scope.launch {
             try {
@@ -32,6 +35,23 @@ class ReminderReceiver : BroadcastReceiver() {
                             slot != null
                         ) {
                             container.notifications.showSlot(container.repository.data.value, date, slot)
+                        }
+                        if (at != null) container.notifications.showCourseDoses(container.repository.data.value, at)
+                    }
+
+                    ACTION_TAKE_COURSE -> {
+                        if (at != null) {
+                            container.repository.update {
+                                it.logCourseDosesAt(at, DoseStatus.TAKEN, Clock.System.now().toEpochMilliseconds())
+                            }
+                            container.notifications.cancelCourseDoses()
+                        }
+                    }
+
+                    ACTION_SNOOZE_COURSE -> {
+                        if (at != null) {
+                            container.notifications.cancelCourseDoses()
+                            container.reminders.snoozeCourse(at)
                         }
                     }
 
@@ -71,20 +91,36 @@ class ReminderReceiver : BroadcastReceiver() {
         const val ACTION_SHOW = "org.mariacf.tempusremedium.SHOW_REMINDER"
         const val ACTION_TAKE = "org.mariacf.tempusremedium.TAKE_SLOT"
         const val ACTION_SNOOZE = "org.mariacf.tempusremedium.SNOOZE_SLOT"
+        const val ACTION_TAKE_COURSE = "org.mariacf.tempusremedium.TAKE_COURSE"
+        const val ACTION_SNOOZE_COURSE = "org.mariacf.tempusremedium.SNOOZE_COURSE"
         const val ACTION_DAY_CHANGED = "org.mariacf.tempusremedium.DAY_CHANGED"
         const val EXTRA_DATE = "date"
         const val EXTRA_SLOT = "slot"
+        const val EXTRA_AT = "at"
 
         private const val REQUEST_DAY_CHANGED = 3
         private const val REQUEST_TAKE_BASE = 10
         private const val REQUEST_SNOOZE_BASE = 20
+        private const val REQUEST_TAKE_COURSE = 30
+        private const val REQUEST_SNOOZE_COURSE = 31
 
         fun showIntent(
             context: Context,
             requestCode: Int,
             date: LocalDate?,
             slot: TimeSlot?,
-        ): PendingIntent = broadcast(context, requestCode, ACTION_SHOW, date, slot)
+            at: LocalDateTime?,
+        ): PendingIntent = broadcast(context, requestCode, ACTION_SHOW, date, slot, at)
+
+        fun takeCourseIntent(
+            context: Context,
+            at: LocalDateTime,
+        ): PendingIntent = broadcast(context, REQUEST_TAKE_COURSE, ACTION_TAKE_COURSE, null, null, at)
+
+        fun snoozeCourseIntent(
+            context: Context,
+            at: LocalDateTime,
+        ): PendingIntent = broadcast(context, REQUEST_SNOOZE_COURSE, ACTION_SNOOZE_COURSE, null, null, at)
 
         fun takeIntent(
             context: Context,
@@ -106,12 +142,14 @@ class ReminderReceiver : BroadcastReceiver() {
             action: String,
             date: LocalDate?,
             slot: TimeSlot?,
+            at: LocalDateTime? = null,
         ): PendingIntent {
             val intent =
                 Intent(context, ReminderReceiver::class.java)
                     .setAction(action)
                     .putExtra(EXTRA_DATE, date?.toString())
                     .putExtra(EXTRA_SLOT, slot?.name)
+                    .putExtra(EXTRA_AT, at?.toString())
             return PendingIntent.getBroadcast(
                 context,
                 requestCode,

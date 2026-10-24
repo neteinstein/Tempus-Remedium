@@ -31,8 +31,8 @@ data class AdherenceReport(
 
 /**
  * Adherence for the [days] days ending at [now]'s date, newest first. On the
- * current day only doses whose slot time has passed, or that were already
- * logged, count as due.
+ * current day only doses whose slot (or course dose) time has passed, or that
+ * were already logged, count as due.
  */
 fun AppData.adherence(
     now: LocalDateTime,
@@ -42,15 +42,22 @@ fun AppData.adherence(
         (0 until days).map { offset ->
             val date = now.date.minus(DatePeriod(days = offset))
             val dueDoses =
-                planFor(date).slots.flatMap { slot ->
-                    val slotHasPassed = date < now.date || slot.time <= now.time
-                    slot.doses.filter { slotHasPassed || it.status != null }
-                }
+                planFor(date)
+                    .slots
+                    .flatMap { slot ->
+                        val slotHasPassed = date < now.date || slot.time <= now.time
+                        slot.doses.filter { slotHasPassed || it.status != null }
+                    }.map { it.status }
+            val dueCourseDoses =
+                courseDosesOn(date)
+                    .filter { it.at <= now || it.status != null }
+                    .map { it.status }
+            val statuses = dueDoses + dueCourseDoses
             DaySummary(
                 date = date,
-                due = dueDoses.size,
-                taken = dueDoses.count { it.status == DoseStatus.TAKEN },
-                skipped = dueDoses.count { it.status == DoseStatus.SKIPPED },
+                due = statuses.size,
+                taken = statuses.count { it == DoseStatus.TAKEN },
+                skipped = statuses.count { it == DoseStatus.SKIPPED },
             )
         },
     )

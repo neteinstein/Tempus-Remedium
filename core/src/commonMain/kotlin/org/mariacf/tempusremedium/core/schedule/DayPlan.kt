@@ -26,10 +26,12 @@ data class SlotPlan(
         get() = doses.isNotEmpty() && doses.all { it.status != null }
 }
 
-/** The HOJE panel for one date: always the four slots, in order. */
+/** The HOJE panel for one date: always the four slots, in order, plus the course doses of the day. */
 data class DayPlan(
     val date: LocalDate,
     val slots: List<SlotPlan>,
+    /** Doses of courses taken every few hours (see [courseDosesOn]); not part of the HOJE panel. */
+    val courseDoses: List<CourseDose> = emptyList(),
 ) {
     /** "5 doses": one per medication per slot, regardless of quantity. */
     val doseCount: Int
@@ -80,4 +82,5 @@ fun AppData.planFor(date: LocalDate): DayPlan =
                             },
                 )
             },
+        courseDoses = courseDosesOn(date),
     )

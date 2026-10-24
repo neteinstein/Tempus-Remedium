@@ -31,11 +31,12 @@ calm blues, frosted cards, and a light and a dark theme.
 | HOJE: doses by MANHÃ / MEIO-DIA / NOITE / DEITAR, mark as taken or skipped | ✅ | ✅ |
 | REPOR EM BREVE: stock tracking, low-stock list, refill, shown as **jars or blister packs** | ✅ | ✅ |
 | Medications: name, strength, pill shape and colour, slots, frequency, stock | ✅ | ✅ |
+| Courses (e.g. antibiotics): a dose every N hours, ending after N days, N doses, on a date or when the pack runs out; dose, interval and length suggested by the author's [dose calculator](https://mariacf.pt/calculadora-doses/) | ✅ | ✅ |
 | History: 30-day adherence | ✅ | ✅ |
 | Configurable slot times; automatic, light or dark theme | ✅ | ✅ |
 | Reminder notifications with **Tomei** / **Adiar 10 min**, shown on the lock screen (names can be hidden) | ✅ | — |
 | Low-stock notifications | ✅ | — |
-| Home-screen widgets: Hoje and Repor em breve (also offered for the lock screen where the system supports it) | ✅ | — |
+| Home-screen widgets: Hoje, Repor em breve and Tratamento (also offered for the lock screen where the system supports it) | ✅ | — |
 | Data storage | On the device | In the browser (localStorage) |
 
 pt-PT by default; English when the device or browser language is English. No account and no
