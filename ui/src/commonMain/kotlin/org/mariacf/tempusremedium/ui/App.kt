@@ -45,6 +45,7 @@ import org.mariacf.tempusremedium.core.data.MedicationRepository
 import org.mariacf.tempusremedium.core.model.Medication
 import org.mariacf.tempusremedium.core.model.Settings
 import org.mariacf.tempusremedium.core.model.ThemeMode
+import org.mariacf.tempusremedium.core.schedule.activeCourses
 import org.mariacf.tempusremedium.core.schedule.adherence
 import org.mariacf.tempusremedium.core.schedule.lowStock
 import org.mariacf.tempusremedium.core.schedule.planFor
@@ -54,6 +55,7 @@ import org.mariacf.tempusremedium.ui.resources.nav_history
 import org.mariacf.tempusremedium.ui.resources.nav_medications
 import org.mariacf.tempusremedium.ui.resources.nav_settings
 import org.mariacf.tempusremedium.ui.resources.nav_today
+import org.mariacf.tempusremedium.ui.screens.CourseEditor
 import org.mariacf.tempusremedium.ui.screens.HistoryScreen
 import org.mariacf.tempusremedium.ui.screens.LaunchRequest
 import org.mariacf.tempusremedium.ui.screens.MedicationEditor
@@ -119,6 +121,23 @@ fun App(
         val palette = TempusTheme.colors
         Box(modifier.fillMaxSize().brandBackground(palette)) {
             val editing = editingId
+            val editingMedication = editing?.let(data::medication)
+            if (editing == NEW_COURSE || editingMedication?.course != null) {
+                CourseEditor(
+                    medication = editingMedication,
+                    now = now,
+                    onSave = { medication: Medication ->
+                        viewModel.saveMedication(medication)
+                        editingId = null
+                    },
+                    onDelete = { medication ->
+                        viewModel.deleteMedication(medication.id)
+                        editingId = null
+                    },
+                    onClose = { editingId = null },
+                )
+                return@Box
+            }
             if (editing != null) {
                 MedicationEditor(
                     medication = data.medication(editing),
@@ -184,6 +203,10 @@ fun App(
                                 onLogSlot = { slot -> viewModel.logSlot(now.date, slot) },
                                 onRefill = { medication, units -> viewModel.refill(medication.id, units) },
                                 onAddMedication = { editingId = NEW },
+                                courses = data.activeCourses(now),
+                                onLogCourseDose = { medication, index, status -> viewModel.logCourseDose(medication.id, index, status) },
+                                onUndoCourseDose = { medication, index -> viewModel.undoCourseDose(medication.id, index) },
+                                onAddCourse = { editingId = NEW_COURSE },
                                 launchRequest = launchRequest,
                                 onConsumeLaunchRequest = onConsumeLaunchRequest,
                             )
@@ -194,6 +217,7 @@ fun App(
                                 medications = data.medications,
                                 onEdit = { editingId = it.id },
                                 onAdd = { editingId = NEW },
+                                onAddCourse = { editingId = NEW_COURSE },
                             )
                         }
 
@@ -216,3 +240,4 @@ fun App(
 }
 
 private const val NEW = "new"
+private const val NEW_COURSE = "new_course"

@@ -162,4 +162,101 @@
     <string name="about_author_role">Family doctor</string>
     <string name="about_site">mariacf.pt</string>
     <string name="about_disclaimer">For support only. It does not replace advice from your doctor or pharmacist.</string>
+    <!-- Courses taken every few hours, e.g. antibiotics (product addition) -->
+    <string name="decimal_separator">.</string>
+    <string name="action_add_course">New course</string>
+    <string name="course_new">New course</string>
+    <string name="course_edit">Edit course</string>
+    <string name="course_intro">For antibiotics and other medicines taken at set hours until a set end.</string>
+    <string name="course_suggestions">Suggestions</string>
+    <string name="field_dose_per_take">Dose each time</string>
+    <string name="field_amount">Amount</string>
+    <string name="unit_ml">mL</string>
+    <string name="unit_units">Tablets or capsules</string>
+    <string name="dose_ml">%1$s mL</string>
+    <plurals name="dose_units">
+        <item quantity="one">%1$s unit</item>
+        <item quantity="other">%1$s units</item>
+    </plurals>
+    <string name="field_interval">How many hours apart</string>
+    <plurals name="interval_every">
+        <item quantity="one">Every hour</item>
+        <item quantity="other">Every %1$d hours</item>
+    </plurals>
+    <string name="field_first_dose">First dose</string>
+    <string name="day_today">Today</string>
+    <string name="day_tomorrow">Tomorrow</string>
+    <string name="field_time">Time (HH:MM)</string>
+    <string name="field_end">Ends</string>
+    <string name="end_kind_days">After a number of days</string>
+    <string name="end_kind_doses">After a number of doses</string>
+    <string name="end_kind_date">On a date</string>
+    <string name="end_kind_pack">When the pack runs out</string>
+    <string name="end_last_day">Last day</string>
+    <string name="field_pack_amount">Amount in the pack (%1$s)</string>
+    <string name="unit_units_short">units</string>
+    <plurals name="days_count">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <plurals name="takes_count">
+        <item quantity="one">%1$d dose</item>
+        <item quantity="other">%1$d doses</item>
+    </plurals>
+    <string name="course_summary">%1$s · last dose %2$s at %3$s</string>
+    <string name="course_summary_empty">No doses with these dates.</string>
+    <string name="course_schedule">%1$s · %2$s</string>
+    <string name="courses_title">Courses</string>
+    <string name="when_today">today</string>
+    <string name="when_tomorrow">tomorrow</string>
+    <string name="course_next">Next dose %1$s at %2$s · %3$s</string>
+    <string name="course_remaining">%1$s · %2$s to go</string>
+    <string name="course_dose_of">%1$s · dose %2$d of %3$d</string>
+
+    <!-- Dose calculator (mariacf.pt/calculadora-doses): the author's wording -->
+    <string name="calc_title">Dose calculator</string>
+    <string name="calc_weight">Child’s weight (kg)</string>
+    <string name="calc_concentration">Bottle strength</string>
+    <string name="calc_daily_dose">Daily dose</string>
+    <string name="calc_doses_per_day">Doses a day</string>
+    <string name="calc_mg_per_kg_day">%1$s mg/kg/day</string>
+    <string name="calc_formulation">%1$s mg/5 mL</string>
+    <string name="calc_formulation_clav">%1$s + %2$s mg/5 mL · %3$s</string>
+    <string name="calc_times_a_day">%1$d× a day</string>
+    <string name="calc_result">%1$s · %2$s</string>
+    <string name="calc_result_detail">%1$s mg of %2$s per dose · %3$s doses a day</string>
+    <string name="calc_use">Use suggestion</string>
+    <string name="calc_disclaimer">Suggested by Dr Maria Cortês Ferreira’s dose calculator (mariacf.pt). For support only — it does not replace medical advice.</string>
+    <string name="calc_limited">Dose capped at the maximum of %1$s mg of %2$s a day.</string>
+    <string name="calc_clav">Each dose has %1$s mg of amoxicillin and %2$s mg of clavulanic acid (%3$s mg/kg/day).</string>
+    <string name="calc_clav_excessive">This dose gives %1$s mg/kg/day of clavulanic acid (above %2$s mg/kg/day), which makes diarrhoea more likely. Prefer a formulation with less clavulanate or add plain amoxicillin, as advised by the doctor.</string>
+    <string name="calc_prefer_14_1">Above 45 mg/kg/day prefer the 14:1 formulation: there is no data for the 7:1 under 2 years and its clavulanic acid dose nears the limit.</string>
+    <string name="calc_infants_4_1">For babies under 2–3 months the 7:1 and 14:1 formulations are not recommended: the 4:1 is usually given every 8 hours.</string>
+    <string name="calc_adult">From 40 kg the adult dose is used. Check with the doctor.</string>
+    <string name="calc_complete_course">Finish every day of treatment the doctor prescribed.</string>
+    <string name="calc_need_weight">Enter the child’s weight.</string>
+    <string name="calc_weight_range">Weight outside the supported range (%1$s–%2$s kg).</string>
+    <string name="calc_below_min_weight">%1$s: do not use below %2$s kg unless a doctor says so.</string>
+    <string name="calc_invalid">The dose cannot be worked out with these values.</string>
+    <string name="calc_too_small">The dose comes to less than 0.1 mL: check the bottle strength.</string>
+    <string name="calc_med_amoxicillin">Amoxicillin</string>
+    <string name="calc_med_co_amoxiclav">Amoxicillin + clavulanic acid</string>
+    <string name="calc_med_azithromycin">Azithromycin</string>
+    <string name="calc_med_cefuroxime">Cefuroxime</string>
+    <string name="calc_substance_amoxicillin">amoxicillin</string>
+    <string name="calc_substance_azithromycin">azithromycin</string>
+    <string name="calc_substance_cefuroxime">cefuroxime</string>
+    <string name="calc_ind_amoxicillin_tonsillitis">Tonsillitis · max. 1 g/day</string>
+    <string name="calc_ind_amoxicillin_high">High dose (e.g. otitis, pneumonia)</string>
+    <string name="calc_ind_co_amoxiclav_usual">Usual dose</string>
+    <string name="calc_ind_co_amoxiclav_high">High dose (otitis) · 14:1 formulation</string>
+    <string name="calc_ind_azithromycin_usual">Usual dose · 3 days</string>
+    <string name="calc_ind_azithromycin_strep_5">Strep throat · 5 days</string>
+    <string name="calc_ind_azithromycin_strep_3">Strep throat · 3 days</string>
+    <string name="calc_ind_cefuroxime_usual">Usual dose · max. 125 mg per dose</string>
+    <string name="calc_ind_cefuroxime_otitis">Otitis media (≥ 2 years) · max. 250 mg per dose</string>
+
+    <!-- Android only: course widget -->
+    <string name="widget_course_title">Course</string>
+    <string name="widget_no_course">No course under way.</string>
 </resources>

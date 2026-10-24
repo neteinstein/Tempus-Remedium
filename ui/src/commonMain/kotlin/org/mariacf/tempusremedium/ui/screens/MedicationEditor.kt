@@ -99,7 +99,7 @@ import org.mariacf.tempusremedium.ui.theme.TempusTheme
 
 private enum class FrequencyKind { DAILY, WEEKDAYS, EVERY_N_DAYS }
 
-private val FieldShape = RoundedCornerShape(14.dp)
+internal val FieldShape = RoundedCornerShape(14.dp)
 
 /** Full-screen form for a new ([medication] == null) or existing medication. */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -231,54 +231,10 @@ fun MedicationEditor(
             )
 
             FieldTitle(stringResource(Res.string.field_shape))
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                PillShape.entries.forEach { option ->
-                    val description = stringResource(option.label)
-                    SelectableTile(
-                        selected = option == shape,
-                        onClick = { shape = option },
-                        description = description,
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        PillIcon(option, color, height = 28.dp)
-                        Spacer(Modifier.height(6.dp))
-                        Text(
-                            description,
-                            style = TempusTheme.type.bodySmall.copy(fontSize = 11.5.sp, lineHeight = 14.sp),
-                            color = TempusTheme.colors.inkSoft,
-                            minLines = 2,
-                            maxLines = 2,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                }
-            }
+            ShapePicker(shape, color, onChange = { shape = it })
 
             FieldTitle(stringResource(Res.string.field_color))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                PillColor.entries.forEach { option ->
-                    val selected = option == color
-                    val description = stringResource(option.label)
-                    Box(
-                        Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(option.fill)
-                            .border(
-                                if (selected) 3.dp else 1.dp,
-                                if (selected) TempusTheme.colors.accent else option.edge.copy(alpha = 0.5f),
-                                CircleShape,
-                            ).clickable { color = option }
-                            .semantics {
-                                contentDescription = description
-                                this.selected = selected
-                            },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        if (selected) Icon(Icons.Filled.Check, contentDescription = null, tint = PillInk)
-                    }
-                }
-            }
+            ColorPicker(color, onChange = { color = it })
 
             FieldTitle(stringResource(Res.string.field_when))
             TimeSlot.entries.forEach { slot ->
@@ -388,12 +344,76 @@ fun MedicationEditor(
 }
 
 @Composable
-private fun FieldTitle(text: String) {
+internal fun ShapePicker(
+    shape: PillShape,
+    color: PillColor,
+    onChange: (PillShape) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        PillShape.entries.forEach { option ->
+            val description = stringResource(option.label)
+            SelectableTile(
+                selected = option == shape,
+                onClick = { onChange(option) },
+                description = description,
+                modifier = Modifier.weight(1f),
+            ) {
+                PillIcon(option, color, height = 28.dp)
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    description,
+                    style = TempusTheme.type.bodySmall.copy(fontSize = 11.5.sp, lineHeight = 14.sp),
+                    color = TempusTheme.colors.inkSoft,
+                    minLines = 2,
+                    maxLines = 2,
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+internal fun ColorPicker(
+    color: PillColor,
+    onChange: (PillColor) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    FlowRow(modifier, horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        PillColor.entries.forEach { option ->
+            val selected = option == color
+            val description = stringResource(option.label)
+            Box(
+                Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(option.fill)
+                    .border(
+                        if (selected) 3.dp else 1.dp,
+                        if (selected) TempusTheme.colors.accent else option.edge.copy(alpha = 0.5f),
+                        CircleShape,
+                    ).clickable { onChange(option) }
+                    .semantics {
+                        contentDescription = description
+                        this.selected = selected
+                    },
+                contentAlignment = Alignment.Center,
+            ) {
+                if (selected) Icon(Icons.Filled.Check, contentDescription = null, tint = PillInk)
+            }
+        }
+    }
+}
+
+@Composable
+internal fun FieldTitle(text: String) {
     Text(text.uppercase(), style = TempusTheme.type.eyebrow, color = TempusTheme.colors.inkMute, modifier = Modifier.padding(top = 4.dp))
 }
 
 @Composable
-private fun SelectableTile(
+internal fun SelectableTile(
     selected: Boolean,
     onClick: () -> Unit,
     description: String,
@@ -416,20 +436,21 @@ private fun SelectableTile(
 }
 
 @Composable
-private fun QuantityRow(
+internal fun QuantityRow(
     label: String,
     quantity: Int,
     onChange: (Int) -> Unit,
     range: IntRange = 0..9,
+    showValue: Boolean = true,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(label, style = TempusTheme.type.rowTitle, color = TempusTheme.colors.ink, modifier = Modifier.weight(1f))
         StepButton("−", enabled = quantity > range.first) { onChange((quantity - 1).coerceIn(range)) }
         Text(
-            quantity.toString(),
+            if (showValue) quantity.toString() else "",
             style = TempusTheme.type.title,
             color = TempusTheme.colors.ink,
-            modifier = Modifier.width(44.dp).padding(horizontal = 8.dp),
+            modifier = Modifier.width(if (showValue) 44.dp else 12.dp).padding(horizontal = 8.dp),
             textAlign = TextAlign.Center,
         )
         StepButton("+", enabled = quantity < range.last) { onChange((quantity + 1).coerceIn(range)) }
@@ -437,7 +458,7 @@ private fun QuantityRow(
 }
 
 @Composable
-private fun StepButton(
+internal fun StepButton(
     text: String,
     enabled: Boolean,
     onClick: () -> Unit,
@@ -456,7 +477,7 @@ private fun StepButton(
 }
 
 @Composable
-private fun FrequencyChip(
+internal fun FrequencyChip(
     label: String,
     selected: Boolean,
     onClick: () -> Unit,

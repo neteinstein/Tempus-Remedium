@@ -167,4 +167,101 @@
     <string name="about_author_role">Médica de família</string>
     <string name="about_site">mariacf.pt</string>
     <string name="about_disclaimer">Informação de apoio. Não substitui o aconselhamento do seu médico ou farmacêutico.</string>
+    <!-- Courses taken every few hours, e.g. antibiotics (product addition) -->
+    <string name="decimal_separator">,</string>
+    <string name="action_add_course">Novo tratamento</string>
+    <string name="course_new">Novo tratamento</string>
+    <string name="course_edit">Editar tratamento</string>
+    <string name="course_intro">Para antibióticos e outros medicamentos com horas certas e fim marcado.</string>
+    <string name="course_suggestions">Sugestões</string>
+    <string name="field_dose_per_take">Dose por toma</string>
+    <string name="field_amount">Quantidade</string>
+    <string name="unit_ml">mL</string>
+    <string name="unit_units">Comprimidos ou cápsulas</string>
+    <string name="dose_ml">%1$s mL</string>
+    <plurals name="dose_units">
+        <item quantity="one">%1$s unidade</item>
+        <item quantity="other">%1$s unidades</item>
+    </plurals>
+    <string name="field_interval">De quantas em quantas horas</string>
+    <plurals name="interval_every">
+        <item quantity="one">De hora a hora</item>
+        <item quantity="other">De %1$d em %1$d horas</item>
+    </plurals>
+    <string name="field_first_dose">Primeira toma</string>
+    <string name="day_today">Hoje</string>
+    <string name="day_tomorrow">Amanhã</string>
+    <string name="field_time">Hora (HH:MM)</string>
+    <string name="field_end">Termina</string>
+    <string name="end_kind_days">Ao fim de dias</string>
+    <string name="end_kind_doses">Ao fim de tomas</string>
+    <string name="end_kind_date">Numa data</string>
+    <string name="end_kind_pack">Até acabar</string>
+    <string name="end_last_day">Último dia</string>
+    <string name="field_pack_amount">Quantidade na embalagem (%1$s)</string>
+    <string name="unit_units_short">unidades</string>
+    <plurals name="days_count">
+        <item quantity="one">%1$d dia</item>
+        <item quantity="other">%1$d dias</item>
+    </plurals>
+    <plurals name="takes_count">
+        <item quantity="one">%1$d toma</item>
+        <item quantity="other">%1$d tomas</item>
+    </plurals>
+    <string name="course_summary">%1$s · última toma %2$s às %3$s</string>
+    <string name="course_summary_empty">Nenhuma toma com estas datas.</string>
+    <string name="course_schedule">%1$s · %2$s</string>
+    <string name="courses_title">Tratamentos</string>
+    <string name="when_today">hoje</string>
+    <string name="when_tomorrow">amanhã</string>
+    <string name="course_next">Próxima toma %1$s às %2$s · %3$s</string>
+    <string name="course_remaining">Faltam %1$s · %2$s</string>
+    <string name="course_dose_of">%1$s · toma %2$d de %3$d</string>
+
+    <!-- Dose calculator (mariacf.pt/calculadora-doses): the author's wording -->
+    <string name="calc_title">Calculadora de doses</string>
+    <string name="calc_weight">Peso da criança (kg)</string>
+    <string name="calc_concentration">Concentração do frasco</string>
+    <string name="calc_daily_dose">Dose diária</string>
+    <string name="calc_doses_per_day">Tomas por dia</string>
+    <string name="calc_mg_per_kg_day">%1$s mg/kg/dia</string>
+    <string name="calc_formulation">%1$s mg/5 mL</string>
+    <string name="calc_formulation_clav">%1$s + %2$s mg/5 mL · %3$s</string>
+    <string name="calc_times_a_day">%1$d× por dia</string>
+    <string name="calc_result">%1$s · %2$s</string>
+    <string name="calc_result_detail">%1$s mg de %2$s por toma · %3$s tomas por dia</string>
+    <string name="calc_use">Usar sugestão</string>
+    <string name="calc_disclaimer">Sugestão da calculadora de doses da Dra. Maria Cortês Ferreira (mariacf.pt). Informação de apoio — não substitui aconselhamento médico.</string>
+    <string name="calc_limited">Dose limitada ao máximo de %1$s mg de %2$s por dia.</string>
+    <string name="calc_clav">Cada toma tem %1$s mg de amoxicilina e %2$s mg de ácido clavulânico (%3$s mg/kg/dia).</string>
+    <string name="calc_clav_excessive">Esta dose dá %1$s mg/kg/dia de ácido clavulânico (acima de %2$s mg/kg/dia), o que aumenta a diarreia. Prefira uma formulação com menos clavulanato ou associe amoxicilina simples, por indicação médica.</string>
+    <string name="calc_prefer_14_1">Acima de 45 mg/kg/dia prefira a formulação 14:1: com a 7:1 não há dados abaixo dos 2 anos e a dose de ácido clavulânico aproxima-se do limite.</string>
+    <string name="calc_infants_4_1">Nos bebés com menos de 2–3 meses, as formulações 7:1 e 14:1 não estão recomendadas: usa-se habitualmente a 4:1, de 8/8 h.</string>
+    <string name="calc_adult">A partir de 40 kg usa-se a dose de adulto. Confirme com o médico.</string>
+    <string name="calc_complete_course">Cumprir todos os dias de tratamento indicados pelo médico.</string>
+    <string name="calc_need_weight">Indique o peso da criança.</string>
+    <string name="calc_weight_range">Peso fora do intervalo suportado (%1$s–%2$s kg).</string>
+    <string name="calc_below_min_weight">%1$s: não usar abaixo de %2$s kg sem indicação médica.</string>
+    <string name="calc_invalid">Não é possível calcular a dose com estes valores.</string>
+    <string name="calc_too_small">A dose dá menos de 0,1 mL: confirme a concentração do frasco.</string>
+    <string name="calc_med_amoxicillin">Amoxicilina</string>
+    <string name="calc_med_co_amoxiclav">Amoxicilina + ácido clavulânico</string>
+    <string name="calc_med_azithromycin">Azitromicina</string>
+    <string name="calc_med_cefuroxime">Cefuroxima</string>
+    <string name="calc_substance_amoxicillin">amoxicilina</string>
+    <string name="calc_substance_azithromycin">azitromicina</string>
+    <string name="calc_substance_cefuroxime">cefuroxima</string>
+    <string name="calc_ind_amoxicillin_tonsillitis">Amigdalite · máx. 1 g/dia</string>
+    <string name="calc_ind_amoxicillin_high">Dose alta (ex.: otite, pneumonia)</string>
+    <string name="calc_ind_co_amoxiclav_usual">Dose habitual</string>
+    <string name="calc_ind_co_amoxiclav_high">Dose alta (otite) · formulação 14:1</string>
+    <string name="calc_ind_azithromycin_usual">Dose habitual · 3 dias</string>
+    <string name="calc_ind_azithromycin_strep_5">Amigdalite estreptocócica · 5 dias</string>
+    <string name="calc_ind_azithromycin_strep_3">Amigdalite estreptocócica · 3 dias</string>
+    <string name="calc_ind_cefuroxime_usual">Dose habitual · máx. 125 mg por toma</string>
+    <string name="calc_ind_cefuroxime_otitis">Otite média (≥ 2 anos) · máx. 250 mg por toma</string>
+
+    <!-- Android only: course widget -->
+    <string name="widget_course_title">Tratamento</string>
+    <string name="widget_no_course">Nenhum tratamento em curso.</string>
 </resources>

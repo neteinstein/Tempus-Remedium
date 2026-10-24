@@ -17,6 +17,7 @@ object Inventory {
 
     /** Average units used per day according to the schedule. */
     fun averageDailyUnits(medication: Medication): Double {
+        medication.course?.let { course -> return course.stockUnitsPerDose * 24.0 / course.intervalHours.coerceAtLeast(1) }
         val perDueDay =
             medication.schedule.doses.values
                 .sum()

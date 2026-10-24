@@ -18,6 +18,7 @@ object Widgets {
         try {
             HojeWidget().updateAll(context)
             ReporEmBreveWidget().updateAll(context)
+            CourseWidget().updateAll(context)
         } catch (e: IllegalStateException) {
             // Glance needs WorkManager; never let a widget failure break reminders.
             Log.w("Widgets", "Could not update widgets", e)

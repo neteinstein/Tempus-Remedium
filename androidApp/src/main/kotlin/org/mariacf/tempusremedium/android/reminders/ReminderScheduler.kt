@@ -20,7 +20,7 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 
 /**
- * Keeps exactly one alarm for the next slot with pending doses, plus a daily
+ * Keeps exactly one alarm for the next slot or course dose still pending, plus a daily
  * alarm just after midnight so the widgets move to the new day.
  */
 class ReminderScheduler(
@@ -37,11 +37,11 @@ class ReminderScheduler(
         val now = clock.now().toLocalDateTime(zone)
         val next = data.nextReminder(now)
         if (next == null) {
-            alarms.cancel(ReminderReceiver.showIntent(context, REQUEST_NEXT, null, null))
+            alarms.cancel(ReminderReceiver.showIntent(context, REQUEST_NEXT, null, null, null))
         } else {
             setAlarm(
                 next.at.toInstant(zone).toEpochMilliseconds(),
-                ReminderReceiver.showIntent(context, REQUEST_NEXT, next.date, next.slot),
+                ReminderReceiver.showIntent(context, REQUEST_NEXT, next.date, next.slot, next.at),
             )
         }
         val tomorrow = now.date.plus(DatePeriod(days = 1))
@@ -57,7 +57,13 @@ class ReminderScheduler(
         slot: TimeSlot,
     ) {
         val at = clock.now() + SNOOZE
-        setAlarm(at.toEpochMilliseconds(), ReminderReceiver.showIntent(context, REQUEST_SNOOZE, date, slot))
+        setAlarm(at.toEpochMilliseconds(), ReminderReceiver.showIntent(context, REQUEST_SNOOZE, date, slot, null))
+    }
+
+    /** Shows the course doses due at [doseAt] again in ten minutes. */
+    fun snoozeCourse(doseAt: LocalDateTime) {
+        val at = clock.now() + SNOOZE
+        setAlarm(at.toEpochMilliseconds(), ReminderReceiver.showIntent(context, REQUEST_SNOOZE_COURSE, null, null, doseAt))
     }
 
     private fun setAlarm(
@@ -74,6 +80,7 @@ class ReminderScheduler(
     companion object {
         const val REQUEST_NEXT = 1
         const val REQUEST_SNOOZE = 2
+        const val REQUEST_SNOOZE_COURSE = 4
         val SNOOZE = 10.minutes
         private const val WINDOW_MS = 10 * 60 * 1000L
         private const val MIDNIGHT_DELAY_MS = 30 * 1000L

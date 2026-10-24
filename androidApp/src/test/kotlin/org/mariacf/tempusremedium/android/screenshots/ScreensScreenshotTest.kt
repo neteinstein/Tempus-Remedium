@@ -15,18 +15,22 @@ import kotlinx.datetime.LocalDate
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mariacf.tempusremedium.core.CourseFixtures
 import org.mariacf.tempusremedium.core.ReferenceFixtures
 import org.mariacf.tempusremedium.core.ReferenceFixtures.date
+import org.mariacf.tempusremedium.core.dosing.CalculatorMedication
 import org.mariacf.tempusremedium.core.model.AppData
 import org.mariacf.tempusremedium.core.model.DoseStatus
 import org.mariacf.tempusremedium.core.model.StockDisplay
 import org.mariacf.tempusremedium.core.model.TimeSlot
+import org.mariacf.tempusremedium.core.schedule.activeCourses
 import org.mariacf.tempusremedium.core.schedule.adherence
 import org.mariacf.tempusremedium.core.schedule.logDose
 import org.mariacf.tempusremedium.core.schedule.logSlot
 import org.mariacf.tempusremedium.core.schedule.lowStock
 import org.mariacf.tempusremedium.core.schedule.planFor
 import org.mariacf.tempusremedium.ui.components.brandBackground
+import org.mariacf.tempusremedium.ui.screens.CourseEditor
 import org.mariacf.tempusremedium.ui.screens.HistoryScreen
 import org.mariacf.tempusremedium.ui.screens.MedicationEditor
 import org.mariacf.tempusremedium.ui.screens.MedicationsScreen
@@ -73,6 +77,39 @@ class ScreensScreenshotTest {
     fun todayAllTaken() =
         capture("screen_today_all_taken", dark = true) {
             Today(TimeSlot.entries.fold(ReferenceFixtures.data) { data, slot -> data.logSlot(date, slot, DoseStatus.TAKEN, 0L) })
+        }
+
+    @Test
+    fun todayWithCourse() =
+        capture("screen_today_course", height = 2400) {
+            Today(CourseFixtures.data)
+        }
+
+    @Test
+    fun courseEditor() =
+        capture("screen_course_editor", height = 3600) {
+            CourseEditor(
+                medication = null,
+                now = ReferenceFixtures.now,
+                onSave = {},
+                onDelete = {},
+                onClose = {},
+                initialName = "Amoxicilina",
+                initialCalculator = CalculatorMedication.AMOXICILLIN,
+                initialWeight = "12",
+            )
+        }
+
+    @Test
+    fun courseEditorDark() =
+        capture("screen_course_editor_dark", dark = true) {
+            CourseEditor(CourseFixtures.amoxicilina, now = ReferenceFixtures.now, onSave = {}, onDelete = {}, onClose = {})
+        }
+
+    @Test
+    fun medicationsWithCourse() =
+        capture("screen_medications_course") {
+            MedicationsScreen(CourseFixtures.data.medications, onEdit = {}, onAdd = {})
         }
 
     @Test
@@ -128,6 +165,7 @@ class ScreensScreenshotTest {
             onLogSlot = {},
             onRefill = { _, _ -> },
             onAddMedication = {},
+            courses = data.activeCourses(ReferenceFixtures.now),
         )
     }
 

@@ -38,6 +38,8 @@ data class Medication(
     val stock: Stock? = null,
     val notes: String = "",
     val archived: Boolean = false,
+    /** Set for a course taken every few hours (see [Course]); its slot doses are then empty. */
+    val course: Course? = null,
 ) {
     /** "Metformina 500mg": the name plus strength, as shown in the HOJE legend. */
     val displayName: String

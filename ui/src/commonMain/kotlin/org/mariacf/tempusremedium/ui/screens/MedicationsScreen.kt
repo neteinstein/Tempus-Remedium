@@ -29,11 +29,16 @@ import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.core.schedule.Inventory
 import org.mariacf.tempusremedium.ui.components.BrandButton
 import org.mariacf.tempusremedium.ui.components.ScreenHeader
+import org.mariacf.tempusremedium.ui.components.SoftButton
+import org.mariacf.tempusremedium.ui.components.doseLabel
 import org.mariacf.tempusremedium.ui.components.glass
+import org.mariacf.tempusremedium.ui.components.intervalLabel
 import org.mariacf.tempusremedium.ui.components.label
 import org.mariacf.tempusremedium.ui.components.shortLabel
 import org.mariacf.tempusremedium.ui.resources.Res
+import org.mariacf.tempusremedium.ui.resources.action_add_course
 import org.mariacf.tempusremedium.ui.resources.action_add_medication
+import org.mariacf.tempusremedium.ui.resources.course_schedule
 import org.mariacf.tempusremedium.ui.resources.empty_body
 import org.mariacf.tempusremedium.ui.resources.frequency_daily
 import org.mariacf.tempusremedium.ui.resources.frequency_every_n_days
@@ -48,10 +53,11 @@ fun MedicationsScreen(
     onEdit: (Medication) -> Unit,
     onAdd: () -> Unit,
     modifier: Modifier = Modifier,
+    onAddCourse: () -> Unit = {},
 ) {
     Box(modifier.fillMaxSize()) {
         LazyColumn(
-            contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 112.dp),
+            contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 168.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item {
@@ -75,11 +81,14 @@ fun MedicationsScreen(
                 MedicationRow(medication, onClick = { onEdit(medication) })
             }
         }
-        BrandButton(
-            text = "+  " + stringResource(Res.string.action_add_medication),
-            onClick = onAdd,
-            modifier = Modifier.align(Alignment.BottomCenter).padding(24.dp),
-        )
+        Column(
+            Modifier.align(Alignment.BottomCenter).padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            SoftButton(text = "+  " + stringResource(Res.string.action_add_course), onClick = onAddCourse)
+            BrandButton(text = "+  " + stringResource(Res.string.action_add_medication), onClick = onAdd)
+        }
     }
 }
 
@@ -124,6 +133,10 @@ private fun MedicationRow(
 /** "Manhã, Deitar · Todos os dias" */
 @Composable
 private fun scheduleSummary(medication: Medication): String {
+    medication.course?.let { course ->
+        // "De 8 em 8 horas · 6 mL"
+        return stringResource(Res.string.course_schedule, intervalLabel(course.intervalHours), course.doseLabel())
+    }
     val slots =
         TimeSlot.entries
             .filter { (medication.schedule.doses[it] ?: 0) > 0 }
