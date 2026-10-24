@@ -4,6 +4,9 @@ import io.github.neteinstein.remedioemdia.core.data.InMemoryDocumentStorage
 import io.github.neteinstein.remedioemdia.core.data.MedicationRepository
 import io.github.neteinstein.remedioemdia.core.model.AppData
 import io.github.neteinstein.remedioemdia.core.model.Frequency
+import io.github.neteinstein.remedioemdia.core.model.Settings
+import io.github.neteinstein.remedioemdia.core.model.StockDisplay
+import io.github.neteinstein.remedioemdia.core.model.ThemeMode
 import io.github.neteinstein.remedioemdia.core.model.newMedicationId
 import io.github.neteinstein.remedioemdia.core.schedule.upsertMedication
 import kotlinx.coroutines.test.runTest
@@ -84,6 +87,29 @@ class MedicationRepositoryTest {
             val repository = MedicationRepository(storage)
             repository.load()
             assertEquals(AppData(), repository.data.value)
+        }
+
+    @Test
+    fun documentsWithoutNewerSettingsGetTheDefaults() =
+        runTest {
+            val storage = InMemoryDocumentStorage("""{"schemaVersion":1,"settings":{"remindersEnabled":false}}""")
+            val repository = MedicationRepository(storage)
+            repository.load()
+            val settings = repository.data.value.settings
+            assertEquals(false, settings.remindersEnabled)
+            assertEquals(StockDisplay.JARS, settings.stockDisplay)
+            assertEquals(ThemeMode.SYSTEM, settings.theme)
+        }
+
+    @Test
+    fun displayAndThemeSettingsArePersisted() =
+        runTest {
+            val storage = InMemoryDocumentStorage()
+            val settings = Settings(stockDisplay = StockDisplay.BLISTERS, theme = ThemeMode.DARK)
+            MedicationRepository(storage).update { it.copy(settings = settings) }
+            val reloaded = MedicationRepository(storage)
+            reloaded.load()
+            assertEquals(settings, reloaded.data.value.settings)
         }
 
     @Test

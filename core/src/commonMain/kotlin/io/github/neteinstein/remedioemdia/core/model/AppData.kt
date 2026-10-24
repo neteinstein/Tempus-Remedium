@@ -21,11 +21,30 @@ data class DoseLog(
     val loggedAtEpochMillis: Long,
 )
 
+/** How REPOR EM BREVE (and its widget) draws the units left. */
+@Serializable
+enum class StockDisplay {
+    /** A glass jar with the pills piled at the bottom, as in the reference. */
+    JARS,
+
+    /** A blister pack with full and popped cells. */
+    BLISTERS,
+}
+
+@Serializable
+enum class ThemeMode {
+    SYSTEM,
+    LIGHT,
+    DARK,
+}
+
 @Serializable
 data class Settings(
     val slotTimes: Map<TimeSlot, LocalTime> = TimeSlot.entries.associateWith { it.defaultTime },
     val remindersEnabled: Boolean = true,
     val hideNamesInReminders: Boolean = false,
+    val stockDisplay: StockDisplay = StockDisplay.JARS,
+    val theme: ThemeMode = ThemeMode.SYSTEM,
 ) {
     fun timeOf(slot: TimeSlot): LocalTime = slotTimes[slot] ?: slot.defaultTime
 }
