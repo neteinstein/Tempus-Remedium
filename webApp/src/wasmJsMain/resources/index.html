@@ -2,10 +2,41 @@
 <html lang="pt-PT">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Remédio em Dia</title>
-    <style>html, body { margin: 0; height: 100%; background: #1d1714; overflow: hidden; }</style>
-    <script type="application/javascript" src="remedioemdia.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Remédio em Dia · Dra. Maria Cortês Ferreira</title>
+    <meta name="description" content="Os seus medicamentos e doses de hoje, em dia. Por Dra. Maria Cortês Ferreira, médica de família.">
+    <meta name="author" content="Dra. Maria Cortês Ferreira">
+    <link rel="author" href="https://mariacf.pt">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#f9fafc" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0b1015" media="(prefers-color-scheme: dark)">
+    <style>
+        :root { color-scheme: light dark; --bg: #f9fafc; --ink: #47515c; }
+        @media (prefers-color-scheme: dark) { :root { --bg: #0b1015; --ink: #c0c8d1; } }
+        html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); }
+        #app { position: fixed; inset: 0; }
+        /* Shown until the Wasm app draws its first frame. */
+        #splash {
+            position: fixed; inset: 0; z-index: 10; background: var(--bg); transition: opacity .3s ease;
+            display: flex; flex-direction: column; gap: 18px;
+            align-items: center; justify-content: center;
+            font: 600 13px/1.4 system-ui, -apple-system, 'Segoe UI', sans-serif; letter-spacing: .14em;
+            text-transform: uppercase; color: var(--ink);
+        }
+        #splash img { width: 72px; height: 72px; border-radius: 22px; box-shadow: 0 18px 40px -16px rgba(1, 79, 138, .55); animation: pulse 1.6s ease-in-out infinite; }
+        #splash a { color: inherit; text-decoration: none; letter-spacing: .08em; text-transform: none; font-weight: 500; opacity: .8; }
+        #splash.hide { opacity: 0; pointer-events: none; }
+        @keyframes pulse { 50% { transform: scale(.94); } }
+        @media (prefers-reduced-motion: reduce) { #splash img { animation: none; } }
+    </style>
+    <script type="application/javascript" src="remedioemdia.js" defer></script>
 </head>
-<body></body>
+<body>
+<div id="app"></div>
+<div id="splash">
+    <img src="favicon.svg" alt="">
+    <div>Remédio em Dia</div>
+    <a href="https://mariacf.pt" rel="author">por Dra. Maria Cortês Ferreira · mariacf.pt</a>
+</div>
+</body>
 </html>
