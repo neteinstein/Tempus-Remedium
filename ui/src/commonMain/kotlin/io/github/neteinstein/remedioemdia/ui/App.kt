@@ -95,8 +95,8 @@ fun App(
     platform: PlatformUi = remember { PlatformUi() },
     launchRequest: LaunchRequest? = null,
     onConsumeLaunchRequest: () -> Unit = {},
+    viewModel: AppViewModel = viewModel { AppViewModel(repository) },
 ) {
-    val viewModel = viewModel { AppViewModel(repository) }
     val data by viewModel.data.collectAsStateWithLifecycle()
     val now by viewModel.now.collectAsStateWithLifecycle()
 

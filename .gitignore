@@ -9,3 +9,9 @@ captures/
 .externalNativeBuild/
 .cxx/
 kotlin-js-store/
+*.apk
+*.aab
+output-metadata.json
+*.jks
+*.keystore
+*.klib
