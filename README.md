@@ -1,4 +1,4 @@
-# Remédio em Dia
+# Tempus Remedium
 
 **Por [Dra. Maria Cortês Ferreira](https://mariacf.pt)**, médica de família · [mariacf.pt](https://mariacf.pt)
 

@@ -6,7 +6,7 @@
 # the definition and the call site, so keeping it only makes the APK bigger.
 #
 # Needs no rule here:
-# - Manifest components (RemedioApplication, MainActivity, the reminder and widget receivers):
+# - Manifest components (TempusRemediumApplication, MainActivity, the reminder and widget receivers):
 #   AGP generates keep rules from the merged manifest.
 # - kotlinx.serialization: the library ships R8 rules that keep each @Serializable class's
 #   generated serializer. JSON keys come from the serial descriptors, not from field names, so
