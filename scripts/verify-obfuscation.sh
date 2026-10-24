@@ -9,23 +9,23 @@
 # off) and the build still succeeds. Only the mapping file shows what R8 actually did.
 set -euo pipefail
 
-readonly APP_PACKAGE_PREFIX="io.github.neteinstein.remedioemdia."
+readonly APP_PACKAGE_PREFIX="org.mariacf.tempusremedium."
 
 # Classes the system instantiates by the name written in the manifest. AGP keeps them; if one is
 # renamed the app crashes on launch, on a reminder or when a widget updates.
 readonly KEPT_CLASSES=(
-    "io.github.neteinstein.remedioemdia.android.RemedioApplication"
-    "io.github.neteinstein.remedioemdia.android.MainActivity"
-    "io.github.neteinstein.remedioemdia.android.reminders.ReminderReceiver"
-    "io.github.neteinstein.remedioemdia.android.reminders.RescheduleReceiver"
-    "io.github.neteinstein.remedioemdia.android.widgets.HojeWidgetReceiver"
-    "io.github.neteinstein.remedioemdia.android.widgets.ReporEmBreveWidgetReceiver"
+    "org.mariacf.tempusremedium.android.TempusRemediumApplication"
+    "org.mariacf.tempusremedium.android.MainActivity"
+    "org.mariacf.tempusremedium.android.reminders.ReminderReceiver"
+    "org.mariacf.tempusremedium.android.reminders.RescheduleReceiver"
+    "org.mariacf.tempusremedium.android.widgets.HojeWidgetReceiver"
+    "org.mariacf.tempusremedium.android.widgets.ReporEmBreveWidgetReceiver"
 )
 
 # The stored document is read through this generated serializer. If R8 removed it, every launch
 # would fail to read the user's data.
 readonly PRESENT_CLASSES=(
-    "io.github.neteinstein.remedioemdia.core.model.AppData\$\$serializer"
+    "org.mariacf.tempusremedium.core.model.AppData\$\$serializer"
 )
 
 failures=0

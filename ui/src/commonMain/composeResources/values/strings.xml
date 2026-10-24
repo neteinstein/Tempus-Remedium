@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- pt-PT is the source of truth (docs/design/REFERENCE.md). Keep these strings exactly as in the reference. -->
 <resources>
-    <string name="app_name">Remédio em Dia</string>
+    <string name="app_name">Tempus Remedium</string>
 
     <!-- HOJE panel -->
     <string name="today">Hoje</string>

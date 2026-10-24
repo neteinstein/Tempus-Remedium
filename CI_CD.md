@@ -50,7 +50,7 @@ On every push to `main`:
 3. Decodes the keystore and builds the signed `assembleRelease` APK and `bundleRelease` App Bundle,
    with `versionCode` = run number and `versionName` = `1.0.<run number>`.
 4. Runs `scripts/verify-obfuscation.sh` again.
-5. Creates the GitHub Release `v1.0.<run number>` with `RemedioEmDia_version1_0_<n>.apk`, the
+5. Creates the GitHub Release `v1.0.<run number>` with `TempusRemedium_version1_0_<n>.apk`, the
    `.aab` and the R8 `-mapping.txt`, SHA-1s in the notes, plus generated notes.
 6. If `ANDROID_PUBLISHER_CREDENTIALS` is set, uploads the bundle to the Play Console with
    `publishReleaseBundle` (Gradle Play Publisher) to the `internal` track, or `PLAY_TRACK`.
@@ -58,7 +58,8 @@ On every push to `main`:
 
 ### Deploy Web (GitHub Pages)
 
-Builds the Wasm distribution and publishes it with `actions/deploy-pages`.
+Builds the Wasm distribution and publishes it with `actions/deploy-pages` to
+https://neteinstein.github.io/Tempus-Remedium/.
 **One-time setup:** *Settings → Pages → Build and deployment → Source* = **GitHub Actions**.
 
 ### PR title
@@ -101,7 +102,7 @@ the app → Testing or Production → Create release. Every release after that i
 `publishReleaseBundle`. The Play listing will also need a privacy policy URL.
 
 **Troubleshooting a `403 PERMISSION_DENIED` from `publishReleaseBundle`:** the failing call is the
-first `POST .../applications/io.github.neteinstein.remedioemdia/edits`, so the cause is the
+first `POST .../applications/org.mariacf.tempusremedium/edits`, so the cause is the
 service account's standing, not this repo. Check, in order: (1) the service account (`client_email`
 in the JSON) is invited under Play Console → Users and permissions with access to this app and
 release permission; (2) a first release was uploaded manually; (3) the Google Play Android Developer

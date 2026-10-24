@@ -11,7 +11,7 @@ kotlin {
     jvmToolchain(21)
 
     android {
-        namespace = "io.github.neteinstein.remedioemdia.ui"
+        namespace = "org.mariacf.tempusremedium.ui"
         compileSdk =
             libs.versions.android.compileSdk
                 .get()
@@ -53,5 +53,5 @@ kotlin {
 
 compose.resources {
     publicResClass = true
-    packageOfResClass = "io.github.neteinstein.remedioemdia.ui.resources"
+    packageOfResClass = "org.mariacf.tempusremedium.ui.resources"
 }
