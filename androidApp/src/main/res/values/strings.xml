@@ -2,7 +2,7 @@
 <!-- Strings the Android system reads from resources (launcher, widget picker).
      Everything else lives in ui/src/commonMain/composeResources. -->
 <resources>
-    <string name="app_name" translatable="false">Remédio em Dia</string>
+    <string name="app_name" translatable="false">Tempus Remedium</string>
     <string name="widget_hoje_label">Hoje</string>
     <string name="widget_hoje_description">As doses de hoje em cada horário.</string>
     <string name="widget_repor_label">Repor em breve</string>

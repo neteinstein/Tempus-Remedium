@@ -1,0 +1,119 @@
+package org.mariacf.tempusremedium.core
+
+import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.DayOfWeek
+import org.mariacf.tempusremedium.core.data.InMemoryDocumentStorage
+import org.mariacf.tempusremedium.core.data.MedicationRepository
+import org.mariacf.tempusremedium.core.model.AppData
+import org.mariacf.tempusremedium.core.model.Frequency
+import org.mariacf.tempusremedium.core.model.Settings
+import org.mariacf.tempusremedium.core.model.StockDisplay
+import org.mariacf.tempusremedium.core.model.ThemeMode
+import org.mariacf.tempusremedium.core.model.newMedicationId
+import org.mariacf.tempusremedium.core.schedule.upsertMedication
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNull
+
+class MedicationRepositoryTest {
+    @Test
+    fun startsEmptyWithoutADocument() =
+        runTest {
+            val repository = MedicationRepository(InMemoryDocumentStorage())
+            repository.load()
+            assertEquals(AppData(), repository.data.value)
+        }
+
+    @Test
+    fun updatesArePersistedAndReloaded() =
+        runTest {
+            val storage = InMemoryDocumentStorage()
+            MedicationRepository(storage).update { ReferenceFixtures.data }
+
+            val reloaded = MedicationRepository(storage)
+            reloaded.load()
+            assertEquals(ReferenceFixtures.data, reloaded.data.value)
+        }
+
+    @Test
+    fun everyFrequencySurvivesARoundTrip() =
+        runTest {
+            val storage = InMemoryDocumentStorage()
+            val weekly =
+                ReferenceFixtures.omega3.copy(
+                    id = "weekly",
+                    schedule =
+                        ReferenceFixtures.omega3.schedule.copy(
+                            frequency = Frequency.Weekdays(setOf(DayOfWeek.MONDAY, DayOfWeek.FRIDAY)),
+                        ),
+                )
+            val everyThree =
+                ReferenceFixtures.omega3.copy(
+                    id = "every-three",
+                    schedule = ReferenceFixtures.omega3.schedule.copy(frequency = Frequency.EveryNDays(3)),
+                )
+            val data = ReferenceFixtures.data.upsertMedication(weekly).upsertMedication(everyThree)
+            MedicationRepository(storage).update { data }
+
+            val reloaded = MedicationRepository(storage)
+            reloaded.load()
+            assertEquals(data, reloaded.data.value)
+        }
+
+    @Test
+    fun unchangedDataIsNotRewritten() =
+        runTest {
+            val storage = InMemoryDocumentStorage()
+            val repository = MedicationRepository(storage)
+            repository.update { it }
+            assertNull(storage.content)
+        }
+
+    @Test
+    fun unreadableDocumentIsBackedUpNotLost() =
+        runTest {
+            val storage = InMemoryDocumentStorage("{not json")
+            val repository = MedicationRepository(storage)
+            repository.load()
+            assertEquals(AppData(), repository.data.value)
+            assertEquals("{not json", storage.backup)
+        }
+
+    @Test
+    fun unknownFieldsFromNewerVersionsAreIgnored() =
+        runTest {
+            val storage = InMemoryDocumentStorage("""{"schemaVersion":1,"medications":[],"future":true}""")
+            val repository = MedicationRepository(storage)
+            repository.load()
+            assertEquals(AppData(), repository.data.value)
+        }
+
+    @Test
+    fun documentsWithoutNewerSettingsGetTheDefaults() =
+        runTest {
+            val storage = InMemoryDocumentStorage("""{"schemaVersion":1,"settings":{"remindersEnabled":false}}""")
+            val repository = MedicationRepository(storage)
+            repository.load()
+            val settings = repository.data.value.settings
+            assertEquals(false, settings.remindersEnabled)
+            assertEquals(StockDisplay.JARS, settings.stockDisplay)
+            assertEquals(ThemeMode.SYSTEM, settings.theme)
+        }
+
+    @Test
+    fun displayAndThemeSettingsArePersisted() =
+        runTest {
+            val storage = InMemoryDocumentStorage()
+            val settings = Settings(stockDisplay = StockDisplay.BLISTERS, theme = ThemeMode.DARK)
+            MedicationRepository(storage).update { it.copy(settings = settings) }
+            val reloaded = MedicationRepository(storage)
+            reloaded.load()
+            assertEquals(settings, reloaded.data.value.settings)
+        }
+
+    @Test
+    fun idsAreUnique() {
+        assertNotEquals(newMedicationId(), newMedicationId())
+    }
+}

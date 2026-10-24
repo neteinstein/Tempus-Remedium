@@ -11,10 +11,10 @@ kotlin {
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        outputModuleName = "remedioemdia"
+        outputModuleName = "tempusremedium"
         browser {
             commonWebpackConfig {
-                outputFileName = "remedioemdia.js"
+                outputFileName = "tempusremedium.js"
             }
         }
         binaries.executable()

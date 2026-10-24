@@ -54,7 +54,7 @@ kover {
         filters {
             excludes {
                 // Generated Compose Multiplatform resource accessors.
-                packages("io.github.neteinstein.remedioemdia.ui.resources")
+                packages("org.mariacf.tempusremedium.ui.resources")
             }
         }
     }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- English is derived from pt-PT (values/strings.xml), which is the source of truth. -->
 <resources>
-    <string name="app_name">Remédio em Dia</string>
+    <string name="app_name">Tempus Remedium</string>
 
     <string name="today">Today</string>
     <string name="today_meta">%1$s · %2$s</string>

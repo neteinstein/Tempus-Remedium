@@ -74,7 +74,7 @@ These belong to the phone or to whatever the screenshots were captured in. Do no
 | Title text | `#FDFDFB` | `hoje.png` box 95,1000,240,1050 |
 | Meta text | `#D8D1CD` | `hoje.png` box 650,1000,980,1050 |
 
-The pill colours live in `ui/.../pill/PillPalette.kt`. The amber is `RemedioPalette.stock`
+The pill colours live in `ui/.../pill/PillPalette.kt`. The amber is `TempusPalette.stock`
 (darkened to `#9A6200` on the light theme for contrast). Title, meta and surface colours now
 come from the brand palette in `ui/.../theme/Theme.kt`.
 
