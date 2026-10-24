@@ -13,10 +13,12 @@
 <!-- What you ran and what it showed. Then, explicitly, what you could NOT run and why
      (e.g. "no emulator in the agent container: widgets and notifications not checked on a device"). -->
 
-- [ ] `./gradlew spotlessCheck :androidApp:lintDebug`
+- [ ] `./gradlew ktlintCheck :androidApp:lintDebug`
 - [ ] `./gradlew :core:jvmTest :androidApp:testDebugUnitTest :androidApp:verifyRoborazziDebug`
-- [ ] `./gradlew :androidApp:assembleDebug :webApp:wasmJsBrowserDistribution`
-- [ ] UI changes: screenshots re-recorded and compared with `docs/design/reference` (`scripts/compare-reference.py`)
+- [ ] `./gradlew assembleDebug :webApp:wasmJsBrowserDistribution`
+- [ ] Release-affecting changes: `./gradlew assembleRelease && ./scripts/verify-obfuscation.sh`
+- [ ] UI changes: screenshots re-recorded, checked in light **and** dark theme, compared with `docs/design/reference` (`scripts/compare-reference.py`)
+- [ ] No hardcoded user-visible strings (all in `composeResources`), no secrets or keys committed
 
 **Not run, and why:**
 

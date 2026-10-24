@@ -43,17 +43,25 @@ Key ideas:
 
 ## Commands
 
+Each line mirrors a job of `.github/workflows/pr.yml` (see [`CI_CD.md`](CI_CD.md)):
+
 ```bash
-./gradlew :core:jvmTest                                    # domain tests (fast, no Android SDK needed)
-./gradlew :androidApp:testDebugUnitTest                    # Robolectric tests (notifications, alarms, widgets)
-./gradlew :androidApp:recordRoborazziDebug                 # re-record screenshot goldens
-./gradlew :androidApp:verifyRoborazziDebug                 # compare screenshots with the goldens (CI)
-./gradlew spotlessApply                                    # format (ktlint + Compose rules)
-./gradlew spotlessCheck :androidApp:lintDebug              # lint (CI)
-./gradlew koverXmlReport koverVerify :core:koverVerify     # coverage + thresholds (core ≥ 85 %, merged ≥ 70 %)
-./gradlew :androidApp:assembleDebug                        # APK
-./gradlew :webApp:wasmJsBrowserDistribution                # web build → webApp/build/dist/wasmJs/productionExecutable
+./gradlew ktlintCheck                                      # style gate (ktlint + Compose rules); ktlintFormat fixes   [ktlint]
+./gradlew :androidApp:lintDebug                            # Android Lint                                            [ktlint]
+./gradlew assembleDebug                                    # compile                                                 [Compile]
+./gradlew assembleRelease && ./scripts/verify-obfuscation.sh   # minified/obfuscated release + R8 mapping checks     [Minified Release]
+./gradlew :core:jvmTest :androidApp:testDebugUnitTest :androidApp:verifyRoborazziDebug   # unit + screenshot tests [Unit Tests]
+./gradlew :webApp:wasmJsBrowserDistribution                # web build → webApp/build/dist/wasmJs/productionExecutable [Compile Web]
+./gradlew iosSimulatorArm64Test :ui:compileKotlinIosSimulatorArm64   # iOS (simulator tests need macOS)             [Compile iOS]
+./gradlew :core:jvmTest :androidApp:testDebugUnitTest koverXmlReport koverVerify :core:koverVerify   # coverage    [Code Coverage]
+```
+
+Day to day:
+
+```bash
+./gradlew :androidApp:recordRoborazziDebug                 # re-record screenshot goldens after a visual change
 ./gradlew :webApp:wasmJsBrowserDevelopmentRun              # web dev server
+./gradlew :core:jvmTest --tests "*.DayPlanTest"            # one test class
 ```
 
 JDK 21. The Android SDK path goes in `local.properties` (`scripts/setup-android-sdk.sh` writes it).
@@ -95,10 +103,12 @@ Agent containers may not be able to build everything. What was true when this wa
 - **No emulator** (`/dev/kvm` is absent). Instrumented tests, real notifications, exact-alarm
   timing and widgets on a launcher **cannot be checked** in a container.
 
-What *can* be checked offline once the SDK is installed: `spotlessCheck`, `:core:jvmTest`,
-`:androidApp:testDebugUnitTest` (Robolectric, including notification, alarm and widget-content
-tests), Roborazzi screenshots, `:androidApp:lintDebug`, `:androidApp:assembleDebug`, the Wasm build,
-and the web app itself (serve the dist folder with `python3 -m http.server` and drive it with the
+What *can* be checked offline once the SDK is installed: every PR Checks job except the iOS
+simulator tests. That is `ktlintCheck`, `:androidApp:lintDebug`, `assembleDebug`, `assembleRelease`
+with `verify-obfuscation.sh`, `:core:jvmTest`, `:androidApp:testDebugUnitTest` (Robolectric,
+including notification, alarm and widget-content tests), Roborazzi screenshots, Kover, the Wasm
+build, the iOS *compilation* (`:core:compileKotlinIosSimulatorArm64 :ui:compileKotlinIosSimulatorArm64`;
+Kotlin/Native cross-compiles Apple klibs on Linux), and the web app itself (serve the dist folder with `python3 -m http.server` and drive it with the
 preinstalled Playwright Chromium).
 
 **CI on the pull request is the real build signal.** Say in the PR's test plan what you could not run.
@@ -110,7 +120,11 @@ preinstalled Playwright Chromium).
   CI checks the PR title.
 - Fill in the PR template (`.github/pull_request_template.md`): Summary, Changes, Test plan (including
   what could not be run and why), Risk.
-- Kotlin style: ktlint official style + Compose rules through Spotless (`.editorconfig`). Run
-  `./gradlew spotlessApply` before committing.
+- Kotlin style: ktlint official style + Compose rules through the ktlint Gradle plugin, applied to
+  every project from the root `build.gradle.kts` (`.editorconfig` holds the settings). Run
+  `./gradlew ktlintFormat` before committing; generated sources are excluded.
+- Releases, signing secrets, Play publishing and R8 rules: [`CI_CD.md`](CI_CD.md). Only add a
+  `-keep` to `androidApp/proguard-rules.pro` for something resolved by name at runtime, and extend
+  `scripts/verify-obfuscation.sh` when you do.
 - New logic goes in `core` with tests; UI changes come with re-recorded screenshots.
 - CI/CD topology, secrets and signing are documented in [`CI_CD.md`](CI_CD.md), not here.

@@ -42,10 +42,13 @@ advice from a doctor or pharmacist.
 Requires JDK 21 and, for Android, the Android SDK (`scripts/setup-android-sdk.sh` installs one).
 
 ```bash
-./gradlew :androidApp:assembleDebug            # Android APK
+./gradlew assembleDebug                        # Android APK
 ./gradlew :webApp:wasmJsBrowserDevelopmentRun  # web app on a local dev server
 ./gradlew :core:jvmTest :androidApp:testDebugUnitTest
 ```
+
+Releases are built and published by CI on every push to `main` (GitHub Releases, and the Play
+Console once configured); see [CI_CD.md](CI_CD.md).
 
 More commands and conventions: [AGENTS.md](AGENTS.md). Pipelines: [CI_CD.md](CI_CD.md).
 Design source of truth: [docs/design/REFERENCE.md](docs/design/REFERENCE.md).
