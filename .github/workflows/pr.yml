@@ -285,7 +285,7 @@ jobs:
             core/build/reports/kover/
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           files: 'build/reports/kover/report.xml'
           # Optional: set CODECOV_TOKEN once the repository is added on codecov.io.

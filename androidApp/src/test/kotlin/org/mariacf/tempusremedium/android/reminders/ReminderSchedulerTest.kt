@@ -1,6 +1,7 @@
 package org.mariacf.tempusremedium.android.reminders
 
 import android.app.AlarmManager
+import android.app.Application
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,8 +20,10 @@ import org.robolectric.annotation.Config
 import kotlin.time.Clock
 import kotlin.time.Instant
 
+// A plain Application: the app's own one starts AppContainer, which reschedules (and rewrites the
+// extras of) the same alarm from a background thread while the test runs.
 @RunWith(AndroidJUnit4::class)
-@Config(sdk = [36])
+@Config(sdk = [36], application = Application::class)
 class ReminderSchedulerTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
     private val zone = TimeZone.of("Europe/Lisbon")
