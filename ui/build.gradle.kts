@@ -23,6 +23,10 @@ kotlin {
         androidResources.enable = true
     }
 
+    // Compiled on CI's macOS runner ("Compile iOS"); there is no iOS app yet.
+    iosArm64()
+    iosSimulatorArm64()
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()

@@ -12,6 +12,10 @@ kotlin {
     // The JVM target is consumed by the Android app and runs the unit tests.
     jvm()
 
+    // Compiled and tested on CI's macOS runner ("Compile iOS"); there is no iOS app yet.
+    iosArm64()
+    iosSimulatorArm64()
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()

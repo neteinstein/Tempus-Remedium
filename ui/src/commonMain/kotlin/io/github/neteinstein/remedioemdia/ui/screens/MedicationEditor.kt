@@ -303,9 +303,7 @@ fun MedicationEditor(
                 ) { frequencyKind = FrequencyKind.EVERY_N_DAYS }
             }
             when (frequencyKind) {
-                FrequencyKind.DAILY -> {
-                    Unit
-                }
+                FrequencyKind.DAILY -> {}
 
                 FrequencyKind.WEEKDAYS -> {
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
