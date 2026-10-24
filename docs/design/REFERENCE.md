@@ -1,8 +1,13 @@
 # Design reference
 
-The two screenshots in [`reference/`](reference) are the **source of truth** for how the
-HOJE and REPOR EM BREVE panels look and what they say. They were provided directly by the
-project owner and have no origin URL.
+The two screenshots in [`reference/`](reference) are the **source of truth** for the structure
+and content of the HOJE and REPOR EM BREVE panels: what they say, their layout, the pills and
+the jars. They were provided directly by the project owner and have no origin URL.
+
+Colours (other than the pills and the amber of "Restam N"), surfaces and typography follow the
+author's site, [mariacf.pt](https://mariacf.pt), at the owner's request; see AGENTS.md →
+"Author and visual identity". The screenshot tests render each panel in the light and the dark
+theme; the dark renders are the ones to put next to the reference.
 
 | File | Size | Shows |
 | --- | --- | --- |
@@ -69,7 +74,9 @@ These belong to the phone or to whatever the screenshots were captured in. Do no
 | Title text | `#FDFDFB` | `hoje.png` box 95,1000,240,1050 |
 | Meta text | `#D8D1CD` | `hoje.png` box 650,1000,980,1050 |
 
-They live in `ui/.../theme/Theme.kt` (`RemedioColors`) and `ui/.../pill/PillPalette.kt`.
+The pill colours live in `ui/.../pill/PillPalette.kt`. The amber is `RemedioPalette.stock`
+(darkened to `#9A6200` on the light theme for contrast). Title, meta and surface colours now
+come from the brand palette in `ui/.../theme/Theme.kt`.
 
 ## The reference data
 
@@ -87,16 +94,21 @@ Metformina 500mg (MANHÃ and DEITAR, 6 left), Vitamina D 1000IU (MANHÃ), Ómega
 
 | Where | Deviation | Why |
 | --- | --- | --- |
-| App and widgets | Taken or skipped doses are drawn at 35 % opacity. | The panels are interactive; the reference only shows pending doses. |
-| App | Warm dark gradient instead of the photo. | There is no wallpaper behind an app screen. |
-| Everywhere | Inter (bundled) instead of the phone's system font. | Same rendering on Android and the web. |
+| App and widgets | Taken or skipped doses are drawn at 30 % opacity. | The panels are interactive; the reference only shows pending doses. |
+| App | The author's brand background (soft blobs, light or dark) instead of the photo; frosted white or smoked cards. | Theme of mariacf.pt, requested by the owner. |
+| Everywhere | Fraunces and Plus Jakarta Sans (bundled) instead of the phone's system font. | Typography of mariacf.pt; same rendering on Android and the web. |
+| Pills | A thin outline in a darker shade of the pill colour. | Light pills keep their shape on white cards. |
+| HOJE | The next slot with pending doses gets an accent outline. | Shows what needs attention; product addition. |
+| REPOR EM BREVE | Optional blister packs (2 × 5 cells, popped cells show torn foil) instead of jars; jar glass adapts to the theme. | Product addition ("Mostrar stock como"). |
 | Widgets | Letter spacing approximated with hair spaces. | Glance text has no letter spacing. |
 
 ## Product additions
 
-Everything outside the two panels is a product addition, not reference content: the
-Medicamentos list and editor, Histórico, Definições, the refill dialog, reminders and
-low-stock notifications, the Android widgets, and the four extra pill colours.
+Everything outside the two panels is a product addition, not reference content: the greeting
+header on Hoje ("Boa tarde, *faltam 3 doses.*"), the Medicamentos list and editor, Histórico,
+Definições (including the stock display and theme options and the Sobre card crediting the
+author), the refill dialog, reminders and low-stock notifications, the Android widgets, and the
+four extra pill colours.
 
 ## pt-PT ↔ English
 

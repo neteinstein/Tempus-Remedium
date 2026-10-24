@@ -25,14 +25,17 @@ that is not in the reference — copy strings character for character.
    ```bash
    ./gradlew :androidApp:recordRoborazziDebug
    ```
-   Output: `androidApp/src/test/screenshots/*.png` (these are the committed goldens).
+   Output: `androidApp/src/test/screenshots/*.png` (these are the committed goldens). Each panel
+   is rendered in the light and the dark theme, and REPOR EM BREVE also as blisters.
 4. **Compare side by side** (reference left, render right) and look at the result:
    ```bash
    python3 -I scripts/compare-reference.py hoje /tmp/cmp_hoje.png
    python3 -I scripts/compare-reference.py repor-em-breve /tmp/cmp_repor.png
    ```
-   Check, in this order: strings, element order, vertical rhythm (gaps between title, container,
-   cards, legend), sizes (text cap height, pill and jar size), colours.
+   The script uses the dark renders, the closest to the reference's dark photo. Check, in this
+   order: strings, element order, vertical rhythm (gaps between title, container, cards, legend),
+   sizes (text cap height, pill and jar size), pill colours. Surface and text colours follow the
+   author's brand palette (AGENTS.md), not the photo.
 5. **Adjust** dimensions in `ui/.../components/*Panel.kt`, styles in `ui/.../theme/Theme.kt`,
    pill/jar geometry in `ui/.../pill/*Painter.kt`. Pills and jars are shared with the Android
    widgets (rendered to bitmaps), so a painter change affects both.

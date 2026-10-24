@@ -1,8 +1,9 @@
 # AGENTS.md
 
 Guidance for coding agents (and humans) working on **Remédio em Dia**, a medication and dose
-manager in European Portuguese. Android is the primary platform; the web build is a reduced
-version of the same app. `CLAUDE.md` imports this file.
+manager in European Portuguese by **Dra. Maria Cortês Ferreira** ([mariacf.pt](https://mariacf.pt)).
+Android is the primary platform; the web build is a reduced version of the same app.
+`CLAUDE.md` imports this file.
 
 ## Project map
 
@@ -11,7 +12,7 @@ Kotlin Multiplatform + Compose Multiplatform. Gradle modules:
 | Module | Targets | What lives there |
 | --- | --- | --- |
 | `core` | JVM, Wasm | Model (`Medication`, `Schedule`, `DoseLog`, `AppData`), the day plan, stock, adherence, reminder maths, the JSON repository and storage (`FileDocumentStorage` on JVM/Android, `LocalStorageDocumentStorage` on the web), `ReferenceFixtures`. Pure Kotlin, fully unit-tested. |
-| `ui` | Android, Wasm | Theme, pill and jar painters, the HOJE and REPOR EM BREVE panels, all screens, `App`, `AppViewModel`, string resources (`composeResources/values` = pt-PT, `values-en` = English), the Inter font. |
+| `ui` | Android, Wasm | Theme (`RemedioTheme`, light and dark `RemedioPalette`), pill, jar and blister painters, the HOJE and REPOR EM BREVE panels, all screens, `App`, `AppViewModel`, string resources (`composeResources/values` = pt-PT, `values-en` = English), the Fraunces and Plus Jakarta Sans fonts. |
 | `androidApp` | Android | `MainActivity`, `AppContainer`, reminders (`AlarmManager`, notification actions, reschedule on boot/time change), Glance widgets, Android-only settings, Robolectric and Roborazzi tests. |
 | `webApp` | Wasm | `main()` with `ComposeViewport`, `index.html`. |
 
@@ -24,6 +25,21 @@ Key ideas:
   and low-stock notifications in sync, so callers only change data.
 - Widgets cannot run Compose drawing code. They draw pills and jars with the shared painters into
   bitmaps (`PillBitmaps`).
+
+## Author and visual identity
+
+- The author is **Dra. Maria Cortês Ferreira**, family doctor. She is credited in Definições → Sobre
+  (with a link to https://mariacf.pt), on the web page (`<meta name="author">`, splash) and in the README.
+  Keep the credit wherever the app presents itself.
+- The theme follows her site, **mariacf.pt**: Fraunces (display, with an italic accent in the
+  headline) and Plus Jakarta Sans (body); calm blues with the brand gradient `#026A9F → #125A98 → #00668B`;
+  frosted surfaces on a near-white ground with soft blobs; a dark variant. `RemedioPalette.Light` and
+  `RemedioPalette.Dark` mirror the CSS custom properties of `https://mariacf.pt/assets/css/styles.css`
+  (`--bg`, `--ink*`, `--surface*`, `--teal` → `accent`, `--blob-*`, `--brand-*`). Re-read that file
+  before changing tokens; it was reachable from the agent container.
+- Pill colours, the amber of "Restam N" and the panel layouts stay those of the design reference.
+- Never use `RemedioPalette`/fonts directly in composables: read `RemedioTheme.colors` and
+  `RemedioTheme.type`. Widgets draw bitmaps, so they pick a palette with `WidgetStyle.palette(context)`.
 
 ## Commands
 
@@ -44,8 +60,9 @@ JDK 21. The Android SDK path goes in `local.properties` (`scripts/setup-android-
 
 ## Source of truth for content and design
 
-- `docs/design/reference/*.png` and their transcription `docs/design/REFERENCE.md` define the HOJE
-  and REPOR EM BREVE panels. **Copy strings exactly** (accents, case, `·`, spacing), keep the
+- `docs/design/reference/*.png` and their transcription `docs/design/REFERENCE.md` define the
+  structure and content of the HOJE and REPOR EM BREVE panels (colours and type follow the author's
+  brand, see above). **Copy strings exactly** (accents, case, `·`, spacing), keep the
   order, and **do not "clean up" or invent content** that is not in the source: no rewording
   (`Restam` stays `Restam`), no extra badges or copy inside the panels. Deliberate deviations are
   listed in REFERENCE.md; add to that list instead of silently diverging.
@@ -73,7 +90,8 @@ Agent containers may not be able to build everything. What was true when this wa
   `scripts/sandbox/maven-mirror.init.gradle.kts` into `~/.gradle/init.d`. It adds Google's Maven
   Central mirror and points Robolectric's downloader at it. Do not commit mirror settings into the build.
 - **github.com release downloads are blocked (403).** That is why `gradle.properties` sets
-  `kotlin.js.yarn=false` (npm instead of yarn) and why the Inter font was fetched from Google Fonts.
+  `kotlin.js.yarn=false` (npm instead of yarn) and why the fonts were fetched from Google Fonts
+  (`fonts.googleapis.com` / `fonts.gstatic.com`).
 - **No emulator** (`/dev/kvm` is absent). Instrumented tests, real notifications, exact-alarm
   timing and widgets on a launcher **cannot be checked** in a container.
 

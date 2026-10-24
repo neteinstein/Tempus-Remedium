@@ -5,7 +5,9 @@
   scripts/compare-reference.py repor-em-breve OUT.png
 
 The reference crop and the matching Roborazzi output (androidApp/src/test/screenshots)
-are scaled to the same width and placed side by side, reference on the left.
+are scaled to the same width and placed side by side, reference on the left. The dark-theme
+renders are used because they sit closest to the reference's dark photo background; compare
+layout, sizes and strings, not the surface colours (those follow the author's brand).
 Requires Pillow.
 """
 import sys
@@ -17,8 +19,8 @@ ROOT = Path(__file__).resolve().parent.parent
 
 # name: (reference file, crop box in reference pixels, rendered screenshot)
 PANELS = {
-    "hoje": ("hoje.png", (0, 990, 1080, 1720), "hoje_panel.png"),
-    "repor-em-breve": ("repor-em-breve.png", (0, 980, 1080, 1630), "repor_em_breve_panel.png"),
+    "hoje": ("hoje.png", (0, 990, 1080, 1720), "hoje_panel_dark.png"),
+    "repor-em-breve": ("repor-em-breve.png", (0, 980, 1080, 1630), "repor_em_breve_panel_dark.png"),
 }
 
 
