@@ -4,7 +4,8 @@
 
 Medication and dose manager, in European Portuguese. It shows what to take today and when
 (**HOJE**), which medications are running out (**REPOR EM BREVE**, as jars or blister packs),
-and keeps a history of the doses taken. Android first, plus a reduced web version. The look
+and keeps a history of the doses taken. Android first, plus a reduced web version at
+[neteinstein.github.io/Tempus-Remedium](https://neteinstein.github.io/Tempus-Remedium/). The look
 follows the author's site, [mariacf.pt](https://mariacf.pt): Fraunces and Plus Jakarta Sans,
 calm blues, frosted cards, and a light and a dark theme.
 
