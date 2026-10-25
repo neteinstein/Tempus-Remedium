@@ -63,6 +63,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.mariacf.tempusremedium.core.model.Frequency
 import org.mariacf.tempusremedium.core.model.Medication
 import org.mariacf.tempusremedium.core.model.PillColor
+import org.mariacf.tempusremedium.core.model.PillPortion
 import org.mariacf.tempusremedium.core.model.PillShape
 import org.mariacf.tempusremedium.core.model.Schedule
 import org.mariacf.tempusremedium.core.model.Stock
@@ -72,6 +73,7 @@ import org.mariacf.tempusremedium.core.schedule.lastDueDate
 import org.mariacf.tempusremedium.ui.PlatformBackHandler
 import org.mariacf.tempusremedium.ui.components.BrandButton
 import org.mariacf.tempusremedium.ui.components.brandBackground
+import org.mariacf.tempusremedium.ui.components.doseLabel
 import org.mariacf.tempusremedium.ui.components.frequencyLabel
 import org.mariacf.tempusremedium.ui.components.glass
 import org.mariacf.tempusremedium.ui.components.label
@@ -106,6 +108,7 @@ import org.mariacf.tempusremedium.ui.resources.field_frequency
 import org.mariacf.tempusremedium.ui.resources.field_low_threshold
 import org.mariacf.tempusremedium.ui.resources.field_name
 import org.mariacf.tempusremedium.ui.resources.field_notes
+import org.mariacf.tempusremedium.ui.resources.field_portion
 import org.mariacf.tempusremedium.ui.resources.field_shape
 import org.mariacf.tempusremedium.ui.resources.field_start
 import org.mariacf.tempusremedium.ui.resources.field_strength
@@ -118,6 +121,9 @@ import org.mariacf.tempusremedium.ui.resources.frequency_daily
 import org.mariacf.tempusremedium.ui.resources.frequency_every_n_days
 import org.mariacf.tempusremedium.ui.resources.frequency_monthly
 import org.mariacf.tempusremedium.ui.resources.frequency_weekdays
+import org.mariacf.tempusremedium.ui.resources.portion_half
+import org.mariacf.tempusremedium.ui.resources.portion_quarter
+import org.mariacf.tempusremedium.ui.resources.portion_whole
 import org.mariacf.tempusremedium.ui.resources.times_count
 import org.mariacf.tempusremedium.ui.theme.TempusTheme
 
@@ -147,6 +153,9 @@ fun MedicationEditor(
     var strength by remember { mutableStateOf(medication?.strength.orEmpty()) }
     var shape by remember { mutableStateOf(medication?.shape ?: PillShape.ROUND_SCORED) }
     var color by remember { mutableStateOf(medication?.color ?: PillColor.TEAL) }
+    var portion by remember { mutableStateOf(medication?.portion ?: PillPortion.WHOLE) }
+    val effectivePortion = if (PillPortion.canSplit(shape)) portion else PillPortion.WHOLE
+    val initialParts = medication?.portion?.parts ?: 1
     var doses by remember { mutableStateOf(medication?.schedule?.doses ?: mapOf(TimeSlot.MORNING to 1)) }
     val initialFrequency = medication?.schedule?.frequency ?: Frequency.Daily
     var frequencyKind by remember {
@@ -187,12 +196,14 @@ fun MedicationEditor(
     }
     var occurrences by remember { mutableStateOf(medication?.schedule?.occurrences ?: 10) }
     var trackStock by remember { mutableStateOf(medication?.stock != null) }
-    var remaining by remember { mutableStateOf(medication?.stock?.remaining?.toString() ?: "30") }
+    var remaining by remember { mutableStateOf(medication?.stockTablets?.toString() ?: "30") }
+    val initialTablets = remaining
     var threshold by remember {
         mutableStateOf(
             medication
                 ?.stock
                 ?.lowThreshold
+                ?.let { it / initialParts }
                 ?.toString()
                 .orEmpty(),
         )
@@ -233,10 +244,17 @@ fun MedicationEditor(
             schedule = schedule,
             stock =
                 if (trackStock) {
-                    Stock(remaining = remaining.toIntOrNull() ?: 0, lowThreshold = threshold.toIntOrNull())
+                    val parts = effectivePortion.parts
+                    val storedRemaining = medication?.stock?.remaining
+                    val unchanged = storedRemaining != null && remaining == initialTablets && parts == initialParts
+                    Stock(
+                        remaining = if (unchanged && storedRemaining != null) storedRemaining else (remaining.toIntOrNull() ?: 0) * parts,
+                        lowThreshold = threshold.toIntOrNull()?.times(parts),
+                    )
                 } else {
                     null
                 },
+            portion = effectivePortion,
             notes = notes.trim(),
             archived = medication?.archived ?: false,
         )
@@ -294,13 +312,34 @@ fun MedicationEditor(
             FieldTitle(stringResource(Res.string.field_shape))
             ShapePicker(shape, color, onChange = { shape = it })
 
+            if (PillPortion.canSplit(shape)) {
+                FieldTitle(stringResource(Res.string.field_portion))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FrequencyChip(stringResource(Res.string.portion_whole), portion == PillPortion.WHOLE) { portion = PillPortion.WHOLE }
+                    FrequencyChip(stringResource(Res.string.portion_half), portion == PillPortion.HALF) { portion = PillPortion.HALF }
+                    FrequencyChip(stringResource(Res.string.portion_quarter), portion == PillPortion.QUARTER) {
+                        portion = PillPortion.QUARTER
+                    }
+                }
+            }
+
             FieldTitle(stringResource(Res.string.field_color))
             ColorPicker(color, onChange = { color = it })
 
             FieldTitle(stringResource(Res.string.field_when))
             TimeSlot.entries.forEach { slot ->
                 QuantityRow(
-                    label = stringResource(slot.label),
+                    label =
+                        stringResource(slot.label) +
+                            if (effectivePortion != PillPortion.WHOLE && (doses[slot] ?: 0) > 0) {
+                                " · " +
+                                    doseLabel(
+                                        Medication("", "", shape = shape, color = color, schedule = schedule, portion = effectivePortion),
+                                        doses[slot] ?: 0,
+                                    )
+                            } else {
+                                ""
+                            },
                     quantity = doses[slot] ?: 0,
                     onChange = { doses = doses + (slot to it) },
                 )

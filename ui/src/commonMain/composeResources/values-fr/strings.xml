@@ -60,6 +60,12 @@
     <string name="field_name">Nom</string>
     <string name="field_strength">Dosage (ex. : 500mg)</string>
     <string name="field_shape">Forme</string>
+    <string name="field_portion">Part du comprimé</string>
+    <string name="portion_whole">Entier</string>
+    <string name="portion_half">Moitié</string>
+    <string name="portion_quarter">Quart</string>
+    <string name="dose_fraction_one">%1$s unité</string>
+    <string name="dose_fraction_other">%1$s unités</string>
     <string name="field_color">Couleur</string>
     <string name="field_when">Quand le prendre</string>
     <string name="field_frequency">Fréquence</string>

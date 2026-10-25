@@ -42,7 +42,7 @@ object Inventory {
 fun AppData.lowStock(): List<LowStockItem> =
     activeMedications
         .filter(Inventory::isLow)
-        .map { LowStockItem(it, it.stock!!.remaining) }
+        .map { LowStockItem(it, it.stockTablets!!) }
         .sortedWith(compareBy<LowStockItem> { it.remaining }.thenBy { it.medication.name })
 
 /**

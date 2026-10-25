@@ -9,6 +9,7 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.mariacf.tempusremedium.core.model.Frequency
+import org.mariacf.tempusremedium.core.model.Medication
 import org.mariacf.tempusremedium.core.model.PillColor
 import org.mariacf.tempusremedium.core.model.PillShape
 import org.mariacf.tempusremedium.core.model.Schedule
@@ -25,6 +26,8 @@ import org.mariacf.tempusremedium.ui.resources.color_white
 import org.mariacf.tempusremedium.ui.resources.color_yellow
 import org.mariacf.tempusremedium.ui.resources.cycle_summary
 import org.mariacf.tempusremedium.ui.resources.day_label
+import org.mariacf.tempusremedium.ui.resources.dose_fraction_one
+import org.mariacf.tempusremedium.ui.resources.dose_fraction_other
 import org.mariacf.tempusremedium.ui.resources.every_months
 import org.mariacf.tempusremedium.ui.resources.every_weeks
 import org.mariacf.tempusremedium.ui.resources.frequency_daily
@@ -59,6 +62,7 @@ import org.mariacf.tempusremedium.ui.resources.slot_evening
 import org.mariacf.tempusremedium.ui.resources.slot_midday
 import org.mariacf.tempusremedium.ui.resources.slot_morning
 import org.mariacf.tempusremedium.ui.resources.times_count
+import org.mariacf.tempusremedium.ui.resources.units
 import org.mariacf.tempusremedium.ui.resources.weekday_friday
 import org.mariacf.tempusremedium.ui.resources.weekday_full_friday
 import org.mariacf.tempusremedium.ui.resources.weekday_full_monday
@@ -220,3 +224,19 @@ fun scheduleLabel(schedule: Schedule): String {
         else -> frequency
     }
 }
+
+/** "2 unidades", or "½ unidade" / "1½ unidades" for a medication taken in portions of a tablet. */
+@Composable
+fun doseLabel(
+    medication: Medication,
+    quantity: Int,
+): String {
+    val parts = medication.portion.parts
+    if (parts == 1) return pluralStringResource(Res.plurals.units, quantity, quantity)
+    val whole = quantity / parts
+    val fraction = FRACTIONS[(quantity % parts) * 4 / parts].orEmpty()
+    val amount = (if (whole > 0 || fraction.isEmpty()) whole.toString() else "") + fraction
+    return stringResource(if (quantity <= parts) Res.string.dose_fraction_one else Res.string.dose_fraction_other, amount)
+}
+
+private val FRACTIONS = mapOf(1 to "¼", 2 to "½", 3 to "¾")
