@@ -87,7 +87,7 @@ fix, docs, style, refactor, perf, test, build, ci, chore or revert).
 | `KEYSTORE_PASSWORD` | secret | Release | Keystore password |
 | `KEY_ALIAS` | secret | Release | Key alias |
 | `KEY_PASSWORD` | secret | Release | Key password |
-| `ANDROID_PUBLISHER_CREDENTIALS` | secret, optional | Release | Raw JSON of a Play Console service account key with release permission for this app |
+| `ANDROID_PUBLISHER_CREDENTIALS` | secret, optional | Release | The JSON of a Play Console service account key with release permission for this app, pasted into the secret as is (not a file path). `scripts/play-credentials.py` also accepts it base64-encoded, quoted or with a BOM, validates it and writes it to a temporary file for the publish step |
 | `PLAY_TRACK` | variable, optional | Release | Play track to publish to (default `internal`) |
 | `CODECOV_TOKEN` | secret, optional | PR Checks | Codecov upload token |
 | `DEPLOY_GITHUB_PAGES` | variable, optional | Deploy Web | `true` turns on the GitHub Pages deploy (off when unset) |
@@ -100,7 +100,7 @@ Until the four signing secrets are set, **Release fails on every push to `main`*
 step. PR Checks need no secrets: the minified build falls back to debug signing.
 
 `androidApp/build.gradle.kts` reads `KEYSTORE_FILE`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`,
-`APP_VERSION_CODE`, `APP_VERSION_NAME` and `PLAY_TRACK` from the environment the workflow sets,
+`APP_VERSION_CODE`, `APP_VERSION_NAME`, `PLAY_TRACK` and `PLAY_SERVICE_ACCOUNT_FILE` from the environment the workflow sets,
 falling back to debug signing and `1` / `1.0.0` locally.
 
 ## Signing and distribution per platform
@@ -117,6 +117,11 @@ The Play Developer API can only update an app that already has one release, so t
 upload is manual**: download the `.aab` from the GitHub Release and upload it under Play Console →
 the app → Testing or Production → Create release. Every release after that is automated by
 `publishReleaseBundle`. The Play listing will also need a privacy policy URL.
+
+**`MalformedJsonException ... line 1 column 1`** meant the secret's value was not plain JSON (a
+byte-order mark, quotes or base64 from the paste). The "Prepare Play publisher credentials" step
+now normalises those and fails with a description of the value's shape (never its content) when it
+is not a service account key at all; re-create the secret from the downloaded key file if so.
 
 **Troubleshooting a `403 PERMISSION_DENIED` from `publishReleaseBundle`:** the failing call is the
 first `POST .../applications/org.mariacf.tempusremedium/edits`, so the cause is the
