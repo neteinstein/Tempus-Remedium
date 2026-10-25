@@ -1,0 +1,47 @@
+O Tempus Remedium mostra, num relance, o que há para tomar hoje e a que horas, lembra cada toma, assinala a vermelho o que ficou por tomar e avisa quando um medicamento está a acabar. Foi criado pela Dra. Maria Cortês Ferreira, médica de família.
+
+HOJE
+• As doses do dia em quatro horários: Manhã, Meio-dia, Noite e Deitar.
+• Cada medicamento aparece com a forma e a cor que escolheu, para o reconhecer de imediato.
+• Toque num horário para marcar cada dose como tomada ou saltada, ou use «Tomei todas». Enganou-se? Desfaça com um toque.
+• O próximo horário fica destacado; se a hora passou e ficaram doses por tomar, o horário fica a vermelho.
+
+LEMBRETES
+• Uma notificação em cada horário com doses, com as ações «Tomei» e «Adiar 10 min», também no ecrã de bloqueio.
+• Lembretes à hora certa, mesmo com a app fechada. Se faltar uma permissão, a app mostra-o a vermelho e leva-o até ela.
+• Pode ocultar os nomes dos medicamentos no ecrã de bloqueio.
+
+TODAS AS FORMAS, CADA UMA AO SEU RITMO
+• Comprimidos, cápsulas, cápsulas moles, inaladores, pensos transdérmicos, sprays nasais, gotas e injetáveis, em várias cores.
+• Todos os dias, em dias da semana à escolha (também de 2 em 2 semanas), a cada N dias, mensalmente ou em ciclos com pausa.
+• Com data de início, e sem fim, até uma data ou ao fim de N vezes.
+
+TRATAMENTOS
+• Para antibióticos e outros medicamentos com horas certas e fim marcado: uma toma de N em N horas, em mL ou em comprimidos.
+• Termina ao fim de dias, ao fim de tomas, numa data ou quando acabar a embalagem, e cada toma tem o seu lembrete.
+• Para alguns antibióticos em xarope, a app sugere a dose, o intervalo e a duração a partir do peso da criança, com a calculadora de doses da autora. As sugestões só são guardadas se as aceitar e podem ser alteradas.
+
+REPOR EM BREVE
+• O stock desce sozinho à medida que regista as doses.
+• Veja que medicamentos estão a acabar, em frascos ou em blisters. O que acaba hoje ou amanhã pisca a vermelho.
+• Por omissão, o aviso surge quando restam 7 dias de medicação; pode escolher outro limite.
+• Notificação de stock baixo e reposição do stock quando compra uma embalagem nova.
+
+WIDGETS
+• «Hoje», «Repor em breve» e «Tratamento», no ecrã principal e, nos dispositivos que o permitem, no ecrã de bloqueio, com um guia passo a passo.
+
+HISTÓRICO
+• A percentagem de doses tomadas nos últimos 30 dias e o resumo de cada dia.
+
+À SUA MEDIDA
+• Horários configuráveis e aspeto automático, claro ou escuro.
+• Em português, inglês, francês, alemão e espanhol: o idioma do dispositivo ou o que escolher nas Definições.
+
+PRIVACIDADE
+• Sem conta, sem registo e sem publicidade.
+• A aplicação não acede à Internet: os seus dados ficam apenas no seu dispositivo.
+
+AVISO IMPORTANTE
+O Tempus Remedium é uma ferramenta de apoio à organização da medicação. Não é um dispositivo médico e não diagnostica, trata, cura nem previne qualquer doença. As sugestões da calculadora de doses são informação de apoio e não substituem a prescrição. Não substitui o aconselhamento do seu médico ou farmacêutico: consulte sempre um profissional de saúde para qualquer questão sobre a sua medicação, diagnóstico ou tratamento.
+
+Dra. Maria Cortês Ferreira, médica de família · mariacf.pt

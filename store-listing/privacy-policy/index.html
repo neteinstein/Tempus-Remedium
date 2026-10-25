@@ -1,0 +1,179 @@
+<!doctype html>
+<!-- Hostable copy of pt-PT.md and en-US.md (keep the three in sync). Self-contained: no external fonts, scripts or trackers. -->
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Dra. Maria Cortês Ferreira">
+  <title>Tempus Remedium · Política de privacidade / Privacy policy</title>
+  <style>
+    :root {
+      --bg: #f9fafc;
+      --ink: #1a232c;
+      --ink-soft: #47515c;
+      --line: rgba(30, 47, 65, .12);
+      --accent: #1a609e;
+      --surface: rgba(255, 255, 255, .8);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1015;
+        --ink: #ebeff4;
+        --ink-soft: #c0c8d1;
+        --line: rgba(235, 239, 244, .1);
+        --accent: #89c3fe;
+        --surface: rgba(29, 37, 45, .7);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+    header { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+    .mark {
+      width: 48px; height: 48px; border-radius: 15px; flex: none;
+      background: linear-gradient(135deg, #026a9f, #125a98 55%, #00668b);
+      display: grid; place-items: center;
+    }
+    nav { margin: 8px 0 32px; font-size: 15px; }
+    nav a { color: var(--accent); margin-right: 16px; }
+    h1, h2 { font-family: Georgia, "Times New Roman", serif; font-weight: 600; line-height: 1.2; }
+    h1 { font-size: 30px; margin: 0; }
+    h2 { font-size: 21px; margin: 32px 0 8px; }
+    section + section { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 16px; }
+    .updated { color: var(--ink-soft); font-size: 14px; }
+    a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 12px; overflow: hidden; font-size: 15px; }
+    th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    tr:last-child td { border-bottom: 0; }
+    code { font-size: 13px; overflow-wrap: anywhere; }
+    @media (max-width: 520px) { th, td { padding: 8px; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="mark" aria-hidden="true">
+      <svg width="30" height="30" viewBox="0 0 32 32"><circle cx="16" cy="16" r="15" fill="#fff"/><path d="M10.5 21.5 21.5 10.5" stroke="#125a98" stroke-width="3" stroke-linecap="round"/></svg>
+    </div>
+    <h1>Tempus Remedium</h1>
+  </header>
+  <nav><a href="#pt" hreflang="pt-PT">Português</a><a href="#en" hreflang="en">English</a></nav>
+
+  <section id="pt" lang="pt-PT">
+    <h1>Política de privacidade</h1>
+    <p class="updated">Última atualização: 25 de outubro de 2026</p>
+    <p>O Tempus Remedium é uma aplicação para Android de gestão de medicação e doses, criada pela
+      Dra. Maria Cortês Ferreira, médica de família (<a href="https://mariacf.pt">mariacf.pt</a>). Esta política
+      explica que dados a aplicação usa e onde ficam guardados.</p>
+
+    <h2>Resumo</h2>
+    <ul>
+      <li>A aplicação não recolhe nem partilha dados pessoais.</li>
+      <li>A aplicação não tem permissão de acesso à Internet: não envia dados para nenhum servidor, da autora ou de terceiros.</li>
+      <li>Não há conta, publicidade, estatísticas de utilização nem serviços de rastreio.</li>
+    </ul>
+
+    <h2>Que dados a aplicação guarda</h2>
+    <p>Os dados que introduz: os medicamentos (nome, dosagem, forma, cor, horários, frequência, stock e notas),
+      os tratamentos (dose, intervalo, primeira toma e fim), o registo das doses tomadas ou saltadas e as
+      definições (horários, aspeto, idioma e lembretes). Estes dados podem revelar informação sobre a sua saúde.
+      O peso da criança indicado na calculadora de doses serve apenas para o cálculo e não é guardado.</p>
+    <p>Ficam guardados apenas no armazenamento privado da aplicação, no seu dispositivo. Outras aplicações não lhes
+      acedem e a autora não tem acesso a eles. Como nenhum dado sai do dispositivo por ação da aplicação, a autora
+      não trata os seus dados pessoais. Os links para mariacf.pt abrem no navegador do dispositivo.</p>
+
+    <h2>Notificações e widgets</h2>
+    <p>Os lembretes, os avisos de stock baixo e os widgets são gerados no próprio dispositivo. Em Definições pode
+      ocultar os nomes dos medicamentos no ecrã de bloqueio.</p>
+
+    <h2>Cópias de segurança do Android</h2>
+    <p>Se a cópia de segurança do Android estiver ativada, o sistema pode incluir os dados da aplicação na cópia de
+      segurança do dispositivo, guardada na sua Conta Google nos termos da Google, ou transferi-los para um
+      dispositivo novo. Essa cópia é gerida pelo Android e pela Google; a autora não lhe tem acesso. Pode
+      desativá-la nas definições do Android.</p>
+
+    <h2>Permissões</h2>
+    <table>
+      <tr><th>Permissão</th><th>Para quê</th></tr>
+      <tr><td>Notificações (<code>POST_NOTIFICATIONS</code>)</td><td>Mostrar os lembretes das doses e os avisos de stock baixo.</td></tr>
+      <tr><td>Alarmes e lembretes (<code>SCHEDULE_EXACT_ALARM</code>)</td><td>Mostrar os lembretes à hora certa. Sem ela, podem chegar alguns minutos depois.</td></tr>
+      <tr><td>Arranque (<code>RECEIVE_BOOT_COMPLETED</code>)</td><td>Voltar a agendar os lembretes depois de reiniciar o dispositivo ou de mudar a hora.</td></tr>
+      <tr><td><code>WAKE_LOCK</code>, <code>FOREGROUND_SERVICE</code>, <code>ACCESS_NETWORK_STATE</code></td><td>Pedidas pela biblioteca do Android (WorkManager) de que os widgets dependem. A aplicação não usa a rede: <code>ACCESS_NETWORK_STATE</code> só permite saber se há ligação, não permite enviar dados.</td></tr>
+    </table>
+
+    <h2>Apagar os dados</h2>
+    <p>Pode apagar um medicamento e o respetivo histórico na própria aplicação. Para apagar tudo, limpe o
+      armazenamento da aplicação nas definições do Android ou desinstale-a.</p>
+
+    <h2>Crianças</h2>
+    <p>A aplicação destina-se a adultos e não se dirige a crianças.</p>
+
+    <h2>Alterações a esta política</h2>
+    <p>Se esta política mudar, a nova versão é publicada neste mesmo endereço, com a data atualizada.</p>
+
+    <h2>Contacto</h2>
+    <p>Dra. Maria Cortês Ferreira · <a href="https://mariacf.pt">mariacf.pt</a></p>
+  </section>
+
+  <section id="en" lang="en">
+    <h1>Privacy policy</h1>
+    <p class="updated">Last updated: 25 October 2026</p>
+    <p>Tempus Remedium is an Android app for managing medications and doses, created by Dr Maria Cortês Ferreira,
+      family doctor (<a href="https://mariacf.pt">mariacf.pt</a>). This policy explains what data the app uses and
+      where it is kept.</p>
+
+    <h2>Summary</h2>
+    <ul>
+      <li>The app does not collect or share personal data.</li>
+      <li>The app has no permission to access the internet: it sends no data to any server, the author's or anyone else's.</li>
+      <li>There is no account, no advertising, no usage analytics and no tracking.</li>
+    </ul>
+
+    <h2>What the app stores</h2>
+    <p>The data you enter: your medications (name, strength, shape, colour, times, frequency, stock and notes), your
+      courses (dose, interval, first dose and end), the record of doses taken or skipped, and your settings (times,
+      appearance, language and reminders). This data can reveal information about your health. The child's weight
+      entered in the dose calculator is only used for the calculation and is not stored.</p>
+    <p>It is stored only in the app's private storage on your device. Other apps cannot read it and the author has
+      no access to it. Because the app never sends any data off the device, the author does not process your
+      personal data. Links to mariacf.pt open in the device's browser.</p>
+
+    <h2>Notifications and widgets</h2>
+    <p>Reminders, low-stock alerts and widgets are produced on the device itself. In Settings you can hide medication
+      names on the lock screen.</p>
+
+    <h2>Android backups</h2>
+    <p>If Android backup is turned on, the system may include the app's data in your device backup, stored in your
+      Google Account under Google's terms, or transfer it to a new device. That backup is handled by Android and
+      Google; the author has no access to it. You can turn it off in Android's settings.</p>
+
+    <h2>Permissions</h2>
+    <table>
+      <tr><th>Permission</th><th>Why</th></tr>
+      <tr><td>Notifications (<code>POST_NOTIFICATIONS</code>)</td><td>Show dose reminders and low-stock alerts.</td></tr>
+      <tr><td>Alarms &amp; reminders (<code>SCHEDULE_EXACT_ALARM</code>)</td><td>Show reminders on time. Without it they may arrive a few minutes late.</td></tr>
+      <tr><td>Run at startup (<code>RECEIVE_BOOT_COMPLETED</code>)</td><td>Schedule reminders again after the device restarts or the time changes.</td></tr>
+      <tr><td><code>WAKE_LOCK</code>, <code>FOREGROUND_SERVICE</code>, <code>ACCESS_NETWORK_STATE</code></td><td>Requested by the Android library (WorkManager) the widgets rely on. The app does not use the network: <code>ACCESS_NETWORK_STATE</code> only tells whether a connection exists and cannot send data.</td></tr>
+    </table>
+
+    <h2>Deleting your data</h2>
+    <p>You can delete a medication and its history in the app. To delete everything, clear the app's storage in
+      Android's settings or uninstall the app.</p>
+
+    <h2>Children</h2>
+    <p>The app is meant for adults and is not directed at children.</p>
+
+    <h2>Changes to this policy</h2>
+    <p>If this policy changes, the new version is published at this same address with an updated date.</p>
+
+    <h2>Contact</h2>
+    <p>Dr Maria Cortês Ferreira · <a href="https://mariacf.pt">mariacf.pt</a></p>
+  </section>
+</main>
+</body>
+</html>

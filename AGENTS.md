@@ -16,6 +16,11 @@ Kotlin Multiplatform + Compose Multiplatform. Gradle modules:
 | `androidApp` | Android | `MainActivity`, `AppContainer`, reminders (`AlarmManager`, notification actions, reschedule on boot/time change), Glance widgets, Android-only settings, Robolectric and Roborazzi tests. |
 | `webApp` | Wasm | `main()` with `ComposeViewport`, `index.html`; the installable web app (`manifest.webmanifest`, `sw.js` with the `precache.json` the build writes, icons), the install bar (iOS: add to home screen; Android: Google Play), notifications and icon badge while the page is open (`WebReminders.kt`). |
 
+Not a module: `store-listing/` holds the Play Store listing (pt-PT and en-US text, graphics,
+privacy policy, Play Console answers) and the demo video's pipeline. Its screenshots and the video
+(`docs/tempus-remedium.mp4`) come from `StoreListingCaptures` in `androidApp`'s tests, which only
+runs with `STORE_LISTING=1`; see `store-listing/README.md`.
+
 Key ideas:
 
 - All data is one `AppData` JSON document. Every change is a **pure function** in
@@ -128,5 +133,7 @@ preinstalled Playwright Chromium).
 - Releases, signing secrets, Play publishing and R8 rules: [`CI_CD.md`](CI_CD.md). Only add a
   `-keep` to `androidApp/proguard-rules.pro` for something resolved by name at runtime, and extend
   `scripts/verify-obfuscation.sh` when you do.
-- New logic goes in `core` with tests; UI changes come with re-recorded screenshots.
+- New logic goes in `core` with tests; UI changes come with re-recorded screenshots. Visible
+  changes to the screens or features also mean regenerating the store graphics and updating the
+  listing text in `store-listing/`.
 - CI/CD topology, secrets and signing are documented in [`CI_CD.md`](CI_CD.md), not here.
