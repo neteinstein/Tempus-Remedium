@@ -19,6 +19,8 @@ import org.mariacf.tempusremedium.ui.components.GroupCard
 import org.mariacf.tempusremedium.ui.components.GroupDivider
 import org.mariacf.tempusremedium.ui.resources.Res
 import org.mariacf.tempusremedium.ui.resources.permission_notifications
+import org.mariacf.tempusremedium.ui.resources.settings_alarm_reminders
+import org.mariacf.tempusremedium.ui.resources.settings_alarm_reminders_body
 import org.mariacf.tempusremedium.ui.resources.settings_exact_alarms
 import org.mariacf.tempusremedium.ui.resources.settings_exact_alarms_body
 import org.mariacf.tempusremedium.ui.resources.settings_hide_names
@@ -79,6 +81,13 @@ fun AndroidSettingsExtras(
                 body = stringResource(Res.string.settings_reminders_body),
                 checked = settings.remindersEnabled,
                 onCheckedChange = { onChange(settings.copy(remindersEnabled = it)) },
+            )
+            GroupDivider()
+            SettingsSwitchRow(
+                title = stringResource(Res.string.settings_alarm_reminders),
+                body = stringResource(Res.string.settings_alarm_reminders_body),
+                checked = settings.alarmReminders,
+                onCheckedChange = { onChange(settings.copy(alarmReminders = it)) },
             )
             GroupDivider()
             SettingsSwitchRow(

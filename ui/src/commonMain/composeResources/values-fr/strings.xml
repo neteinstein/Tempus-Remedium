@@ -97,6 +97,7 @@
     <string name="install_store_action">Installer</string>
     <string name="install_banner_close">Fermer l’astuce d’installation</string>
     <string name="channel_reminders">Rappels de doses</string>
+    <string name="channel_reminders_alarm">Rappels (alarme)</string>
     <string name="channel_low_stock">Stock bas</string>
     <string name="notification_slot_title">%1$s · %2$s</string>
     <plurals name="notification_hidden_body">
@@ -108,6 +109,8 @@
     <string name="settings_reminders">Rappels</string>
     <string name="settings_reminders_body">Une notification à chaque horaire avec des doses.</string>
     <string name="settings_hide_names">Masquer les noms sur l’écran de verrouillage</string>
+    <string name="settings_alarm_reminders">Sonner comme une alarme</string>
+    <string name="settings_alarm_reminders_body">Le son d’alarme se répète jusqu’à ce que vous touchiez Pris ou Reporter, ou fermiez le rappel.</string>
     <string name="settings_exact_alarms">Rappels à l’heure exacte</string>
     <string name="settings_exact_alarms_body">Sans cette autorisation, les rappels peuvent arriver quelques minutes en retard.</string>
     <string name="settings_widgets_hint">Ajoutez les widgets Aujourd’hui et À renouveler à l’écran d’accueil.</string>

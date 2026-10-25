@@ -109,6 +109,7 @@
     <string name="install_banner_close">Close install tip</string>
 
     <string name="channel_reminders">Dose reminders</string>
+    <string name="channel_reminders_alarm">Reminders (alarm)</string>
     <string name="channel_low_stock">Low stock</string>
     <string name="notification_slot_title">%1$s · %2$s</string>
     <plurals name="notification_hidden_body">
@@ -120,6 +121,8 @@
     <string name="settings_reminders">Reminders</string>
     <string name="settings_reminders_body">A notification at each time with doses.</string>
     <string name="settings_hide_names">Hide names on the lock screen</string>
+    <string name="settings_alarm_reminders">Ring like an alarm</string>
+    <string name="settings_alarm_reminders_body">The alarm sound repeats until you tap Taken, Snooze or dismiss the reminder.</string>
     <string name="settings_exact_alarms">On-time reminders</string>
     <string name="settings_exact_alarms_body">Without this permission reminders may arrive a few minutes late.</string>
     <string name="settings_widgets_hint">Add the Today and Refill soon widgets to your home screen.</string>

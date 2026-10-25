@@ -57,6 +57,8 @@ data class Settings(
     val slotTimes: Map<TimeSlot, LocalTime> = TimeSlot.entries.associateWith { it.defaultTime },
     val remindersEnabled: Boolean = true,
     val hideNamesInReminders: Boolean = false,
+    /** Reminders ring with the alarm sound, over and over, until the dose is handled. */
+    val alarmReminders: Boolean = false,
     val stockDisplay: StockDisplay = StockDisplay.JARS,
     val theme: ThemeMode = ThemeMode.SYSTEM,
     val language: AppLanguage = AppLanguage.SYSTEM,

@@ -113,6 +113,7 @@
 
     <!-- Android only: reminders and settings -->
     <string name="channel_reminders">Lembretes de doses</string>
+    <string name="channel_reminders_alarm">Lembretes (alarme)</string>
     <string name="channel_low_stock">Stock baixo</string>
     <string name="notification_slot_title">%1$s · %2$s</string>
     <plurals name="notification_hidden_body">
@@ -124,6 +125,8 @@
     <string name="settings_reminders">Lembretes</string>
     <string name="settings_reminders_body">Notificação a cada horário com doses.</string>
     <string name="settings_hide_names">Ocultar nomes no ecrã de bloqueio</string>
+    <string name="settings_alarm_reminders">Tocar como alarme</string>
+    <string name="settings_alarm_reminders_body">O som de alarme repete-se até tocar em Tomei ou Adiar, ou dispensar o lembrete.</string>
     <string name="settings_exact_alarms">Lembretes à hora certa</string>
     <string name="settings_exact_alarms_body">Sem esta permissão, os lembretes podem chegar alguns minutos depois.</string>
     <string name="settings_widgets_hint">Adicione os widgets Hoje e Repor em breve ao ecrã principal.</string>
