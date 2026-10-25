@@ -2,7 +2,7 @@
 
 The pipeline follows the project owner's standard Android + KMP pipeline: PR checks in parallel
 jobs, signed releases from `main` to GitHub Releases and the Play Console, and the web build on
-GitHub Pages. Where this project deviates from that standard, the last section says why.
+GitHub Pages and Cloudflare Pages (both paused for now). Where this project deviates from that standard, the last section says why.
 
 ## Workflows
 
@@ -10,7 +10,7 @@ GitHub Pages. Where this project deviates from that standard, the last section s
 | --- | --- | --- |
 | PR Checks | `.github/workflows/pr.yml` | Pull requests into `main` or `develop` (opened, synchronised, reopened) |
 | Release | `.github/workflows/release.yml` | Pushes to `main`; manual run |
-| Deploy Web (GitHub Pages) | `.github/workflows/deploy-pages.yml` | Pushes to `main`; manual run |
+| Deploy Web | `.github/workflows/deploy-web.yml` | Pushes to `main`; manual run. **Paused:** each target runs only when its variable is `true` |
 | PR title | `.github/workflows/pr-title.yml` | Pull requests (opened, edited, updated) |
 | Dependabot | `.github/dependabot.yml` | Weekly `gradle` and `github-actions` update PRs |
 
@@ -56,11 +56,19 @@ On every push to `main`:
    `publishReleaseBundle` (Gradle Play Publisher) to the `internal` track, or `PLAY_TRACK`.
    Otherwise it logs a notice and skips.
 
-### Deploy Web (GitHub Pages)
+### Deploy Web
 
-Builds the Wasm distribution and publishes it with `actions/deploy-pages` to
-https://neteinstein.github.io/Tempus-Remedium/.
-**One-time setup:** *Settings → Pages → Build and deployment → Source* = **GitHub Actions**.
+Builds the Wasm distribution once and deploys it to two targets in parallel jobs. **Both are paused
+for now** (GitHub Pages is disabled on the repository): a target's job only runs when its variable is
+`true`, and the build is skipped while neither is, so pushes to `main` show a skipped run.
+
+| Target | Switch (variable) | One-time setup |
+| --- | --- | --- |
+| GitHub Pages (`actions/deploy-pages`, https://neteinstein.github.io/Tempus-Remedium/) | `DEPLOY_GITHUB_PAGES` = `true` | *Settings → Pages → Build and deployment → Source* = **GitHub Actions** |
+| Cloudflare Pages (`cloudflare/wrangler-action`, `pages deploy`) | `DEPLOY_CLOUDFLARE_PAGES` = `true` | Create a **Direct Upload** Pages project; set `CLOUDFLARE_PAGES_PROJECT` to its name and add the `CLOUDFLARE_API_TOKEN` (*Account → Cloudflare Pages → Edit*) and `CLOUDFLARE_ACCOUNT_ID` secrets |
+
+The site uses relative paths, so the same build works under the GitHub Pages subpath and at the root
+of `<project>.pages.dev`.
 
 ### PR title
 
@@ -78,6 +86,11 @@ fix, docs, style, refactor, perf, test, build, ci, chore or revert).
 | `ANDROID_PUBLISHER_CREDENTIALS` | secret, optional | Release | Raw JSON of a Play Console service account key with release permission for this app |
 | `PLAY_TRACK` | variable, optional | Release | Play track to publish to (default `internal`) |
 | `CODECOV_TOKEN` | secret, optional | PR Checks | Codecov upload token |
+| `DEPLOY_GITHUB_PAGES` | variable, optional | Deploy Web | `true` turns on the GitHub Pages deploy (off when unset) |
+| `DEPLOY_CLOUDFLARE_PAGES` | variable, optional | Deploy Web | `true` turns on the Cloudflare Pages deploy (off when unset) |
+| `CLOUDFLARE_PAGES_PROJECT` | variable, optional | Deploy Web | Cloudflare Pages project name |
+| `CLOUDFLARE_API_TOKEN` | secret, optional | Deploy Web | API token with Cloudflare Pages edit permission |
+| `CLOUDFLARE_ACCOUNT_ID` | secret, optional | Deploy Web | Cloudflare account ID |
 
 Until the four signing secrets are set, **Release fails on every push to `main`** at its first
 step. PR Checks need no secrets: the minified build falls back to debug signing.
@@ -91,7 +104,7 @@ falling back to debug signing and `1` / `1.0.0` locally.
 | Platform | Status |
 | --- | --- |
 | Android | Release builds are minified (R8 full mode), resource-shrunk and signed with the upload key from the secrets. Published on GitHub Releases (APK + AAB + mapping) and, once configured, to the Play Console's internal track. PRs build a debug APK and a debug-signed minified release. |
-| Web | No signing. Static Wasm site deployed to GitHub Pages from `main`. |
+| Web | No signing. Static Wasm site, deployable to GitHub Pages and Cloudflare Pages from `main`; both deploys paused for now. |
 | iOS | Compile and simulator tests only (no app, no signing). |
 
 ## Play Console
