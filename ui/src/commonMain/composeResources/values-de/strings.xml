@@ -126,9 +126,7 @@
     <string name="month_november">November</string>
     <string name="month_december">Dezember</string>
     <string name="long_date">%1$s, %2$d. %3$s</string>
-    <string name="greeting_morning">Guten Morgen,</string>
-    <string name="greeting_afternoon">Guten Tag,</string>
-    <string name="greeting_evening">Guten Abend,</string>
+    <string name="greeting">Hallo,</string>
     <plurals name="greeting_pending">
         <item quantity="one">noch %1$d Dosis.</item>
         <item quantity="other">noch %1$d Dosen.</item>
@@ -253,4 +251,32 @@
     <string name="permission_missing">Fehlt · zum Erteilen tippen</string>
     <string name="settings_language">Sprache</string>
     <string name="language_system">Automatisch (Gerätesprache)</string>
+
+    <!-- Widget prompt and guide, overdue and running-out highlights -->
+    <string name="slot_overdue">überfällig</string>
+    <string name="stock_running_out">geht heute oder morgen aus</string>
+    <string name="widget_banner">Fügen Sie das Widget zum Start- oder Sperrbildschirm hinzu</string>
+    <string name="widget_banner_close">Widget-Hinweis schließen</string>
+    <string name="widget_guide_eyebrow">Widget</string>
+    <string name="widget_guide_title">Die heutigen Dosen, ohne die App zu öffnen</string>
+    <string name="widget_guide_what_title">Was es ist</string>
+    <string name="widget_guide_what_body">Ein Widget ist ein kleines Feld der App, das auf dem Start- oder Sperrbildschirm des Telefons bleibt. Tempus Remedium hat drei: „Heute“ mit den Dosen jeder Uhrzeit, „Bald nachfüllen“ mit den Medikamenten, die zur Neige gehen, und „Behandlung“ mit der nächsten Einnahme der laufenden Behandlung.</string>
+    <string name="widget_guide_why_title">Warum es sich lohnt</string>
+    <string name="widget_guide_why_1">Sie sehen auf einen Blick, was noch einzunehmen ist, jedes Mal, wenn Sie auf das Telefon schauen.</string>
+    <string name="widget_guide_why_2">Sie denken daran, ein Medikament nachzufüllen, bevor es ausgeht.</string>
+    <string name="widget_guide_why_3">Ein Tippen auf eine Uhrzeit öffnet die App direkt bei diesen Dosen.</string>
+    <string name="widget_guide_home_title">So fügen Sie es zum Startbildschirm hinzu</string>
+    <string name="widget_guide_home_1">Berühren und halten Sie eine freie Stelle auf dem Startbildschirm.</string>
+    <string name="widget_guide_home_2">Tippen Sie auf „Widgets“.</string>
+    <string name="widget_guide_home_3">Suchen Sie „Tempus Remedium“ in der Liste oder über die Suche.</string>
+    <string name="widget_guide_home_4">Berühren und halten Sie das Widget „Heute“ (oder „Bald nachfüllen“) und ziehen Sie es auf den Bildschirm.</string>
+    <string name="widget_guide_home_5">Legen Sie es ab, wo Sie möchten. Um die Größe zu ändern, berühren und halten Sie das Widget und ziehen Sie an den Rändern.</string>
+    <string name="widget_guide_lock_title">So fügen Sie es zum Sperrbildschirm hinzu</string>
+    <string name="widget_guide_lock_intro">Nur manche Telefone und Tablets erlauben Widgets auf dem Sperrbildschirm, und die Schritte unterscheiden sich je nach Marke.</string>
+    <string name="widget_guide_lock_1">Berühren und halten Sie bei gesperrtem Bildschirm eine freie Stelle (oder wischen Sie vom rechten Rand herein).</string>
+    <string name="widget_guide_lock_2">Tippen Sie auf „Anpassen“ oder „Widget hinzufügen“ und entsperren Sie, wenn Sie dazu aufgefordert werden.</string>
+    <string name="widget_guide_lock_3">Wählen Sie „Tempus Remedium“ und dann das Widget „Heute“.</string>
+    <string name="widget_guide_lock_4">Tippen Sie auf „Fertig“.</string>
+    <string name="widget_guide_privacy">Auf dem Sperrbildschirm sieht jeder, der das Telefon in die Hand nimmt, die Namen der Medikamente.</string>
+    <string name="widget_guide_add">Zum Startbildschirm hinzufügen</string>
 </resources>

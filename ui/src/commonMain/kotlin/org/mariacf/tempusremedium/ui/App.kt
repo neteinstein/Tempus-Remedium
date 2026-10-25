@@ -9,10 +9,13 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.CheckCircle
@@ -37,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.jetbrains.compose.resources.StringResource
@@ -49,6 +53,7 @@ import org.mariacf.tempusremedium.core.schedule.activeCourses
 import org.mariacf.tempusremedium.core.schedule.adherence
 import org.mariacf.tempusremedium.core.schedule.lowStock
 import org.mariacf.tempusremedium.core.schedule.planFor
+import org.mariacf.tempusremedium.core.schedule.stockAlerts
 import org.mariacf.tempusremedium.ui.components.NotificationsRationaleDialog
 import org.mariacf.tempusremedium.ui.components.PermissionsMissingBanner
 import org.mariacf.tempusremedium.ui.components.brandBackground
@@ -64,6 +69,8 @@ import org.mariacf.tempusremedium.ui.screens.MedicationEditor
 import org.mariacf.tempusremedium.ui.screens.MedicationsScreen
 import org.mariacf.tempusremedium.ui.screens.SettingsScreen
 import org.mariacf.tempusremedium.ui.screens.TodayScreen
+import org.mariacf.tempusremedium.ui.screens.WidgetBanner
+import org.mariacf.tempusremedium.ui.screens.WidgetGuideScreen
 import org.mariacf.tempusremedium.ui.theme.TempusTheme
 
 enum class Tab(
@@ -74,6 +81,17 @@ enum class Tab(
     MEDICATIONS(Res.string.nav_medications, Icons.AutoMirrored.Filled.List),
     HISTORY(Res.string.nav_history, Icons.Filled.CheckCircle),
     SETTINGS(Res.string.nav_settings, Icons.Filled.Settings),
+}
+
+/** Home and lock screen widgets, on platforms that have them. */
+interface WidgetSupport {
+    /** Whether a widget of this app is placed on a home or lock screen. */
+    fun isPlaced(): Boolean
+
+    /** Whether the launcher can add a widget for the user ([pin]). */
+    fun canPin(): Boolean
+
+    fun pin()
 }
 
 /** What a platform adds to the shared app (Android: reminders and widgets; web: storage notice). */
@@ -88,6 +106,7 @@ class PlatformUi(
     val permissionsMissing: () -> Boolean = { false },
     /** Asks for the first missing permission (the system dialog, or its settings screen). */
     val requestPermissions: () -> Unit = {},
+    val widgets: WidgetSupport? = null,
 )
 
 /** Whether [ThemeMode] resolves to dark right now. */
@@ -132,6 +151,16 @@ fun App(
         editingId = null
     }
 
+    var widgetGuide by rememberSaveable { mutableStateOf(false) }
+
+    // Re-checked on every resume: the user places widgets outside the app.
+    val widgets = platform.widgets
+    var widgetPlaced by remember { mutableStateOf(widgets?.isPlaced() ?: true) }
+    LifecycleResumeEffect(widgets) {
+        widgetPlaced = widgets?.isPlaced() ?: true
+        onPauseOrDispose {}
+    }
+
     LaunchedEffect(launchRequest) {
         if (launchRequest != null) {
             tab = Tab.TODAY
@@ -148,6 +177,13 @@ fun App(
             val palette = TempusTheme.colors
             Box(modifier.fillMaxSize().brandBackground(palette)) {
                 val editing = editingId
+                if (widgetGuide) {
+                    WidgetGuideScreen(
+                        onClose = { widgetGuide = false },
+                        onAdd = widgets?.takeIf { it.canPin() }?.let { support -> { support.pin() } },
+                    )
+                    return@Box
+                }
                 val editingMedication = editing?.let(data::medication)
                 if (editing == NEW_COURSE || editingMedication?.course != null) {
                     CourseEditor(
@@ -175,11 +211,31 @@ fun App(
                     )
                     return@Box
                 }
+                val showPermissionsBanner =
+                    permissionsMissing && data.settings.remindersEnabled && data.activeMedications.isNotEmpty()
+                val showWidgetBanner = !widgetPlaced && data.medications.isNotEmpty() && !data.settings.widgetPromptDismissed
                 Scaffold(
                     containerColor = Color.Transparent,
                     topBar = {
-                        if (permissionsMissing && data.settings.remindersEnabled && data.activeMedications.isNotEmpty()) {
-                            PermissionsMissingBanner(onFix = ::openPermissions)
+                        // Missing permissions come first; the widget tip sits below, without a second status-bar gap.
+                        Column {
+                            if (showPermissionsBanner) {
+                                PermissionsMissingBanner(onFix = ::openPermissions)
+                            }
+                            if (showWidgetBanner) {
+                                WidgetBanner(
+                                    onOpen = { widgetGuide = true },
+                                    onClose = { viewModel.updateSettings(data.settings.copy(widgetPromptDismissed = true)) },
+                                    modifier =
+                                        if (showPermissionsBanner) {
+                                            Modifier.consumeWindowInsets(
+                                                WindowInsets.statusBars,
+                                            )
+                                        } else {
+                                            Modifier
+                                        },
+                                )
+                            }
                         }
                     },
                     bottomBar = {
@@ -224,6 +280,8 @@ fun App(
                                     lowStock = data.lowStock(),
                                     medications = data.activeMedications,
                                     stockDisplay = data.settings.stockDisplay,
+                                    stockAlerts = data.stockAlerts(now.date),
+                                    onAcknowledgeStockAlert = { medication -> viewModel.acknowledgeStockAlert(medication.id, now.date) },
                                     onLogDose = { medication, slot, status -> viewModel.logDose(medication.id, now.date, slot, status) },
                                     onUndoDose = { medication, slot -> viewModel.undoDose(medication.id, now.date, slot) },
                                     onLogSlot = { slot -> viewModel.logSlot(now.date, slot) },

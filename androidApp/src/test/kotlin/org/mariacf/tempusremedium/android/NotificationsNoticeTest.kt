@@ -8,6 +8,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,6 +19,7 @@ import org.mariacf.tempusremedium.core.model.AppData
 import org.mariacf.tempusremedium.core.model.Settings
 import org.mariacf.tempusremedium.ui.App
 import org.mariacf.tempusremedium.ui.PlatformUi
+import org.mariacf.tempusremedium.ui.WidgetSupport
 import org.robolectric.annotation.Config
 
 /** The red bar and the first-medication explanation, driven through the whole App. */
@@ -102,5 +104,21 @@ class NotificationsNoticeTest {
         show(AppData(), missing = false)
         addFirstMedication()
         composeRule.onNodeWithText(dialogTitle).assertDoesNotExist()
+    }
+
+    @Test
+    fun barSitsAboveTheWidgetTip() {
+        val noWidget =
+            object : WidgetSupport {
+                override fun isPlaced() = false
+
+                override fun canPin() = false
+
+                override fun pin() = Unit
+            }
+        show(ReferenceFixtures.data, missing = true, PlatformUi(permissionsMissing = { true }, widgets = noWidget))
+        val bar = composeRule.onNodeWithText(missingText).fetchSemanticsNode().boundsInRoot
+        val tip = composeRule.onNodeWithText("Adicione o widget ao ecrã principal ou de bloqueio").fetchSemanticsNode().boundsInRoot
+        assertTrue("the red bar must come first ($bar, $tip)", bar.bottom <= tip.top)
     }
 }

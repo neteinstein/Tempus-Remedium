@@ -139,9 +139,7 @@
     <string name="month_november">November</string>
     <string name="month_december">December</string>
     <string name="long_date">%1$s, %2$d %3$s</string>
-    <string name="greeting_morning">Good morning,</string>
-    <string name="greeting_afternoon">Good afternoon,</string>
-    <string name="greeting_evening">Good evening,</string>
+    <string name="greeting">Hello,</string>
     <plurals name="greeting_pending">
         <item quantity="one">%1$d dose to go.</item>
         <item quantity="other">%1$d doses to go.</item>
@@ -271,4 +269,32 @@
     <string name="permission_missing">Missing · tap to grant</string>
     <string name="settings_language">Language</string>
     <string name="language_system">Automatic (device language)</string>
+
+    <!-- Widget prompt and guide, overdue and running-out highlights -->
+    <string name="slot_overdue">overdue</string>
+    <string name="stock_running_out">runs out today or tomorrow</string>
+    <string name="widget_banner">Add the widget to your home or lock screen</string>
+    <string name="widget_banner_close">Close widget tip</string>
+    <string name="widget_guide_eyebrow">Widget</string>
+    <string name="widget_guide_title">Today’s doses, without opening the app</string>
+    <string name="widget_guide_what_title">What it is</string>
+    <string name="widget_guide_what_body">A widget is a small panel of the app that lives on your phone’s home screen or lock screen. Tempus Remedium has three: “Today”, with the doses at each time of day, “Refill soon”, with the medications that are running low, and “Course”, with the next dose of the course under way.</string>
+    <string name="widget_guide_why_title">Why it helps</string>
+    <string name="widget_guide_why_1">See at a glance what is left to take, every time you look at your phone.</string>
+    <string name="widget_guide_why_2">Remember to refill a medication before it runs out.</string>
+    <string name="widget_guide_why_3">Tap a time of day to open the app right at those doses.</string>
+    <string name="widget_guide_home_title">How to add it to the home screen</string>
+    <string name="widget_guide_home_1">Touch and hold an empty spot on the home screen.</string>
+    <string name="widget_guide_home_2">Tap “Widgets”.</string>
+    <string name="widget_guide_home_3">Find “Tempus Remedium” in the list or with search.</string>
+    <string name="widget_guide_home_4">Touch and hold the “Today” widget (or “Refill soon”) and drag it onto the screen.</string>
+    <string name="widget_guide_home_5">Drop it where you like. To resize it, touch and hold the widget and drag its edges.</string>
+    <string name="widget_guide_lock_title">How to add it to the lock screen</string>
+    <string name="widget_guide_lock_intro">Only some phones and tablets allow widgets on the lock screen, and the steps vary by brand.</string>
+    <string name="widget_guide_lock_1">With the screen locked, touch and hold an empty spot (or swipe in from the right edge).</string>
+    <string name="widget_guide_lock_2">Tap “Customise” or “Add widget”, and unlock if asked.</string>
+    <string name="widget_guide_lock_3">Choose “Tempus Remedium”, then the “Today” widget.</string>
+    <string name="widget_guide_lock_4">Tap “Done”.</string>
+    <string name="widget_guide_privacy">On the lock screen, anyone who picks up your phone can see the medication names.</string>
+    <string name="widget_guide_add">Add to home screen</string>
 </resources>

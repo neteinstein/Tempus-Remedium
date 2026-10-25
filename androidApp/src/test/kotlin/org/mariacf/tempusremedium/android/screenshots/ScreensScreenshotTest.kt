@@ -1,6 +1,7 @@
 package org.mariacf.tempusremedium.android.screenshots
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +23,7 @@ import org.mariacf.tempusremedium.core.ReferenceFixtures.date
 import org.mariacf.tempusremedium.core.dosing.CalculatorMedication
 import org.mariacf.tempusremedium.core.model.AppData
 import org.mariacf.tempusremedium.core.model.DoseStatus
+import org.mariacf.tempusremedium.core.model.Stock
 import org.mariacf.tempusremedium.core.model.StockDisplay
 import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.core.schedule.activeCourses
@@ -30,6 +32,7 @@ import org.mariacf.tempusremedium.core.schedule.logDose
 import org.mariacf.tempusremedium.core.schedule.logSlot
 import org.mariacf.tempusremedium.core.schedule.lowStock
 import org.mariacf.tempusremedium.core.schedule.planFor
+import org.mariacf.tempusremedium.core.schedule.stockAlerts
 import org.mariacf.tempusremedium.ui.components.NotificationsRationaleDialog
 import org.mariacf.tempusremedium.ui.components.PermissionsMissingBanner
 import org.mariacf.tempusremedium.ui.components.brandBackground
@@ -39,6 +42,8 @@ import org.mariacf.tempusremedium.ui.screens.MedicationEditor
 import org.mariacf.tempusremedium.ui.screens.MedicationsScreen
 import org.mariacf.tempusremedium.ui.screens.SettingsScreen
 import org.mariacf.tempusremedium.ui.screens.TodayScreen
+import org.mariacf.tempusremedium.ui.screens.WidgetBanner
+import org.mariacf.tempusremedium.ui.screens.WidgetGuideScreen
 import org.mariacf.tempusremedium.ui.theme.TempusTheme
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
@@ -92,6 +97,29 @@ class ScreensScreenshotTest {
     fun todayAllTaken() =
         capture("screen_today_all_taken", dark = true) {
             Today(TimeSlot.entries.fold(ReferenceFixtures.data) { data, slot -> data.logSlot(date, slot, DoseStatus.TAKEN, 0L) })
+        }
+
+    /** Ómega 3 down to its last unit: its jar blinks red, and MANHÃ and MEIO-DIA are overdue at 16:37. */
+    @Test
+    fun todayRunningOut() =
+        capture("screen_today_running_out") {
+            val data =
+                ReferenceFixtures.data.copy(
+                    medications =
+                        ReferenceFixtures.data.medications.map {
+                            if (it.id == ReferenceFixtures.omega3.id) it.copy(stock = Stock(remaining = 1)) else it
+                        },
+                )
+            Today(data, stockAlerts = data.stockAlerts(date))
+        }
+
+    @Test
+    fun widgetGuide() =
+        capture("screen_widget_guide", height = 3000) {
+            Column {
+                WidgetBanner(onOpen = {}, onClose = {})
+                WidgetGuideScreen(onClose = {}, onAdd = {})
+            }
         }
 
     @Test
@@ -202,10 +230,12 @@ class ScreensScreenshotTest {
     private fun Today(
         data: AppData,
         stockDisplay: StockDisplay = StockDisplay.JARS,
+        stockAlerts: Set<String> = emptySet(),
     ) {
         TodayScreen(
             now = ReferenceFixtures.now,
             stockDisplay = stockDisplay,
+            stockAlerts = stockAlerts,
             plan = data.planFor(date),
             lowStock = data.lowStock(),
             medications = data.activeMedications,

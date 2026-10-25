@@ -126,9 +126,7 @@
     <string name="month_november">noviembre</string>
     <string name="month_december">diciembre</string>
     <string name="long_date">%1$s, %2$d de %3$s</string>
-    <string name="greeting_morning">Buenos días,</string>
-    <string name="greeting_afternoon">Buenas tardes,</string>
-    <string name="greeting_evening">Buenas noches,</string>
+    <string name="greeting">Hola,</string>
     <plurals name="greeting_pending">
         <item quantity="one">falta %1$d dosis.</item>
         <item quantity="other">faltan %1$d dosis.</item>
@@ -253,4 +251,32 @@
     <string name="permission_missing">Falta · toca para darlo</string>
     <string name="settings_language">Idioma</string>
     <string name="language_system">Automático (idioma del dispositivo)</string>
+
+    <!-- Widget prompt and guide, overdue and running-out highlights -->
+    <string name="slot_overdue">con retraso</string>
+    <string name="stock_running_out">se acaba hoy o mañana</string>
+    <string name="widget_banner">Añade el widget a la pantalla de inicio o de bloqueo</string>
+    <string name="widget_banner_close">Cerrar aviso del widget</string>
+    <string name="widget_guide_eyebrow">Widget</string>
+    <string name="widget_guide_title">Las dosis de hoy, sin abrir la app</string>
+    <string name="widget_guide_what_title">Qué es</string>
+    <string name="widget_guide_what_body">Un widget es un pequeño panel de la app que se queda en la pantalla de inicio o de bloqueo del teléfono. Tempus Remedium tiene tres: «Hoy», con las dosis de cada horario, «Reponer pronto», con los medicamentos que se están acabando, y «Tratamiento», con la próxima toma del tratamiento en curso.</string>
+    <string name="widget_guide_why_title">Por qué merece la pena</string>
+    <string name="widget_guide_why_1">Ves de un vistazo lo que te falta tomar, cada vez que miras el teléfono.</string>
+    <string name="widget_guide_why_2">Te acuerdas de reponer un medicamento antes de que se acabe.</string>
+    <string name="widget_guide_why_3">Un toque en un horario abre la app directamente en esas dosis.</string>
+    <string name="widget_guide_home_title">Cómo añadirlo a la pantalla de inicio</string>
+    <string name="widget_guide_home_1">Mantén pulsada una zona vacía de la pantalla de inicio.</string>
+    <string name="widget_guide_home_2">Toca «Widgets».</string>
+    <string name="widget_guide_home_3">Busca «Tempus Remedium» en la lista o con el buscador.</string>
+    <string name="widget_guide_home_4">Mantén pulsado el widget «Hoy» (o «Reponer pronto») y arrástralo a la pantalla.</string>
+    <string name="widget_guide_home_5">Suéltalo donde quieras. Para cambiar el tamaño, mantén pulsado el widget y arrastra los bordes.</string>
+    <string name="widget_guide_lock_title">Cómo añadirlo a la pantalla de bloqueo</string>
+    <string name="widget_guide_lock_intro">Solo algunos teléfonos y tabletas permiten widgets en la pantalla de bloqueo, y los pasos cambian según la marca.</string>
+    <string name="widget_guide_lock_1">Con la pantalla bloqueada, mantén pulsada una zona vacía (o desliza desde el borde derecho).</string>
+    <string name="widget_guide_lock_2">Toca «Personalizar» o «Añadir widget» y desbloquea si te lo pide.</string>
+    <string name="widget_guide_lock_3">Elige «Tempus Remedium» y después el widget «Hoy».</string>
+    <string name="widget_guide_lock_4">Toca «Listo».</string>
+    <string name="widget_guide_privacy">En la pantalla de bloqueo, cualquiera que coja el teléfono ve los nombres de los medicamentos.</string>
+    <string name="widget_guide_add">Añadir a la pantalla de inicio</string>
 </resources>

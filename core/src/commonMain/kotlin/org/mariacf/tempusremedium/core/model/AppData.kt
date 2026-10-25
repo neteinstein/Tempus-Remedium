@@ -60,6 +60,8 @@ data class Settings(
     val stockDisplay: StockDisplay = StockDisplay.JARS,
     val theme: ThemeMode = ThemeMode.SYSTEM,
     val language: AppLanguage = AppLanguage.SYSTEM,
+    /** The user closed the "add a widget" banner. */
+    val widgetPromptDismissed: Boolean = false,
 ) {
     fun timeOf(slot: TimeSlot): LocalTime = slotTimes[slot] ?: slot.defaultTime
 }

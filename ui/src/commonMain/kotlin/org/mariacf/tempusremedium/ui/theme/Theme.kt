@@ -191,7 +191,7 @@ data class TempusTypography(
     val display: FontFamily,
     val body: FontFamily,
 ) {
-    /** "Boa tarde," */
+    /** "Olá," */
     val headline =
         TextStyle(fontFamily = display, fontWeight = FontWeight.SemiBold, fontSize = 34.sp, lineHeight = 38.sp, letterSpacing = (-0.6).sp)
 

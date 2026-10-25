@@ -18,6 +18,7 @@ import org.mariacf.tempusremedium.core.model.DoseStatus
 import org.mariacf.tempusremedium.core.model.Medication
 import org.mariacf.tempusremedium.core.model.Settings
 import org.mariacf.tempusremedium.core.model.TimeSlot
+import org.mariacf.tempusremedium.core.schedule.acknowledgeStockAlert
 import org.mariacf.tempusremedium.core.schedule.deleteMedication
 import org.mariacf.tempusremedium.core.schedule.logCourseDose
 import org.mariacf.tempusremedium.core.schedule.logDose
@@ -81,6 +82,11 @@ class AppViewModel(
         medicationId: String,
         units: Int,
     ) = update { it.refill(medicationId, units) }
+
+    fun acknowledgeStockAlert(
+        medicationId: String,
+        today: LocalDate,
+    ) = update { it.acknowledgeStockAlert(medicationId, today) }
 
     fun saveMedication(medication: Medication) = update { it.upsertMedication(medication) }
 

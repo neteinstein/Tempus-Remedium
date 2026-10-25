@@ -97,6 +97,9 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)
+    // Glance runs every widget session as a WorkManager job but only asks for WorkManager 2.7.1
+    // (2021, Room 2.2), which predates targetSdk 34+. Pin a current one.
+    implementation(libs.androidx.work.runtime)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

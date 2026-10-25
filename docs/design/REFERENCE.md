@@ -99,15 +99,18 @@ Metformina 500mg (MANHÃ and DEITAR, 6 left), Vitamina D 1000IU (MANHÃ), Ómega
 | Everywhere | Fraunces and Plus Jakarta Sans (bundled) instead of the phone's system font. | Typography of mariacf.pt; same rendering on Android and the web. |
 | Pills | A thin outline in a darker shade of the pill colour. | Light pills keep their shape on white cards. |
 | HOJE | The next slot with pending doses gets an accent outline. | Shows what needs attention; product addition. |
+| HOJE | A slot whose time has passed with doses neither taken nor skipped gets a red (`danger`) outline, label and time, until every dose is logged. | Overdue doses; requested by the owner. |
+| REPOR EM BREVE | A jar or blister that runs out today or tomorrow pulses with a red halo until tapped (silenced for the rest of that day). | Requested by the owner. |
 | REPOR EM BREVE | Optional blister packs (2 × 5 cells, popped cells show torn foil) instead of jars; jar glass adapts to the theme. | Product addition ("Mostrar stock como"). |
 | Widgets | Letter spacing approximated with hair spaces. | Glance text has no letter spacing. |
 
 ## Product additions
 
 Everything outside the two panels is a product addition, not reference content: the greeting
-header on Hoje ("Boa tarde, *faltam 3 doses.*"), the TRATAMENTOS card below HOJE (courses taken
+header on Hoje ("Olá, *faltam 3 doses.*", the same at any time of day), the TRATAMENTOS card below HOJE (courses taken
 every few hours, which never appear inside the HOJE panel or change its dose count), the course
-editor with the dose calculator, the Tratamento widget, the red "Faltam permissões" bar and the permissions explanation shown with the first medication, the Permissões section of Definições, the Medicamentos list and editor, Histórico,
+editor with the dose calculator, the Tratamento widget, the red "Faltam permissões" bar and the permissions explanation shown with the first medication, the Permissões section of Definições, the "add the widget"
+banner (shown below the red bar when both apply) and its guide screen, the Medicamentos list and editor, Histórico,
 Definições (including the stock display and theme options and the Sobre card crediting the
 author), the refill dialog, reminders and low-stock notifications, the Android widgets, and the
 four extra pill colours.

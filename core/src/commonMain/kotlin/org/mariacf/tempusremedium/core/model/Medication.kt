@@ -1,5 +1,6 @@
 package org.mariacf.tempusremedium.core.model
 
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 /** Visual form of a medication. The four shapes are the ones in docs/design/reference. */
@@ -49,9 +50,12 @@ data class Medication(
 /**
  * Units left of a medication. When [lowThreshold] is null the threshold is
  * derived from the schedule (see [org.mariacf.tempusremedium.core.schedule.Inventory]).
+ * [alertSeenOn] is the day the user last tapped the "running out" alert, which silences it
+ * for the rest of that day.
  */
 @Serializable
 data class Stock(
     val remaining: Int,
     val lowThreshold: Int? = null,
+    val alertSeenOn: LocalDate? = null,
 )
