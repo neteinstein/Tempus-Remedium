@@ -123,6 +123,8 @@
     <string name="settings_hide_names">Hide names on the lock screen</string>
     <string name="settings_alarm_reminders">Ring like an alarm</string>
     <string name="settings_alarm_reminders_body">The alarm sound repeats until you tap Taken, Snooze or dismiss the reminder.</string>
+    <string name="alarm_sound">Alarm sound</string>
+    <string name="alarm_sound_default">Default alarm sound</string>
     <string name="settings_exact_alarms">On-time reminders</string>
     <string name="settings_exact_alarms_body">Without this permission reminders may arrive a few minutes late.</string>
     <string name="settings_widgets_hint">Add the Today and Refill soon widgets to your home screen.</string>

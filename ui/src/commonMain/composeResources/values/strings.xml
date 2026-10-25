@@ -127,6 +127,8 @@
     <string name="settings_hide_names">Ocultar nomes no ecrã de bloqueio</string>
     <string name="settings_alarm_reminders">Tocar como alarme</string>
     <string name="settings_alarm_reminders_body">O som de alarme repete-se até tocar em Tomei ou Adiar, ou dispensar o lembrete.</string>
+    <string name="alarm_sound">Som do alarme</string>
+    <string name="alarm_sound_default">Som de alarme predefinido</string>
     <string name="settings_exact_alarms">Lembretes à hora certa</string>
     <string name="settings_exact_alarms_body">Sem esta permissão, os lembretes podem chegar alguns minutos depois.</string>
     <string name="settings_widgets_hint">Adicione os widgets Hoje e Repor em breve ao ecrã principal.</string>

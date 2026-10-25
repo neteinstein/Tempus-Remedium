@@ -111,6 +111,8 @@
     <string name="settings_hide_names">Masquer les noms sur l’écran de verrouillage</string>
     <string name="settings_alarm_reminders">Sonner comme une alarme</string>
     <string name="settings_alarm_reminders_body">Le son d’alarme se répète jusqu’à ce que vous touchiez Pris ou Reporter, ou fermiez le rappel.</string>
+    <string name="alarm_sound">Son de l’alarme</string>
+    <string name="alarm_sound_default">Son d’alarme par défaut</string>
     <string name="settings_exact_alarms">Rappels à l’heure exacte</string>
     <string name="settings_exact_alarms_body">Sans cette autorisation, les rappels peuvent arriver quelques minutes en retard.</string>
     <string name="settings_widgets_hint">Ajoutez les widgets Aujourd’hui et À renouveler à l’écran d’accueil.</string>

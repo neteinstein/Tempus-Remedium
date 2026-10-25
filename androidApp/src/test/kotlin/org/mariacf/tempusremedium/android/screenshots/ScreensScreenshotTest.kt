@@ -32,6 +32,7 @@ import org.mariacf.tempusremedium.core.model.Medication
 import org.mariacf.tempusremedium.core.model.PillColor
 import org.mariacf.tempusremedium.core.model.PillShape
 import org.mariacf.tempusremedium.core.model.Schedule
+import org.mariacf.tempusremedium.core.model.Settings
 import org.mariacf.tempusremedium.core.model.Stock
 import org.mariacf.tempusremedium.core.model.StockDisplay
 import org.mariacf.tempusremedium.core.model.TimeSlot
@@ -191,6 +192,15 @@ class ScreensScreenshotTest {
                     )
                 },
             )
+        }
+
+    /** The reminder settings with the alarm on (the default): the alarm sound row under the switch. */
+    @Test
+    fun settingsAlarmSound() =
+        capture("screen_settings_alarm_sound", height = 2100) {
+            Column(Modifier.padding(horizontal = 20.dp)) {
+                AndroidSettingsExtras(Settings(), {}, onRequestNotifications = {}, onRequestExactAlarms = {})
+            }
         }
 
     @Test
