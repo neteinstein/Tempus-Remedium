@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.CheckCircle
@@ -270,9 +271,20 @@ fun App(
                                         onClick = { tab = item },
                                         icon = { Icon(item.icon, contentDescription = null) },
                                         label = {
+                                            // One line in every language: "Medicamentos" is wider than a tab on a
+                                            // 360 dp phone, so a label that does not fit shrinks a little instead of wrapping.
+                                            val style = TempusTheme.type.eyebrow.copy(letterSpacing = 0.2.sp)
                                             Text(
                                                 stringResource(item.title),
-                                                style = TempusTheme.type.eyebrow.copy(letterSpacing = 0.2.sp),
+                                                style = style,
+                                                maxLines = 1,
+                                                softWrap = false,
+                                                autoSize =
+                                                    TextAutoSize.StepBased(
+                                                        minFontSize = 8.sp,
+                                                        maxFontSize = style.fontSize,
+                                                        stepSize = 0.25.sp,
+                                                    ),
                                             )
                                         },
                                         colors =
