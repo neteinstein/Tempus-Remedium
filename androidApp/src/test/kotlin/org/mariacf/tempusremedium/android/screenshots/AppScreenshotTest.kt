@@ -37,7 +37,7 @@ import kotlin.time.Instant
 
 /**
  * The whole app on a 360 dp phone: every bottom bar label stays on one line, uncut, in every language.
- * The language comes from the setting, not the qualifiers: the app keeps the first device locale it sees.
+ * The language comes from the app's language setting.
  */
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
