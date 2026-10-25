@@ -18,6 +18,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mariacf.tempusremedium.core.CourseFixtures
 import org.mariacf.tempusremedium.core.ReferenceFixtures
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
@@ -49,19 +50,45 @@ class WidgetPreviewImagesTest {
     @Config(sdk = [36], qualifiers = "en-rUS-night-xhdpi")
     fun englishDark() = renderAll("en-night-nodpi")
 
+    @Test
+    @Config(sdk = [36], qualifiers = "fr-rFR-xhdpi")
+    fun frenchLight() = renderAll("fr-nodpi")
+
+    @Test
+    @Config(sdk = [36], qualifiers = "fr-rFR-night-xhdpi")
+    fun frenchDark() = renderAll("fr-night-nodpi")
+
+    @Test
+    @Config(sdk = [36], qualifiers = "de-rDE-xhdpi")
+    fun germanLight() = renderAll("de-nodpi")
+
+    @Test
+    @Config(sdk = [36], qualifiers = "de-rDE-night-xhdpi")
+    fun germanDark() = renderAll("de-night-nodpi")
+
+    @Test
+    @Config(sdk = [36], qualifiers = "es-rES-xhdpi")
+    fun spanishLight() = renderAll("es-nodpi")
+
+    @Test
+    @Config(sdk = [36], qualifiers = "es-rES-night-xhdpi")
+    fun spanishDark() = renderAll("es-night-nodpi")
+
     private fun renderAll(qualifiers: String) {
         val hoje = runBlocking { HojeWidgetUi.build(context, ReferenceFixtures.data, ReferenceFixtures.date) }
         val repor = runBlocking { ReporWidgetUi.build(context, ReferenceFixtures.data) }
-        render("widget_hoje_preview", qualifiers) { HojeWidgetContent(hoje) }
-        render("widget_repor_preview", qualifiers) { ReporWidgetContent(repor) }
+        val course = runBlocking { CourseWidgetUi.build(context, CourseFixtures.data, ReferenceFixtures.now) }
+        render("widget_hoje_preview", qualifiers, DpSize(320.dp, 220.dp)) { HojeWidgetContent(hoje) }
+        render("widget_repor_preview", qualifiers, DpSize(320.dp, 220.dp)) { ReporWidgetContent(repor) }
+        render("widget_course_preview", qualifiers, DpSize(320.dp, 150.dp)) { CourseWidgetContent(course) }
     }
 
     private fun render(
         name: String,
         qualifiers: String,
+        size: DpSize,
         content: @Composable () -> Unit,
     ) {
-        val size = DpSize(320.dp, 220.dp)
         val views = runBlocking { ContentWidget(content).compose(context, size = size) }
         val density = context.resources.displayMetrics.density
         val width = (size.width.value * density).toInt()
@@ -77,9 +104,9 @@ class WidgetPreviewImagesTest {
         assertTrue("$name drew nothing", (0 until width step 8).any { x -> bitmap.getPixel(x, height / 2) != 0 })
 
         if (System.getProperty("roborazzi.test.record") == "true") {
-            val file = File("src/main/res/drawable-$qualifiers/$name.png")
+            val file = File("src/main/res/drawable-$qualifiers/$name.webp")
             file.parentFile?.mkdirs()
-            file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+            file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSLESS, 100, it) }
         }
     }
 

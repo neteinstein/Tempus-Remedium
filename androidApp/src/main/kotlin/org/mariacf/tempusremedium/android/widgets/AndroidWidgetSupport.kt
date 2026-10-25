@@ -12,7 +12,7 @@ class AndroidWidgetSupport(
     private val manager get() = AppWidgetManager.getInstance(context)
 
     override fun isPlaced(): Boolean =
-        listOf(HojeWidgetReceiver::class.java, ReporEmBreveWidgetReceiver::class.java).any { receiver ->
+        listOf(HojeWidgetReceiver::class.java, ReporEmBreveWidgetReceiver::class.java, CourseWidgetReceiver::class.java).any { receiver ->
             manager.getAppWidgetIds(ComponentName(context, receiver)).isNotEmpty()
         }
 
