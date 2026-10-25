@@ -52,8 +52,14 @@ fun Frequency.dueDaysPerDay(): Double =
         is Frequency.Weekdays -> days.size / 7.0 / everyWeeks.coerceAtLeast(1)
         is Frequency.EveryNDays -> 1.0 / interval.coerceAtLeast(1)
         is Frequency.Monthly -> 12.0 / 365.25 / everyMonths.coerceAtLeast(1)
-        is Frequency.Cycle -> daysOn.coerceAtLeast(0).toDouble() / (daysOn + daysOff).coerceAtLeast(1)
+        is Frequency.Cycle -> cycleShare(daysOn, daysOff)
+        is Frequency.Contraceptive -> cycleShare(daysOn, daysOff)
     }
+
+private fun cycleShare(
+    daysOn: Int,
+    daysOff: Int,
+): Double = daysOn.coerceAtLeast(0).toDouble() / (daysOn + daysOff).coerceAtLeast(1)
 
 private fun Schedule.matchesFrequency(date: LocalDate): Boolean {
     if (date < startDate) return false
@@ -78,11 +84,20 @@ private fun Schedule.matchesFrequency(date: LocalDate): Boolean {
         }
 
         is Frequency.Cycle -> {
-            val period = (frequency.daysOn + frequency.daysOff).coerceAtLeast(1)
-            startDate.daysUntil(date) % period < frequency.daysOn
+            inCycle(date, frequency.daysOn, frequency.daysOff)
+        }
+
+        is Frequency.Contraceptive -> {
+            inCycle(date, frequency.daysOn, frequency.daysOff)
         }
     }
 }
+
+private fun Schedule.inCycle(
+    date: LocalDate,
+    daysOn: Int,
+    daysOff: Int,
+): Boolean = startDate.daysUntil(date) % (daysOn + daysOff).coerceAtLeast(1) < daysOn
 
 private fun LocalDate.mondayOfWeek(): LocalDate = minus(DatePeriod(days = dayOfWeek.ordinal - DayOfWeek.MONDAY.ordinal))
 

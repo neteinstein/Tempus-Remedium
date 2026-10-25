@@ -86,6 +86,9 @@ import org.mariacf.tempusremedium.ui.resources.action_back
 import org.mariacf.tempusremedium.ui.resources.action_cancel
 import org.mariacf.tempusremedium.ui.resources.action_delete
 import org.mariacf.tempusremedium.ui.resources.action_save
+import org.mariacf.tempusremedium.ui.resources.contraceptive_hint
+import org.mariacf.tempusremedium.ui.resources.contraceptive_weeks_off
+import org.mariacf.tempusremedium.ui.resources.contraceptive_weeks_on
 import org.mariacf.tempusremedium.ui.resources.cycle_days_off
 import org.mariacf.tempusremedium.ui.resources.cycle_days_on
 import org.mariacf.tempusremedium.ui.resources.day_today
@@ -111,6 +114,7 @@ import org.mariacf.tempusremedium.ui.resources.field_strength
 import org.mariacf.tempusremedium.ui.resources.field_track_stock
 import org.mariacf.tempusremedium.ui.resources.field_units_left
 import org.mariacf.tempusremedium.ui.resources.field_when
+import org.mariacf.tempusremedium.ui.resources.frequency_contraceptive
 import org.mariacf.tempusremedium.ui.resources.frequency_cycle
 import org.mariacf.tempusremedium.ui.resources.frequency_daily
 import org.mariacf.tempusremedium.ui.resources.frequency_every_n_days
@@ -119,7 +123,7 @@ import org.mariacf.tempusremedium.ui.resources.frequency_weekdays
 import org.mariacf.tempusremedium.ui.resources.times_count
 import org.mariacf.tempusremedium.ui.theme.TempusTheme
 
-private enum class FrequencyKind { DAILY, WEEKDAYS, EVERY_N_DAYS, MONTHLY, CYCLE }
+private enum class FrequencyKind { DAILY, WEEKDAYS, EVERY_N_DAYS, MONTHLY, CYCLE, CONTRACEPTIVE }
 
 private enum class ScheduleEnd { NEVER, DATE, OCCURRENCES }
 
@@ -155,6 +159,7 @@ fun MedicationEditor(
                 is Frequency.EveryNDays -> FrequencyKind.EVERY_N_DAYS
                 is Frequency.Monthly -> FrequencyKind.MONTHLY
                 is Frequency.Cycle -> FrequencyKind.CYCLE
+                is Frequency.Contraceptive -> FrequencyKind.CONTRACEPTIVE
             },
         )
     }
@@ -164,6 +169,8 @@ fun MedicationEditor(
     var everyMonths by remember { mutableStateOf((initialFrequency as? Frequency.Monthly)?.everyMonths ?: 1) }
     var daysOn by remember { mutableStateOf((initialFrequency as? Frequency.Cycle)?.daysOn ?: 21) }
     var daysOff by remember { mutableStateOf((initialFrequency as? Frequency.Cycle)?.daysOff ?: 7) }
+    var weeksOn by remember { mutableStateOf((initialFrequency as? Frequency.Contraceptive)?.weeksOn ?: 3) }
+    var weeksOff by remember { mutableStateOf((initialFrequency as? Frequency.Contraceptive)?.weeksOff ?: 1) }
     // Dates are edited as day offsets: the start from today, the end from the start.
     val initialStart = medication?.schedule?.startDate ?: today
     var startOffset by remember { mutableStateOf(today.daysUntil(initialStart)) }
@@ -211,6 +218,7 @@ fun MedicationEditor(
                     FrequencyKind.EVERY_N_DAYS -> Frequency.EveryNDays(interval)
                     FrequencyKind.MONTHLY -> Frequency.Monthly(everyMonths)
                     FrequencyKind.CYCLE -> Frequency.Cycle(daysOn, daysOff)
+                    FrequencyKind.CONTRACEPTIVE -> Frequency.Contraceptive(weeksOn, weeksOff)
                 },
             startDate = startDate,
             endDate = if (endKind == ScheduleEnd.DATE) startDate.plus(DatePeriod(days = lastDayOffset)) else null,
@@ -318,6 +326,9 @@ fun MedicationEditor(
                 FrequencyChip(stringResource(Res.string.frequency_cycle), frequencyKind == FrequencyKind.CYCLE) {
                     frequencyKind = FrequencyKind.CYCLE
                 }
+                FrequencyChip(stringResource(Res.string.frequency_contraceptive), frequencyKind == FrequencyKind.CONTRACEPTIVE) {
+                    frequencyKind = FrequencyKind.CONTRACEPTIVE
+                }
             }
             when (frequencyKind) {
                 FrequencyKind.DAILY -> {}
@@ -359,6 +370,16 @@ fun MedicationEditor(
                 FrequencyKind.CYCLE -> {
                     QuantityRow(stringResource(Res.string.cycle_days_on), daysOn, { daysOn = it }, range = 1..90)
                     QuantityRow(stringResource(Res.string.cycle_days_off), daysOff, { daysOff = it }, range = 1..90)
+                }
+
+                FrequencyKind.CONTRACEPTIVE -> {
+                    QuantityRow(stringResource(Res.string.contraceptive_weeks_on), weeksOn, { weeksOn = it }, range = 1..12)
+                    QuantityRow(stringResource(Res.string.contraceptive_weeks_off), weeksOff, { weeksOff = it }, range = 1..4)
+                    Text(
+                        stringResource(Res.string.contraceptive_hint),
+                        style = TempusTheme.type.bodySmall,
+                        color = TempusTheme.colors.inkSoft,
+                    )
                 }
             }
 

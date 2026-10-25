@@ -221,6 +221,25 @@ class ScreensScreenshotTest {
 
     @Test
     @Config(qualifiers = "+h1700dp")
+    fun editorContraceptive() =
+        capture("screen_editor_contraceptive") {
+            MedicationEditor(
+                patch.copy(
+                    name = "Pílula",
+                    strength = "",
+                    shape = PillShape.ROUND_SCORED,
+                    color = PillColor.PINK,
+                    schedule = patch.schedule.copy(frequency = Frequency.Contraceptive(), occurrences = null, endDate = null),
+                ),
+                today = date,
+                onSave = {},
+                onDelete = {},
+                onClose = {},
+            )
+        }
+
+    @Test
+    @Config(qualifiers = "+h1700dp")
     fun editorCycleDark() =
         capture("screen_editor_cycle_dark", dark = true) {
             MedicationEditor(

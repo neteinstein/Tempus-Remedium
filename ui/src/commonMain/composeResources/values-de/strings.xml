@@ -311,6 +311,15 @@
     <string name="cycle_days_on">Einnahmetage</string>
     <string name="cycle_days_off">Pausentage</string>
     <string name="cycle_summary">%1$d Tage + %2$d Pause</string>
+    <string name="frequency_contraceptive">Antibabypille</string>
+    <string name="contraceptive_weeks_on">Einnahmewochen</string>
+    <string name="contraceptive_weeks_off">Pausenwochen</string>
+    <string name="contraceptive_hint">Der Zyklus zählt ab dem Startdatum: Wählen Sie den Tag, an dem Sie die erste Pille der Packung genommen haben.</string>
+    <string name="contraceptive_summary">%1$s + %2$d Pause</string>
+    <plurals name="weeks_count">
+        <item quantity="one">%1$d Woche</item>
+        <item quantity="other">%1$d Wochen</item>
+    </plurals>
     <string name="field_start">Beginnt</string>
     <string name="end_never">Nie</string>
     <string name="end_kind_occurrences">Anzahl</string>

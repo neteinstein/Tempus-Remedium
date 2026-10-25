@@ -342,6 +342,15 @@
     <string name="cycle_days_on">Dias a tomar</string>
     <string name="cycle_days_off">Dias de pausa</string>
     <string name="cycle_summary">%1$d dias + %2$d de pausa</string>
+    <string name="frequency_contraceptive">Pílula contracetiva</string>
+    <string name="contraceptive_weeks_on">Semanas a tomar</string>
+    <string name="contraceptive_weeks_off">Semanas de pausa</string>
+    <string name="contraceptive_hint">O ciclo conta a partir da data de início: escolha o dia em que tomou o primeiro comprimido da embalagem.</string>
+    <string name="contraceptive_summary">%1$s + %2$d de pausa</string>
+    <plurals name="weeks_count">
+        <item quantity="one">%1$d semana</item>
+        <item quantity="other">%1$d semanas</item>
+    </plurals>
     <string name="field_start">Começa</string>
     <string name="end_never">Nunca</string>
     <string name="end_kind_occurrences">N.º de vezes</string>
