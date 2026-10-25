@@ -53,8 +53,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.daysUntil
+import kotlinx.datetime.plus
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.mariacf.tempusremedium.core.model.Frequency
 import org.mariacf.tempusremedium.core.model.Medication
@@ -64,11 +68,14 @@ import org.mariacf.tempusremedium.core.model.Schedule
 import org.mariacf.tempusremedium.core.model.Stock
 import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.core.model.newMedicationId
+import org.mariacf.tempusremedium.core.schedule.lastDueDate
 import org.mariacf.tempusremedium.ui.PlatformBackHandler
 import org.mariacf.tempusremedium.ui.components.BrandButton
 import org.mariacf.tempusremedium.ui.components.brandBackground
+import org.mariacf.tempusremedium.ui.components.frequencyLabel
 import org.mariacf.tempusremedium.ui.components.glass
 import org.mariacf.tempusremedium.ui.components.label
+import org.mariacf.tempusremedium.ui.components.longDateLabel
 import org.mariacf.tempusremedium.ui.components.shortLabel
 import org.mariacf.tempusremedium.ui.pill.PillIcon
 import org.mariacf.tempusremedium.ui.pill.PillInk
@@ -79,27 +86,47 @@ import org.mariacf.tempusremedium.ui.resources.action_back
 import org.mariacf.tempusremedium.ui.resources.action_cancel
 import org.mariacf.tempusremedium.ui.resources.action_delete
 import org.mariacf.tempusremedium.ui.resources.action_save
+import org.mariacf.tempusremedium.ui.resources.cycle_days_off
+import org.mariacf.tempusremedium.ui.resources.cycle_days_on
+import org.mariacf.tempusremedium.ui.resources.day_today
+import org.mariacf.tempusremedium.ui.resources.day_tomorrow
 import org.mariacf.tempusremedium.ui.resources.editor_delete_confirm
 import org.mariacf.tempusremedium.ui.resources.editor_edit
 import org.mariacf.tempusremedium.ui.resources.editor_new
+import org.mariacf.tempusremedium.ui.resources.end_kind_date
+import org.mariacf.tempusremedium.ui.resources.end_kind_occurrences
+import org.mariacf.tempusremedium.ui.resources.end_last_day
+import org.mariacf.tempusremedium.ui.resources.end_last_time
+import org.mariacf.tempusremedium.ui.resources.end_never
+import org.mariacf.tempusremedium.ui.resources.every_weeks
 import org.mariacf.tempusremedium.ui.resources.field_color
+import org.mariacf.tempusremedium.ui.resources.field_end
 import org.mariacf.tempusremedium.ui.resources.field_frequency
 import org.mariacf.tempusremedium.ui.resources.field_low_threshold
 import org.mariacf.tempusremedium.ui.resources.field_name
 import org.mariacf.tempusremedium.ui.resources.field_notes
 import org.mariacf.tempusremedium.ui.resources.field_shape
+import org.mariacf.tempusremedium.ui.resources.field_start
 import org.mariacf.tempusremedium.ui.resources.field_strength
 import org.mariacf.tempusremedium.ui.resources.field_track_stock
 import org.mariacf.tempusremedium.ui.resources.field_units_left
 import org.mariacf.tempusremedium.ui.resources.field_when
+import org.mariacf.tempusremedium.ui.resources.frequency_cycle
 import org.mariacf.tempusremedium.ui.resources.frequency_daily
 import org.mariacf.tempusremedium.ui.resources.frequency_every_n_days
+import org.mariacf.tempusremedium.ui.resources.frequency_monthly
 import org.mariacf.tempusremedium.ui.resources.frequency_weekdays
+import org.mariacf.tempusremedium.ui.resources.times_count
 import org.mariacf.tempusremedium.ui.theme.TempusTheme
 
-private enum class FrequencyKind { DAILY, WEEKDAYS, EVERY_N_DAYS }
+private enum class FrequencyKind { DAILY, WEEKDAYS, EVERY_N_DAYS, MONTHLY, CYCLE }
+
+private enum class ScheduleEnd { NEVER, DATE, OCCURRENCES }
 
 internal val FieldShape = RoundedCornerShape(14.dp)
+
+/** How far the start and end dates can be moved, in days. */
+private const val MAX_DATE_OFFSET = 730
 
 /** Full-screen form for a new ([medication] == null) or existing medication. */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -126,11 +153,34 @@ fun MedicationEditor(
                 Frequency.Daily -> FrequencyKind.DAILY
                 is Frequency.Weekdays -> FrequencyKind.WEEKDAYS
                 is Frequency.EveryNDays -> FrequencyKind.EVERY_N_DAYS
+                is Frequency.Monthly -> FrequencyKind.MONTHLY
+                is Frequency.Cycle -> FrequencyKind.CYCLE
             },
         )
     }
     var weekdays by remember { mutableStateOf((initialFrequency as? Frequency.Weekdays)?.days ?: DayOfWeek.entries.toSet()) }
-    var interval by remember { mutableStateOf((initialFrequency as? Frequency.EveryNDays)?.interval ?: 2) }
+    var everyWeeks by remember { mutableStateOf((initialFrequency as? Frequency.Weekdays)?.everyWeeks ?: 1) }
+    var interval by remember { mutableStateOf((initialFrequency as? Frequency.EveryNDays)?.interval ?: 3) }
+    var everyMonths by remember { mutableStateOf((initialFrequency as? Frequency.Monthly)?.everyMonths ?: 1) }
+    var daysOn by remember { mutableStateOf((initialFrequency as? Frequency.Cycle)?.daysOn ?: 21) }
+    var daysOff by remember { mutableStateOf((initialFrequency as? Frequency.Cycle)?.daysOff ?: 7) }
+    // Dates are edited as day offsets: the start from today, the end from the start.
+    val initialStart = medication?.schedule?.startDate ?: today
+    var startOffset by remember { mutableStateOf(today.daysUntil(initialStart)) }
+    val startDate = today.plus(DatePeriod(days = startOffset))
+    var endKind by remember {
+        mutableStateOf(
+            when {
+                medication?.schedule?.occurrences != null -> ScheduleEnd.OCCURRENCES
+                medication?.schedule?.endDate != null -> ScheduleEnd.DATE
+                else -> ScheduleEnd.NEVER
+            },
+        )
+    }
+    var lastDayOffset by remember {
+        mutableStateOf(medication?.schedule?.endDate?.let { initialStart.daysUntil(it).coerceAtLeast(0) } ?: 29)
+    }
+    var occurrences by remember { mutableStateOf(medication?.schedule?.occurrences ?: 10) }
     var trackStock by remember { mutableStateOf(medication?.stock != null) }
     var remaining by remember { mutableStateOf(medication?.stock?.remaining?.toString() ?: "30") }
     var threshold by remember {
@@ -151,6 +201,22 @@ fun MedicationEditor(
             (frequencyKind != FrequencyKind.WEEKDAYS || weekdays.isNotEmpty()) &&
             (!trackStock || remaining.toIntOrNull() != null)
 
+    val schedule =
+        Schedule(
+            doses = doses.filterValues { it > 0 },
+            frequency =
+                when (frequencyKind) {
+                    FrequencyKind.DAILY -> Frequency.Daily
+                    FrequencyKind.WEEKDAYS -> Frequency.Weekdays(weekdays, everyWeeks)
+                    FrequencyKind.EVERY_N_DAYS -> Frequency.EveryNDays(interval)
+                    FrequencyKind.MONTHLY -> Frequency.Monthly(everyMonths)
+                    FrequencyKind.CYCLE -> Frequency.Cycle(daysOn, daysOff)
+                },
+            startDate = startDate,
+            endDate = if (endKind == ScheduleEnd.DATE) startDate.plus(DatePeriod(days = lastDayOffset)) else null,
+            occurrences = if (endKind == ScheduleEnd.OCCURRENCES) occurrences else null,
+        )
+
     fun build(): Medication =
         Medication(
             id = medication?.id ?: newMedicationId(),
@@ -158,18 +224,7 @@ fun MedicationEditor(
             strength = strength.trim(),
             shape = shape,
             color = color,
-            schedule =
-                Schedule(
-                    doses = doses.filterValues { it > 0 },
-                    frequency =
-                        when (frequencyKind) {
-                            FrequencyKind.DAILY -> Frequency.Daily
-                            FrequencyKind.WEEKDAYS -> Frequency.Weekdays(weekdays)
-                            FrequencyKind.EVERY_N_DAYS -> Frequency.EveryNDays(interval)
-                        },
-                    startDate = medication?.schedule?.startDate ?: today,
-                    endDate = medication?.schedule?.endDate,
-                ),
+            schedule = schedule,
             stock =
                 if (trackStock) {
                     Stock(remaining = remaining.toIntOrNull() ?: 0, lowThreshold = threshold.toIntOrNull())
@@ -246,7 +301,7 @@ fun MedicationEditor(
             }
 
             FieldTitle(stringResource(Res.string.field_frequency))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 FrequencyChip(stringResource(Res.string.frequency_daily), frequencyKind == FrequencyKind.DAILY) {
                     frequencyKind = FrequencyKind.DAILY
                 }
@@ -257,27 +312,106 @@ fun MedicationEditor(
                     stringResource(Res.string.frequency_every_n_days, interval),
                     frequencyKind == FrequencyKind.EVERY_N_DAYS,
                 ) { frequencyKind = FrequencyKind.EVERY_N_DAYS }
+                FrequencyChip(stringResource(Res.string.frequency_monthly), frequencyKind == FrequencyKind.MONTHLY) {
+                    frequencyKind = FrequencyKind.MONTHLY
+                }
+                FrequencyChip(stringResource(Res.string.frequency_cycle), frequencyKind == FrequencyKind.CYCLE) {
+                    frequencyKind = FrequencyKind.CYCLE
+                }
             }
             when (frequencyKind) {
                 FrequencyKind.DAILY -> {}
 
                 FrequencyKind.WEEKDAYS -> {
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         DayOfWeek.entries.forEach { day ->
                             FrequencyChip(stringResource(day.shortLabel), day in weekdays) {
                                 weekdays = if (day in weekdays) weekdays - day else weekdays + day
                             }
                         }
                     }
+                    QuantityRow(
+                        label = pluralStringResource(Res.plurals.every_weeks, everyWeeks, everyWeeks),
+                        quantity = everyWeeks,
+                        onChange = { everyWeeks = it },
+                        range = 1..12,
+                    )
                 }
 
                 FrequencyKind.EVERY_N_DAYS -> {
                     QuantityRow(
                         label = stringResource(Res.string.frequency_every_n_days, interval),
                         quantity = interval,
-                        onChange = { interval = it.coerceIn(2, 30) },
-                        range = 2..30,
+                        onChange = { interval = it },
+                        range = 2..90,
                     )
+                }
+
+                FrequencyKind.MONTHLY -> {
+                    QuantityRow(
+                        label = frequencyLabel(Frequency.Monthly(everyMonths), startDate),
+                        quantity = everyMonths,
+                        onChange = { everyMonths = it },
+                        range = 1..12,
+                    )
+                }
+
+                FrequencyKind.CYCLE -> {
+                    QuantityRow(stringResource(Res.string.cycle_days_on), daysOn, { daysOn = it }, range = 1..90)
+                    QuantityRow(stringResource(Res.string.cycle_days_off), daysOff, { daysOff = it }, range = 1..90)
+                }
+            }
+
+            FieldTitle(stringResource(Res.string.field_start))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FrequencyChip(stringResource(Res.string.day_today), startOffset == 0) { startOffset = 0 }
+                FrequencyChip(stringResource(Res.string.day_tomorrow), startOffset == 1) { startOffset = 1 }
+            }
+            QuantityRow(
+                label = longDateLabel(startDate),
+                quantity = startOffset,
+                onChange = { startOffset = it },
+                range = minOf(-MAX_DATE_OFFSET, startOffset)..MAX_DATE_OFFSET,
+                showValue = false,
+            )
+
+            FieldTitle(stringResource(Res.string.field_end))
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                FrequencyChip(stringResource(Res.string.end_never), endKind == ScheduleEnd.NEVER) { endKind = ScheduleEnd.NEVER }
+                FrequencyChip(stringResource(Res.string.end_kind_date), endKind == ScheduleEnd.DATE) { endKind = ScheduleEnd.DATE }
+                FrequencyChip(stringResource(Res.string.end_kind_occurrences), endKind == ScheduleEnd.OCCURRENCES) {
+                    endKind = ScheduleEnd.OCCURRENCES
+                }
+            }
+            when (endKind) {
+                ScheduleEnd.NEVER -> {}
+
+                ScheduleEnd.DATE -> {
+                    QuantityRow(
+                        label =
+                            stringResource(Res.string.end_last_day) + " · " +
+                                longDateLabel(startDate.plus(DatePeriod(days = lastDayOffset))),
+                        quantity = lastDayOffset,
+                        onChange = { lastDayOffset = it },
+                        range = 0..MAX_DATE_OFFSET,
+                        showValue = false,
+                    )
+                }
+
+                ScheduleEnd.OCCURRENCES -> {
+                    QuantityRow(
+                        label = pluralStringResource(Res.plurals.times_count, occurrences, occurrences),
+                        quantity = occurrences,
+                        onChange = { occurrences = it },
+                        range = 1..365,
+                    )
+                    schedule.lastDueDate()?.let { last ->
+                        Text(
+                            stringResource(Res.string.end_last_time) + " · " + longDateLabel(last),
+                            style = TempusTheme.type.bodySmall,
+                            color = TempusTheme.colors.inkSoft,
+                        )
+                    }
                 }
             }
 
@@ -350,29 +484,37 @@ internal fun ShapePicker(
     onChange: (PillShape) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        PillShape.entries.forEach { option ->
-            val description = stringResource(option.label)
-            SelectableTile(
-                selected = option == shape,
-                onClick = { onChange(option) },
-                description = description,
-                modifier = Modifier.weight(1f),
-            ) {
-                PillIcon(option, color, height = 28.dp)
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    description,
-                    style = TempusTheme.type.bodySmall.copy(fontSize = 11.5.sp, lineHeight = 14.sp),
-                    color = TempusTheme.colors.inkSoft,
-                    minLines = 2,
-                    maxLines = 2,
-                    textAlign = TextAlign.Center,
-                )
+    // Three per row: the device names ("Penso transdérmico") need the width.
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        PillShape.entries.chunked(SHAPES_PER_ROW).forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                row.forEach { option ->
+                    val description = stringResource(option.label)
+                    SelectableTile(
+                        selected = option == shape,
+                        onClick = { onChange(option) },
+                        description = description,
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        PillIcon(option, color, height = 28.dp)
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            description,
+                            style = TempusTheme.type.bodySmall.copy(fontSize = 11.5.sp, lineHeight = 14.sp),
+                            color = TempusTheme.colors.inkSoft,
+                            minLines = 2,
+                            maxLines = 2,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                }
+                repeat(SHAPES_PER_ROW - row.size) { Spacer(Modifier.weight(1f)) }
             }
         }
     }
 }
+
+private const val SHAPES_PER_ROW = 3
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

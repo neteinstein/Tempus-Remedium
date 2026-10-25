@@ -6,10 +6,14 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.Month
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import org.mariacf.tempusremedium.core.model.Frequency
 import org.mariacf.tempusremedium.core.model.PillColor
 import org.mariacf.tempusremedium.core.model.PillShape
+import org.mariacf.tempusremedium.core.model.Schedule
 import org.mariacf.tempusremedium.core.model.TimeSlot
+import org.mariacf.tempusremedium.core.schedule.lastDueDate
 import org.mariacf.tempusremedium.ui.resources.Res
 import org.mariacf.tempusremedium.ui.resources.color_blue
 import org.mariacf.tempusremedium.ui.resources.color_green
@@ -19,7 +23,13 @@ import org.mariacf.tempusremedium.ui.resources.color_pink
 import org.mariacf.tempusremedium.ui.resources.color_teal
 import org.mariacf.tempusremedium.ui.resources.color_white
 import org.mariacf.tempusremedium.ui.resources.color_yellow
+import org.mariacf.tempusremedium.ui.resources.cycle_summary
 import org.mariacf.tempusremedium.ui.resources.day_label
+import org.mariacf.tempusremedium.ui.resources.every_months
+import org.mariacf.tempusremedium.ui.resources.every_weeks
+import org.mariacf.tempusremedium.ui.resources.frequency_daily
+import org.mariacf.tempusremedium.ui.resources.frequency_every_n_days
+import org.mariacf.tempusremedium.ui.resources.frequency_monthly
 import org.mariacf.tempusremedium.ui.resources.long_date
 import org.mariacf.tempusremedium.ui.resources.month_april
 import org.mariacf.tempusremedium.ui.resources.month_august
@@ -33,7 +43,14 @@ import org.mariacf.tempusremedium.ui.resources.month_may
 import org.mariacf.tempusremedium.ui.resources.month_november
 import org.mariacf.tempusremedium.ui.resources.month_october
 import org.mariacf.tempusremedium.ui.resources.month_september
+import org.mariacf.tempusremedium.ui.resources.monthly_on_day
+import org.mariacf.tempusremedium.ui.resources.schedule_until
 import org.mariacf.tempusremedium.ui.resources.shape_capsule
+import org.mariacf.tempusremedium.ui.resources.shape_drops
+import org.mariacf.tempusremedium.ui.resources.shape_inhaler
+import org.mariacf.tempusremedium.ui.resources.shape_injection
+import org.mariacf.tempusremedium.ui.resources.shape_nasal_spray
+import org.mariacf.tempusremedium.ui.resources.shape_patch
 import org.mariacf.tempusremedium.ui.resources.shape_round_scored
 import org.mariacf.tempusremedium.ui.resources.shape_softgel
 import org.mariacf.tempusremedium.ui.resources.shape_square
@@ -41,6 +58,7 @@ import org.mariacf.tempusremedium.ui.resources.slot_bedtime
 import org.mariacf.tempusremedium.ui.resources.slot_evening
 import org.mariacf.tempusremedium.ui.resources.slot_midday
 import org.mariacf.tempusremedium.ui.resources.slot_morning
+import org.mariacf.tempusremedium.ui.resources.times_count
 import org.mariacf.tempusremedium.ui.resources.weekday_friday
 import org.mariacf.tempusremedium.ui.resources.weekday_full_friday
 import org.mariacf.tempusremedium.ui.resources.weekday_full_monday
@@ -84,6 +102,11 @@ val PillShape.label: StringResource
             PillShape.SQUARE -> Res.string.shape_square
             PillShape.CAPSULE -> Res.string.shape_capsule
             PillShape.SOFTGEL -> Res.string.shape_softgel
+            PillShape.INHALER -> Res.string.shape_inhaler
+            PillShape.PATCH -> Res.string.shape_patch
+            PillShape.NASAL_SPRAY -> Res.string.shape_nasal_spray
+            PillShape.DROPS -> Res.string.shape_drops
+            PillShape.INJECTION -> Res.string.shape_injection
         }
 
 val PillColor.label: StringResource
@@ -139,3 +162,57 @@ fun dayLabel(date: LocalDate): String = stringResource(Res.string.day_label, str
 
 /** "08:00": 24-hour time, as in the reference. */
 fun LocalTime.hhmm(): String = "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
+
+/** "A cada 3 dias", "Seg Qui · A cada 2 semanas", "Todos os meses, no dia 15", "21 dias + 7 de pausa". */
+@Composable
+fun frequencyLabel(
+    frequency: Frequency,
+    startDate: LocalDate,
+): String =
+    when (frequency) {
+        Frequency.Daily -> {
+            stringResource(Res.string.frequency_daily)
+        }
+
+        is Frequency.Weekdays -> {
+            val days =
+                frequency.days
+                    .sorted()
+                    .map { stringResource(it.shortLabel) }
+                    .joinToString(" ")
+            if (frequency.everyWeeks > 1) {
+                days + " · " + pluralStringResource(Res.plurals.every_weeks, frequency.everyWeeks, frequency.everyWeeks)
+            } else {
+                days
+            }
+        }
+
+        is Frequency.EveryNDays -> {
+            stringResource(Res.string.frequency_every_n_days, frequency.interval)
+        }
+
+        is Frequency.Monthly -> {
+            stringResource(
+                Res.string.monthly_on_day,
+                pluralStringResource(Res.plurals.every_months, frequency.everyMonths, frequency.everyMonths),
+                startDate.day,
+            )
+        }
+
+        is Frequency.Cycle -> {
+            stringResource(Res.string.cycle_summary, frequency.daysOn, frequency.daysOff)
+        }
+    }
+
+/** [frequencyLabel] plus when it ends: "A cada 3 dias · 10 vezes", "Todos os dias · até sábado, 31 de outubro". */
+@Composable
+fun scheduleLabel(schedule: Schedule): String {
+    val frequency = frequencyLabel(schedule.frequency, schedule.startDate)
+    val occurrences = schedule.occurrences
+    val end = schedule.lastDueDate()
+    return when {
+        occurrences != null -> frequency + " · " + pluralStringResource(Res.plurals.times_count, occurrences, occurrences)
+        end != null -> frequency + " · " + stringResource(Res.string.schedule_until, longDateLabel(end))
+        else -> frequency
+    }
+}

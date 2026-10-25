@@ -73,8 +73,8 @@ fun DrawScope.drawJar(
         val rotation =
             when (shape) {
                 PillShape.ROUND_SCORED -> roundRotations[index]
-                PillShape.CAPSULE -> capsuleRotations[index]
-                PillShape.SQUARE, PillShape.SOFTGEL -> smallRotations[index]
+                PillShape.CAPSULE, PillShape.INJECTION -> capsuleRotations[index]
+                else -> smallRotations[index]
             }
         drawPill(
             shape = shape,

@@ -310,4 +310,36 @@
     <string name="widget_guide_lock_4">Toque em «Concluído».</string>
     <string name="widget_guide_privacy">No ecrã de bloqueio, qualquer pessoa que pegue no telemóvel vê os nomes dos medicamentos.</string>
     <string name="widget_guide_add">Adicionar ao ecrã principal</string>
+
+    <!-- Forms that are not swallowed -->
+    <string name="shape_inhaler">Inalador</string>
+    <string name="shape_patch">Penso transdérmico</string>
+    <string name="shape_nasal_spray">Spray nasal</string>
+    <string name="shape_drops">Gotas</string>
+    <string name="shape_injection">Injetável</string>
+
+    <!-- Recurrence -->
+    <string name="frequency_monthly">Mensal</string>
+    <string name="frequency_cycle">Ciclo</string>
+    <plurals name="every_weeks">
+        <item quantity="one">Todas as semanas</item>
+        <item quantity="other">A cada %1$d semanas</item>
+    </plurals>
+    <plurals name="every_months">
+        <item quantity="one">Todos os meses</item>
+        <item quantity="other">A cada %1$d meses</item>
+    </plurals>
+    <string name="monthly_on_day">%1$s, no dia %2$d</string>
+    <string name="cycle_days_on">Dias a tomar</string>
+    <string name="cycle_days_off">Dias de pausa</string>
+    <string name="cycle_summary">%1$d dias + %2$d de pausa</string>
+    <string name="field_start">Começa</string>
+    <string name="end_never">Nunca</string>
+    <string name="end_kind_occurrences">N.º de vezes</string>
+    <string name="end_last_time">Última vez</string>
+    <plurals name="times_count">
+        <item quantity="one">%1$d vez</item>
+        <item quantity="other">%1$d vezes</item>
+    </plurals>
+    <string name="schedule_until">até %1$s</string>
 </resources>

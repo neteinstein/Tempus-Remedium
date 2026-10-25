@@ -297,4 +297,36 @@
     <string name="widget_guide_lock_4">Tap “Done”.</string>
     <string name="widget_guide_privacy">On the lock screen, anyone who picks up your phone can see the medication names.</string>
     <string name="widget_guide_add">Add to home screen</string>
+
+    <!-- Forms that are not swallowed -->
+    <string name="shape_inhaler">Inhaler</string>
+    <string name="shape_patch">Transdermal patch</string>
+    <string name="shape_nasal_spray">Nasal spray</string>
+    <string name="shape_drops">Drops</string>
+    <string name="shape_injection">Injection</string>
+
+    <!-- Recurrence -->
+    <string name="frequency_monthly">Monthly</string>
+    <string name="frequency_cycle">Cycle</string>
+    <plurals name="every_weeks">
+        <item quantity="one">Every week</item>
+        <item quantity="other">Every %1$d weeks</item>
+    </plurals>
+    <plurals name="every_months">
+        <item quantity="one">Every month</item>
+        <item quantity="other">Every %1$d months</item>
+    </plurals>
+    <string name="monthly_on_day">%1$s, on day %2$d</string>
+    <string name="cycle_days_on">Days on</string>
+    <string name="cycle_days_off">Days off</string>
+    <string name="cycle_summary">%1$d days on, %2$d off</string>
+    <string name="field_start">Starts</string>
+    <string name="end_never">Never</string>
+    <string name="end_kind_occurrences">No. of times</string>
+    <string name="end_last_time">Last time</string>
+    <plurals name="times_count">
+        <item quantity="one">%1$d time</item>
+        <item quantity="other">%1$d times</item>
+    </plurals>
+    <string name="schedule_until">until %1$s</string>
 </resources>

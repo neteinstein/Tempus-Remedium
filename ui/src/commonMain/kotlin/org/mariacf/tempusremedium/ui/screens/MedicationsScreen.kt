@@ -23,7 +23,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
-import org.mariacf.tempusremedium.core.model.Frequency
 import org.mariacf.tempusremedium.core.model.Medication
 import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.core.schedule.Inventory
@@ -34,7 +33,7 @@ import org.mariacf.tempusremedium.ui.components.doseLabel
 import org.mariacf.tempusremedium.ui.components.glass
 import org.mariacf.tempusremedium.ui.components.intervalLabel
 import org.mariacf.tempusremedium.ui.components.label
-import org.mariacf.tempusremedium.ui.components.shortLabel
+import org.mariacf.tempusremedium.ui.components.scheduleLabel
 import org.mariacf.tempusremedium.ui.resources.Res
 import org.mariacf.tempusremedium.ui.resources.action_add_course
 import org.mariacf.tempusremedium.ui.resources.action_add_medication
@@ -145,22 +144,6 @@ private fun scheduleSummary(medication: Medication): String {
                 val name = stringResource(slot.label)
                 if (quantity > 1) "$name ×$quantity" else name
             }
-    val frequency =
-        when (val frequency = medication.schedule.frequency) {
-            Frequency.Daily -> {
-                stringResource(Res.string.frequency_daily)
-            }
-
-            is Frequency.Weekdays -> {
-                frequency.days
-                    .sorted()
-                    .map { stringResource(it.shortLabel) }
-                    .joinToString(" ")
-            }
-
-            is Frequency.EveryNDays -> {
-                stringResource(Res.string.frequency_every_n_days, frequency.interval)
-            }
-        }
+    val frequency = scheduleLabel(medication.schedule)
     return slots.joinToString(", ") + " · " + frequency
 }

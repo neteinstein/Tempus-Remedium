@@ -21,12 +21,13 @@ data class Reminder(
 
 /**
  * The first slot strictly after [after] that still has pending doses (looking at most
- * [horizonDays] days ahead) or the next pending course dose, whichever comes first.
+ * [horizonDays] days ahead, enough for a medication taken every few months) or the next
+ * pending course dose, whichever comes first.
  * Null when reminders are off or nothing is due.
  */
 fun AppData.nextReminder(
     after: LocalDateTime,
-    horizonDays: Int = 8,
+    horizonDays: Int = 400,
 ): Reminder? {
     if (!settings.remindersEnabled) return null
     val slot = nextSlotReminder(after, horizonDays)
@@ -46,6 +47,15 @@ private fun AppData.nextSlotReminder(
 ): Reminder? {
     for (offset in 0..horizonDays) {
         val date = after.date.plus(DatePeriod(days = offset))
+        // Most days of a sparse schedule have nothing due; skip them without building a plan.
+        if (activeMedications.none {
+                it.isDueOn(date) &&
+                    it.schedule.doses.values
+                        .any { q -> q > 0 }
+            }
+        ) {
+            continue
+        }
         for (slot in planFor(date).slots) {
             val at = LocalDateTime(date, slot.time)
             if (at > after && slot.doses.any { it.status == null }) return Reminder(date, slot.slot, at)

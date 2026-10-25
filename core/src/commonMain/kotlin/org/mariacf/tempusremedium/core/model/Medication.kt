@@ -3,13 +3,22 @@ package org.mariacf.tempusremedium.core.model
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
-/** Visual form of a medication. The four shapes are the ones in docs/design/reference. */
+/**
+ * Visual form of a medication. The first four shapes are the ones in docs/design/reference;
+ * the rest are product additions for medications that are not swallowed. The name stays
+ * `PillShape` because it is stored in the JSON document.
+ */
 @Serializable
 enum class PillShape {
     ROUND_SCORED,
     SQUARE,
     CAPSULE,
     SOFTGEL,
+    INHALER,
+    PATCH,
+    NASAL_SPRAY,
+    DROPS,
+    INJECTION,
 }
 
 /**

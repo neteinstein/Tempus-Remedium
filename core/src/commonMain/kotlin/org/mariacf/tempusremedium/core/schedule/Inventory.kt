@@ -4,7 +4,6 @@ import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
 import org.mariacf.tempusremedium.core.model.AppData
-import org.mariacf.tempusremedium.core.model.Frequency
 import org.mariacf.tempusremedium.core.model.Medication
 import kotlin.math.ceil
 
@@ -25,11 +24,7 @@ object Inventory {
             medication.schedule.doses.values
                 .sum()
                 .toDouble()
-        return when (val frequency = medication.schedule.frequency) {
-            Frequency.Daily -> perDueDay
-            is Frequency.Weekdays -> perDueDay * frequency.days.size / 7.0
-            is Frequency.EveryNDays -> perDueDay / frequency.interval.coerceAtLeast(1)
-        }
+        return perDueDay * medication.schedule.frequency.dueDaysPerDay()
     }
 
     fun threshold(medication: Medication): Int {
