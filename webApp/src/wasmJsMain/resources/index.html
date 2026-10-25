@@ -10,6 +10,15 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <meta name="theme-color" content="#f9fafc" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0b1015" media="(prefers-color-scheme: dark)">
+    <script>
+        // The app's language setting: Compose resources read navigator.languages.
+        (function () {
+            var languages = Object.getOwnPropertyDescriptor(Navigator.prototype, "languages");
+            Object.defineProperty(Navigator.prototype, "languages", Object.assign({}, languages, {
+                get: function () { return window.__customLocale ? [window.__customLocale] : languages.get.apply(this); }
+            }));
+        })();
+    </script>
     <style>
         :root { color-scheme: light dark; --bg: #f9fafc; --ink: #47515c; }
         @media (prefers-color-scheme: dark) { :root { --bg: #0b1015; --ink: #c0c8d1; } }

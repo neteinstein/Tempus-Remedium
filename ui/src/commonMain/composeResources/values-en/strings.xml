@@ -259,4 +259,6 @@
     <!-- Android only: course widget -->
     <string name="widget_course_title">Course</string>
     <string name="widget_no_course">No course under way.</string>
+    <string name="settings_language">Language</string>
+    <string name="language_system">Automatic (device language)</string>
 </resources>

@@ -12,7 +12,7 @@ Kotlin Multiplatform + Compose Multiplatform. Gradle modules:
 | Module | Targets | What lives there |
 | --- | --- | --- |
 | `core` | JVM, Wasm | Model (`Medication`, `Schedule`, `DoseLog`, `AppData`), the day plan, stock, adherence, reminder maths, the JSON repository and storage (`FileDocumentStorage` on JVM/Android, `LocalStorageDocumentStorage` on the web), `ReferenceFixtures`. Pure Kotlin, fully unit-tested. |
-| `ui` | Android, Wasm | Theme (`TempusTheme`, light and dark `TempusPalette`), pill, jar and blister painters, the HOJE and REPOR EM BREVE panels, all screens, `App`, `AppViewModel`, string resources (`composeResources/values` = pt-PT, `values-en` = English), the Fraunces and Plus Jakarta Sans fonts. |
+| `ui` | Android, Wasm | Theme (`TempusTheme`, light and dark `TempusPalette`), pill, jar and blister painters, the HOJE and REPOR EM BREVE panels, all screens, `App`, `AppViewModel`, string resources (`composeResources/values` = pt-PT, `values-en`, `values-fr`, `values-de`, `values-es` = translations), the Fraunces and Plus Jakarta Sans fonts. |
 | `androidApp` | Android | `MainActivity`, `AppContainer`, reminders (`AlarmManager`, notification actions, reschedule on boot/time change), Glance widgets, Android-only settings, Robolectric and Roborazzi tests. |
 | `webApp` | Wasm | `main()` with `ComposeViewport`, `index.html`. |
 
@@ -78,7 +78,9 @@ JDK 21. The Android SDK path goes in `local.properties` (`scripts/setup-android-
   They contain phone and screenshot-viewer chrome (clock, buttons, counters) that is not part of the
   design; REFERENCE.md lists it.
 - pt-PT strings (`ui/src/commonMain/composeResources/values/strings.xml`) are authoritative;
-  English (`values-en`) is a translation of them. Never hard-code user-visible text.
+  English, French, German and Spanish (`values-en`, `-fr`, `-de`, `-es`) are translations of them;
+  add every new string to all five. Definições → Idioma overrides the device language
+  (`LocalAppLocale` in `ui`). Never hard-code user-visible text.
 - `ReferenceFixtures` reproduces the reference data and must keep doing so.
 - Do not reference other apps or products in code, docs, commits or PRs.
 

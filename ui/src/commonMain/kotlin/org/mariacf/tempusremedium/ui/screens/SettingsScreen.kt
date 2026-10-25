@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,7 +40,9 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalTime
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import org.mariacf.tempusremedium.core.model.AppLanguage
 import org.mariacf.tempusremedium.core.model.PillColor
 import org.mariacf.tempusremedium.core.model.PillShape
 import org.mariacf.tempusremedium.core.model.Settings
@@ -63,8 +66,15 @@ import org.mariacf.tempusremedium.ui.resources.about_site
 import org.mariacf.tempusremedium.ui.resources.action_cancel
 import org.mariacf.tempusremedium.ui.resources.action_save
 import org.mariacf.tempusremedium.ui.resources.app_name
+import org.mariacf.tempusremedium.ui.resources.language_de
+import org.mariacf.tempusremedium.ui.resources.language_en
+import org.mariacf.tempusremedium.ui.resources.language_es
+import org.mariacf.tempusremedium.ui.resources.language_fr
+import org.mariacf.tempusremedium.ui.resources.language_pt
+import org.mariacf.tempusremedium.ui.resources.language_system
 import org.mariacf.tempusremedium.ui.resources.nav_settings
 import org.mariacf.tempusremedium.ui.resources.settings_about
+import org.mariacf.tempusremedium.ui.resources.settings_language
 import org.mariacf.tempusremedium.ui.resources.settings_stock_display
 import org.mariacf.tempusremedium.ui.resources.settings_theme
 import org.mariacf.tempusremedium.ui.resources.settings_times
@@ -128,6 +138,16 @@ fun SettingsScreen(
                 },
                 onSelect = { onChange(settings.copy(theme = it)) },
             )
+        }
+
+        SettingsSection(stringResource(Res.string.settings_language)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                AppLanguage.entries.forEach { language ->
+                    FrequencyChip(stringResource(language.label), selected = settings.language == language) {
+                        onChange(settings.copy(language = language))
+                    }
+                }
+            }
         }
 
         extras()
@@ -320,3 +340,15 @@ private fun TimeDialog(
         },
     )
 }
+
+/** Language names in their own language; [AppLanguage.SYSTEM] is translated. */
+private val AppLanguage.label: StringResource
+    get() =
+        when (this) {
+            AppLanguage.SYSTEM -> Res.string.language_system
+            AppLanguage.PT -> Res.string.language_pt
+            AppLanguage.EN -> Res.string.language_en
+            AppLanguage.FR -> Res.string.language_fr
+            AppLanguage.DE -> Res.string.language_de
+            AppLanguage.ES -> Res.string.language_es
+        }

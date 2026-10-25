@@ -25,7 +25,7 @@ rendered screenshot next to them (see `.claude/skills/match-reference-design`).
   `Restam 3`. Do not "fix" `1000IU` to `1000 UI`, `Restam` to `Faltam`, or reorder the legend.
 - **Do not invent content** in these panels: no extra badges, icons, progress bars or copy
   that is not in the reference. Additions elsewhere in the app are fine and are listed below.
-- pt-PT is authoritative. English strings are derived translations (see the table at the end).
+- pt-PT is authoritative. English, French, German and Spanish strings are derived translations (the English ones are in the table at the end).
 
 ## Not part of the design
 

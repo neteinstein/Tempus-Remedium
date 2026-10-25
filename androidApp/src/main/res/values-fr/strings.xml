@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_hoje_label">Aujourd’hui</string>
+    <string name="widget_hoje_description">Les doses du jour à chaque horaire.</string>
+    <string name="widget_repor_label">À renouveler</string>
+    <string name="widget_repor_description">Les médicaments qui s’épuisent.</string>
+    <string name="widget_course_label">Traitement</string>
+    <string name="widget_course_description">La prochaine prise et ce qui reste du traitement en cours.</string>
+</resources>

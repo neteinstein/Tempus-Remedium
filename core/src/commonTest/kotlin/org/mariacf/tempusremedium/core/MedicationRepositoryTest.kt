@@ -5,6 +5,7 @@ import kotlinx.datetime.DayOfWeek
 import org.mariacf.tempusremedium.core.data.InMemoryDocumentStorage
 import org.mariacf.tempusremedium.core.data.MedicationRepository
 import org.mariacf.tempusremedium.core.model.AppData
+import org.mariacf.tempusremedium.core.model.AppLanguage
 import org.mariacf.tempusremedium.core.model.Frequency
 import org.mariacf.tempusremedium.core.model.Settings
 import org.mariacf.tempusremedium.core.model.StockDisplay
@@ -99,13 +100,14 @@ class MedicationRepositoryTest {
             assertEquals(false, settings.remindersEnabled)
             assertEquals(StockDisplay.JARS, settings.stockDisplay)
             assertEquals(ThemeMode.SYSTEM, settings.theme)
+            assertEquals(AppLanguage.SYSTEM, settings.language)
         }
 
     @Test
-    fun displayAndThemeSettingsArePersisted() =
+    fun displayThemeAndLanguageSettingsArePersisted() =
         runTest {
             val storage = InMemoryDocumentStorage()
-            val settings = Settings(stockDisplay = StockDisplay.BLISTERS, theme = ThemeMode.DARK)
+            val settings = Settings(stockDisplay = StockDisplay.BLISTERS, theme = ThemeMode.DARK, language = AppLanguage.DE)
             MedicationRepository(storage).update { it.copy(settings = settings) }
             val reloaded = MedicationRepository(storage)
             reloaded.load()

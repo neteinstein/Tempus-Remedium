@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_hoje_label">Heute</string>
+    <string name="widget_hoje_description">Die heutigen Dosen zu jeder Uhrzeit.</string>
+    <string name="widget_repor_label">Bald nachfüllen</string>
+    <string name="widget_repor_description">Medikamente, die zur Neige gehen.</string>
+    <string name="widget_course_label">Behandlung</string>
+    <string name="widget_course_description">Die nächste Einnahme und was von der laufenden Behandlung bleibt.</string>
+</resources>

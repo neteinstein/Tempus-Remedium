@@ -117,120 +117,128 @@ fun App(
     val onDarkThemeChange by rememberUpdatedState(platform.onDarkThemeChange)
     LaunchedEffect(dark) { onDarkThemeChange(dark) }
 
-    TempusTheme(darkTheme = dark) {
-        val palette = TempusTheme.colors
-        Box(modifier.fillMaxSize().brandBackground(palette)) {
-            val editing = editingId
-            val editingMedication = editing?.let(data::medication)
-            if (editing == NEW_COURSE || editingMedication?.course != null) {
-                CourseEditor(
-                    medication = editingMedication,
-                    now = now,
-                    onSave = { medication: Medication ->
-                        viewModel.saveMedication(medication)
-                        editingId = null
-                    },
-                    onDelete = { medication ->
-                        viewModel.deleteMedication(medication.id)
-                        editingId = null
-                    },
-                    onClose = { editingId = null },
-                )
-                return@Box
-            }
-            if (editing != null) {
-                MedicationEditor(
-                    medication = data.medication(editing),
-                    today = now.date,
-                    onSave = { medication: Medication ->
-                        viewModel.saveMedication(medication)
-                        editingId = null
-                    },
-                    onDelete = { medication ->
-                        viewModel.deleteMedication(medication.id)
-                        editingId = null
-                    },
-                    onClose = { editingId = null },
-                )
-                return@Box
-            }
-            Scaffold(
-                containerColor = Color.Transparent,
-                bottomBar = {
-                    Column {
-                        Box(Modifier.fillMaxWidth().height(1.dp).background(palette.line))
-                        NavigationBar(containerColor = palette.surfaceStrong, tonalElevation = 0.dp) {
-                            Tab.entries.forEach { item ->
-                                NavigationBarItem(
-                                    selected = item == tab,
-                                    onClick = { tab = item },
-                                    icon = { Icon(item.icon, contentDescription = null) },
-                                    label = {
-                                        Text(
-                                            stringResource(item.title),
-                                            style = TempusTheme.type.eyebrow.copy(letterSpacing = 0.2.sp),
-                                        )
-                                    },
-                                    colors =
-                                        NavigationBarItemDefaults.colors(
-                                            selectedIconColor = palette.accent,
-                                            selectedTextColor = palette.accent,
-                                            indicatorColor = palette.accentSoft,
-                                            unselectedIconColor = palette.inkMute,
-                                            unselectedTextColor = palette.inkMute,
-                                        ),
-                                )
+    AppLocale(data.settings.language.tag) {
+        TempusTheme(darkTheme = dark) {
+            val palette = TempusTheme.colors
+            Box(modifier.fillMaxSize().brandBackground(palette)) {
+                val editing = editingId
+                val editingMedication = editing?.let(data::medication)
+                if (editing == NEW_COURSE || editingMedication?.course != null) {
+                    CourseEditor(
+                        medication = editingMedication,
+                        now = now,
+                        onSave = { medication: Medication ->
+                            viewModel.saveMedication(medication)
+                            editingId = null
+                        },
+                        onDelete = { medication ->
+                            viewModel.deleteMedication(medication.id)
+                            editingId = null
+                        },
+                        onClose = { editingId = null },
+                    )
+                    return@Box
+                }
+                if (editing != null) {
+                    MedicationEditor(
+                        medication = data.medication(editing),
+                        today = now.date,
+                        onSave = { medication: Medication ->
+                            viewModel.saveMedication(medication)
+                            editingId = null
+                        },
+                        onDelete = { medication ->
+                            viewModel.deleteMedication(medication.id)
+                            editingId = null
+                        },
+                        onClose = { editingId = null },
+                    )
+                    return@Box
+                }
+                Scaffold(
+                    containerColor = Color.Transparent,
+                    bottomBar = {
+                        Column {
+                            Box(Modifier.fillMaxWidth().height(1.dp).background(palette.line))
+                            NavigationBar(containerColor = palette.surfaceStrong, tonalElevation = 0.dp) {
+                                Tab.entries.forEach { item ->
+                                    NavigationBarItem(
+                                        selected = item == tab,
+                                        onClick = { tab = item },
+                                        icon = { Icon(item.icon, contentDescription = null) },
+                                        label = {
+                                            Text(
+                                                stringResource(item.title),
+                                                style = TempusTheme.type.eyebrow.copy(letterSpacing = 0.2.sp),
+                                            )
+                                        },
+                                        colors =
+                                            NavigationBarItemDefaults.colors(
+                                                selectedIconColor = palette.accent,
+                                                selectedTextColor = palette.accent,
+                                                indicatorColor = palette.accentSoft,
+                                                unselectedIconColor = palette.inkMute,
+                                                unselectedTextColor = palette.inkMute,
+                                            ),
+                                    )
+                                }
                             }
                         }
-                    }
-                },
-            ) { padding ->
-                AnimatedContent(
-                    targetState = tab,
-                    transitionSpec = { fadeIn() togetherWith fadeOut() },
-                    modifier = Modifier.padding(padding),
-                ) { current ->
-                    when (current) {
-                        Tab.TODAY -> {
-                            TodayScreen(
-                                now = now,
-                                plan = data.planFor(now.date),
-                                lowStock = data.lowStock(),
-                                medications = data.activeMedications,
-                                stockDisplay = data.settings.stockDisplay,
-                                onLogDose = { medication, slot, status -> viewModel.logDose(medication.id, now.date, slot, status) },
-                                onUndoDose = { medication, slot -> viewModel.undoDose(medication.id, now.date, slot) },
-                                onLogSlot = { slot -> viewModel.logSlot(now.date, slot) },
-                                onRefill = { medication, units -> viewModel.refill(medication.id, units) },
-                                onAddMedication = { editingId = NEW },
-                                courses = data.activeCourses(now),
-                                onLogCourseDose = { medication, index, status -> viewModel.logCourseDose(medication.id, index, status) },
-                                onUndoCourseDose = { medication, index -> viewModel.undoCourseDose(medication.id, index) },
-                                onAddCourse = { editingId = NEW_COURSE },
-                                launchRequest = launchRequest,
-                                onConsumeLaunchRequest = onConsumeLaunchRequest,
-                            )
-                        }
+                    },
+                ) { padding ->
+                    AnimatedContent(
+                        targetState = tab,
+                        transitionSpec = { fadeIn() togetherWith fadeOut() },
+                        modifier = Modifier.padding(padding),
+                    ) { current ->
+                        when (current) {
+                            Tab.TODAY -> {
+                                TodayScreen(
+                                    now = now,
+                                    plan = data.planFor(now.date),
+                                    lowStock = data.lowStock(),
+                                    medications = data.activeMedications,
+                                    stockDisplay = data.settings.stockDisplay,
+                                    onLogDose = { medication, slot, status -> viewModel.logDose(medication.id, now.date, slot, status) },
+                                    onUndoDose = { medication, slot -> viewModel.undoDose(medication.id, now.date, slot) },
+                                    onLogSlot = { slot -> viewModel.logSlot(now.date, slot) },
+                                    onRefill = { medication, units -> viewModel.refill(medication.id, units) },
+                                    onAddMedication = { editingId = NEW },
+                                    courses = data.activeCourses(now),
+                                    onLogCourseDose = {
+                                        medication,
+                                        index,
+                                        status,
+                                        ->
+                                        viewModel.logCourseDose(medication.id, index, status)
+                                    },
+                                    onUndoCourseDose = { medication, index -> viewModel.undoCourseDose(medication.id, index) },
+                                    onAddCourse = { editingId = NEW_COURSE },
+                                    launchRequest = launchRequest,
+                                    onConsumeLaunchRequest = onConsumeLaunchRequest,
+                                )
+                            }
 
-                        Tab.MEDICATIONS -> {
-                            MedicationsScreen(
-                                medications = data.medications,
-                                onEdit = { editingId = it.id },
-                                onAdd = { editingId = NEW },
-                                onAddCourse = { editingId = NEW_COURSE },
-                            )
-                        }
+                            Tab.MEDICATIONS -> {
+                                MedicationsScreen(
+                                    medications = data.medications,
+                                    onEdit = { editingId = it.id },
+                                    onAdd = { editingId = NEW },
+                                    onAddCourse = { editingId = NEW_COURSE },
+                                )
+                            }
 
-                        Tab.HISTORY -> {
-                            HistoryScreen(data.adherence(now))
-                        }
+                            Tab.HISTORY -> {
+                                HistoryScreen(data.adherence(now))
+                            }
 
-                        Tab.SETTINGS -> {
-                            SettingsScreen(
-                                settings = data.settings,
-                                onChange = viewModel::updateSettings,
-                                extras = { platform.settingsExtras(this, data.settings, viewModel::updateSettings) },
-                            )
+                            Tab.SETTINGS -> {
+                                SettingsScreen(
+                                    settings = data.settings,
+                                    onChange = viewModel::updateSettings,
+                                    extras = { platform.settingsExtras(this, data.settings, viewModel::updateSettings) },
+                                )
+                            }
                         }
                     }
                 }
