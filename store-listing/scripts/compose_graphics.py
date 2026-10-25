@@ -6,7 +6,9 @@ real app with Robolectric. This script:
 
 - frames each phone screen on the brand gradient with a two-line caption (captions.json), in the
   app's fonts, as a 1080 x 1920 RGB PNG (9:16, no alpha); 02_overdue shows the running-out glow at
-  its brightest;
+  its brightest; the order in captions.json is the order on the listing;
+- frames the landscape tablet screens (TABLET_SCREENS, same captions on one line) as 16:9 RGB PNGs:
+  1920 x 1080 for 7" tablets and 2560 x 1440 for 10" ones;
 - flattens the feature graphic to a 1024 x 500 RGB PNG;
 - copies the 512 x 512 icon as a 32-bit PNG.
 
@@ -26,6 +28,17 @@ SCREEN_BOTTOM_MARGIN = 70
 CAPTION_TOP = 84
 CAPTION_MAX_WIDTH = 940
 CORNER = 46
+
+# Captured by StoreListingCaptures under source/<locale>/<dir>/, framed into graphics/<folder>/.
+TABLETS = {"tablet-7": ("tablet-screenshots", (1920, 1080)), "tablet-10": ("large-tablet-screenshots", (2560, 1440))}
+TABLET_SCREENS = ["01_today", "03_slot", "04_medications", "06_history"]
+# Tablet frames are laid out at 2560 x 1440 and scaled down for 7".
+TABLET_CANVAS = (2560, 1440)
+TABLET_CAPTION_TOP = 78
+TABLET_CAPTION_MAX_WIDTH = 2200
+TABLET_SCREEN_TOP = 250
+TABLET_SCREEN_BOTTOM_MARGIN = 80
+TABLET_CORNER = 40
 
 # mariacf.pt brand gradient (TempusPalette.brand) and the caption colours of the feature graphic.
 BRAND = [(0x02, 0x6A, 0x9F), (0x12, 0x5A, 0x98), (0x00, 0x66, 0x8B)]
@@ -63,43 +76,72 @@ def rounded_mask(size, radius, scale=4):
     return big.resize(size, Image.LANCZOS)
 
 
-def fit_fonts(lines, draw):
-    """Largest size (<= 76 px) at which both caption lines fit CAPTION_MAX_WIDTH."""
-    for size in range(76, 40, -2):
+def fit_fonts(lines, draw, max_size, max_width, measure):
+    """Largest size (<= max_size) at which measure(widths of both lines) fits max_width."""
+    for size in range(max_size, 40, -2):
         regular = ImageFont.truetype(str(FONTS / "fraunces_semibold.ttf"), size)
         italic = ImageFont.truetype(str(FONTS / "fraunces_medium_italic.ttf"), size)
         widths = [draw.textlength(lines[0], font=regular), draw.textlength(lines[1], font=italic)]
-        if max(widths) <= CAPTION_MAX_WIDTH:
+        if measure(widths) <= max_width:
             return regular, italic, size
     raise ValueError(f"Caption too long: {lines}")
 
 
-def frame(screen, lines, out_path):
-    canvas = brand_background((WIDTH, HEIGHT))
-    draw = ImageDraw.Draw(canvas)
-
-    regular, italic, size = fit_fonts(lines, draw)
-    line_height = round(size * 1.14)
-    for i, (text, font, colour) in enumerate([(lines[0], regular, INK), (lines[1], italic, ACCENT)]):
-        draw.text((WIDTH / 2, CAPTION_TOP + i * line_height), text, font=font, fill=colour, anchor="ma")
-
-    height = round(screen.height * SCREEN_WIDTH / screen.width)
-    screen = screen.resize((SCREEN_WIDTH, height), Image.LANCZOS)
-    x = (WIDTH - SCREEN_WIDTH) // 2
-    y = HEIGHT - height - SCREEN_BOTTOM_MARGIN
-    mask = rounded_mask(screen.size, CORNER)
+def place_screen(canvas, screen, box, corner):
+    """Pastes [screen] scaled into [box] (x, y, width, height), centred, with a shadow and a soft border."""
+    bx, by, bw, bh = box
+    scale = min(bw / screen.width, bh / screen.height)
+    width, height = round(screen.width * scale), round(screen.height * scale)
+    screen = screen.resize((width, height), Image.LANCZOS)
+    x = bx + (bw - width) // 2
+    y = by + bh - height
+    mask = rounded_mask(screen.size, corner)
 
     shadow = Image.new("L", canvas.size, 0)
     shadow.paste(mask.point(lambda v: v * 0.42), (x, y + 22))
     shadow = shadow.filter(ImageFilter.GaussianBlur(34))
     canvas = Image.composite(Image.new("RGB", canvas.size, (0, 18, 40)), canvas, shadow)
 
-    border = Image.new("RGB", (SCREEN_WIDTH + 6, height + 6), (255, 255, 255))
-    canvas.paste(border, (x - 3, y - 3), rounded_mask(border.size, CORNER + 3).point(lambda v: v * 0.35))
+    border = Image.new("RGB", (width + 6, height + 6), (255, 255, 255))
+    canvas.paste(border, (x - 3, y - 3), rounded_mask(border.size, corner + 3).point(lambda v: v * 0.35))
     canvas.paste(screen, (x, y), mask)
+    return canvas
 
+
+def save(canvas, out_path):
     out_path.parent.mkdir(parents=True, exist_ok=True)
     canvas.save(out_path, optimize=True)
+
+
+def frame(screen, lines, out_path):
+    canvas = brand_background((WIDTH, HEIGHT))
+    draw = ImageDraw.Draw(canvas)
+
+    regular, italic, size = fit_fonts(lines, draw, 76, CAPTION_MAX_WIDTH, max)
+    line_height = round(size * 1.14)
+    for i, (text, font, colour) in enumerate([(lines[0], regular, INK), (lines[1], italic, ACCENT)]):
+        draw.text((WIDTH / 2, CAPTION_TOP + i * line_height), text, font=font, fill=colour, anchor="ma")
+
+    box = ((WIDTH - SCREEN_WIDTH) // 2, 0, SCREEN_WIDTH, HEIGHT - SCREEN_BOTTOM_MARGIN)
+    save(place_screen(canvas, screen, box, CORNER), out_path)
+
+
+def frame_tablet(screen, lines, size, out_path):
+    """A landscape tablet screen under its caption, both lines on one line."""
+    w, h = TABLET_CANVAS
+    canvas = brand_background(TABLET_CANVAS)
+    draw = ImageDraw.Draw(canvas)
+
+    gap = 28
+    regular, italic, _ = fit_fonts(lines, draw, 104, TABLET_CAPTION_MAX_WIDTH, lambda widths: sum(widths) + gap)
+    first = draw.textlength(lines[0], font=regular)
+    left = (w - first - gap - draw.textlength(lines[1], font=italic)) / 2
+    draw.text((left, TABLET_CAPTION_TOP), lines[0], font=regular, fill=INK, anchor="la")
+    draw.text((left + first + gap, TABLET_CAPTION_TOP), lines[1], font=italic, fill=ACCENT, anchor="la")
+
+    box = (0, TABLET_SCREEN_TOP, w, h - TABLET_SCREEN_TOP - TABLET_SCREEN_BOTTOM_MARGIN)
+    canvas = place_screen(canvas, screen, box, TABLET_CORNER)
+    save(canvas if canvas.size == size else canvas.resize(size, Image.LANCZOS), out_path)
 
 
 def main():
@@ -113,6 +155,12 @@ def main():
             screen = pulse(locale, 1.0) if name == "02_overdue" else load(locale, name)
             frame(screen, lines, shots / f"{index}.png")
 
+        for source, (folder, size) in TABLETS.items():
+            for old in (graphics / folder).glob("*.png"):
+                old.unlink()
+            for index, name in enumerate(TABLET_SCREENS, start=1):
+                frame_tablet(load(locale, f"{source}/{name}"), screens[name], size, graphics / folder / f"{index}.png")
+
         feature = load(locale, "feature_graphic")
         assert feature.size == (1024, 500), feature.size
         (graphics / "feature-graphic").mkdir(parents=True, exist_ok=True)
@@ -122,7 +170,7 @@ def main():
         assert icon.size == (512, 512), icon.size
         (graphics / "icon").mkdir(parents=True, exist_ok=True)
         icon.save(graphics / "icon/1.png", optimize=True)
-        print(f"{locale}: {len(screens)} screenshots, feature graphic, icon")
+        print(f"{locale}: {len(screens)} phone and {len(TABLET_SCREENS)} + {len(TABLET_SCREENS)} tablet screenshots, feature graphic, icon")
 
 
 if __name__ == "__main__":
