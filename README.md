@@ -42,6 +42,19 @@ calm blues, frosted cards, and a light and a dark theme.
   <img src="androidApp/src/test/screenshots/screen_history.png" width="250" alt="Histórico">
   <img src="androidApp/src/test/screenshots/screen_settings_dark.png" width="250" alt="Definições">
 </p>
+
+**Widgets, alerts and reminders**
+
+<p>
+  <img src="androidApp/src/test/screenshots/screen_today_running_out.png" width="250" alt="Hoje: horários em atraso a vermelho e o frasco do Ómega 3 a piscar porque acaba amanhã">
+  <img src="androidApp/src/test/screenshots/screen_widget_guide.png" width="250" alt="Barra para adicionar o widget e o guia passo a passo">
+  <img src="androidApp/src/test/screenshots/screen_settings_permissions.png" width="250" alt="Definições: secção Permissões com as permissões em falta a vermelho">
+</p>
+<p>
+  <img src="androidApp/src/main/res/drawable-nodpi/widget_hoje_preview.webp" width="250" alt="Widget Hoje">
+  <img src="androidApp/src/main/res/drawable-night-nodpi/widget_repor_preview.webp" width="250" alt="Widget Repor em breve (escuro)">
+  <img src="androidApp/src/main/res/drawable-nodpi/widget_course_preview.webp" width="250" alt="Widget Tratamento">
+</p>
 <p>
   <img src="docs/images/web_today.png" width="380" alt="Versão web (claro)">
   <img src="docs/images/web_today_dark.png" width="380" alt="Versão web (escuro)">
@@ -51,15 +64,17 @@ calm blues, frosted cards, and a light and a dark theme.
 
 | | Android | Web |
 | --- | :---: | :---: |
-| HOJE: doses by MANHÃ / MEIO-DIA / NOITE / DEITAR, mark as taken or skipped | ✅ | ✅ |
-| REPOR EM BREVE: stock tracking, low-stock list, refill, shown as **jars or blister packs** | ✅ | ✅ |
+| HOJE: doses by MANHÃ / MEIO-DIA / NOITE / DEITAR, mark as taken or skipped; slots past their time with doses still pending turn **red** | ✅ | ✅ |
+| REPOR EM BREVE: stock tracking, low-stock list, refill, shown as **jars or blister packs**; a jar or blister that runs out today or tomorrow **pulses red** until tapped | ✅ | ✅ |
 | Medications: name, strength, pill shape and colour, slots, frequency, stock | ✅ | ✅ |
 | Courses (e.g. antibiotics): a dose every N hours, ending after N days, N doses, on a date or when the pack runs out; dose, interval and length suggested by the author's [dose calculator](https://mariacf.pt/calculadora-doses/) | ✅ | ✅ |
 | History: 30-day adherence | ✅ | ✅ |
 | Configurable slot times; automatic, light or dark theme | ✅ | ✅ |
 | Reminder notifications with **Tomei** / **Adiar 10 min**, shown on the lock screen (names can be hidden) | ✅ | — |
 | Low-stock notifications | ✅ | — |
-| Home-screen widgets: Hoje, Repor em breve and Tratamento (also offered for the lock screen where the system supports it) | ✅ | — |
+| Home-screen widgets: Hoje, Repor em breve and Tratamento (also offered for the lock screen where the system supports it), with previews in the widget picker | ✅ | — |
+| "Add the widget" bar and a step-by-step guide (home and lock screen), with one-tap pinning where the launcher allows it | ✅ | — |
+| Permissões section in Definições: a missing reminder permission (notifications, on-time alarms) shows in red, with a red bar on top that leads there | ✅ | — |
 | Data storage | On the device | In the browser (localStorage) |
 
 Português (pt-PT), English, Français, Deutsch and Español: the device or browser language by default, or the one chosen in Definições → Idioma. No account and no
