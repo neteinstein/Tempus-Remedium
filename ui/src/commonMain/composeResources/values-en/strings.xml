@@ -259,6 +259,12 @@
     <!-- Android only: course widget -->
     <string name="widget_course_title">Course</string>
     <string name="widget_no_course">No course under way.</string>
+    <string name="notifications_rationale_title">Dose reminders</string>
+    <string name="notifications_rationale_body">To remind you at the time of each dose, even with the app closed, Tempus Remedium needs permission to send notifications. You can change this at any time in your phone’s settings.</string>
+    <string name="action_allow">Allow</string>
+    <string name="action_not_now">Not now</string>
+    <string name="notifications_blocked">Notifications are off: we can’t remind you of your doses.</string>
+    <string name="notifications_turn_on">Turn on</string>
     <string name="settings_language">Language</string>
     <string name="language_system">Automatic (device language)</string>
 </resources>

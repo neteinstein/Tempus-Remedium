@@ -241,6 +241,12 @@
     <string name="calc_ind_cefuroxime_otitis">Otite moyenne (≥ 2 ans) · max. 250 mg par prise</string>
     <string name="widget_course_title">Traitement</string>
     <string name="widget_no_course">Aucun traitement en cours.</string>
+    <string name="notifications_rationale_title">Rappels des prises</string>
+    <string name="notifications_rationale_body">Pour vous prévenir à l’heure de chaque prise, même app fermée, Tempus Remedium a besoin de l’autorisation d’envoyer des notifications. Vous pouvez la modifier à tout moment dans les réglages du téléphone.</string>
+    <string name="action_allow">Autoriser</string>
+    <string name="action_not_now">Plus tard</string>
+    <string name="notifications_blocked">Les notifications sont désactivées : nous ne pourrons pas vous rappeler vos prises.</string>
+    <string name="notifications_turn_on">Activer</string>
     <string name="settings_language">Langue</string>
     <string name="language_system">Automatique (langue de l’appareil)</string>
 </resources>

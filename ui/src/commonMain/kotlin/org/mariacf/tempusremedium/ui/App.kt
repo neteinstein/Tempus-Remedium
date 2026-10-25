@@ -49,6 +49,8 @@ import org.mariacf.tempusremedium.core.schedule.activeCourses
 import org.mariacf.tempusremedium.core.schedule.adherence
 import org.mariacf.tempusremedium.core.schedule.lowStock
 import org.mariacf.tempusremedium.core.schedule.planFor
+import org.mariacf.tempusremedium.ui.components.NotificationsBlockedBanner
+import org.mariacf.tempusremedium.ui.components.NotificationsRationaleDialog
 import org.mariacf.tempusremedium.ui.components.brandBackground
 import org.mariacf.tempusremedium.ui.resources.Res
 import org.mariacf.tempusremedium.ui.resources.nav_history
@@ -79,6 +81,12 @@ class PlatformUi(
     val settingsExtras: @Composable ColumnScope.(Settings, (Settings) -> Unit) -> Unit = { _, _ -> },
     /** Lets the platform match its system bars to the theme in use. */
     val onDarkThemeChange: (Boolean) -> Unit = {},
+    /** True while reminders cannot reach the user (Android: notifications off or not allowed). Read in composition. */
+    val notificationsBlocked: () -> Boolean = { false },
+    /** Asks the system for notification permission. */
+    val requestNotifications: () -> Unit = {},
+    /** Opens the system screen where notifications for the app are turned on. */
+    val openNotificationSettings: () -> Unit = {},
 )
 
 /** Whether [ThemeMode] resolves to dark right now. */
@@ -105,6 +113,15 @@ fun App(
     var tab by rememberSaveable { mutableStateOf(Tab.TODAY) }
     // null = closed, NEW = adding, otherwise the id being edited.
     var editingId by rememberSaveable { mutableStateOf<String?>(null) }
+    var askNotifications by rememberSaveable { mutableStateOf(false) }
+    val notificationsBlocked = platform.notificationsBlocked()
+
+    // Saves; with the first medication, explains why reminders need notifications.
+    fun save(medication: Medication) {
+        if (data.medications.isEmpty() && notificationsBlocked && data.settings.remindersEnabled) askNotifications = true
+        viewModel.saveMedication(medication)
+        editingId = null
+    }
 
     LaunchedEffect(launchRequest) {
         if (launchRequest != null) {
@@ -127,10 +144,7 @@ fun App(
                     CourseEditor(
                         medication = editingMedication,
                         now = now,
-                        onSave = { medication: Medication ->
-                            viewModel.saveMedication(medication)
-                            editingId = null
-                        },
+                        onSave = ::save,
                         onDelete = { medication ->
                             viewModel.deleteMedication(medication.id)
                             editingId = null
@@ -143,10 +157,7 @@ fun App(
                     MedicationEditor(
                         medication = data.medication(editing),
                         today = now.date,
-                        onSave = { medication: Medication ->
-                            viewModel.saveMedication(medication)
-                            editingId = null
-                        },
+                        onSave = ::save,
                         onDelete = { medication ->
                             viewModel.deleteMedication(medication.id)
                             editingId = null
@@ -157,6 +168,11 @@ fun App(
                 }
                 Scaffold(
                     containerColor = Color.Transparent,
+                    topBar = {
+                        if (notificationsBlocked && data.settings.remindersEnabled && data.activeMedications.isNotEmpty()) {
+                            NotificationsBlockedBanner(onTurnOn = platform.openNotificationSettings)
+                        }
+                    },
                     bottomBar = {
                         Column {
                             Box(Modifier.fillMaxWidth().height(1.dp).background(palette.line))
@@ -241,6 +257,15 @@ fun App(
                             }
                         }
                     }
+                }
+                if (askNotifications) {
+                    NotificationsRationaleDialog(
+                        onAllow = {
+                            askNotifications = false
+                            platform.requestNotifications()
+                        },
+                        onDismiss = { askNotifications = false },
+                    )
                 }
             }
         }

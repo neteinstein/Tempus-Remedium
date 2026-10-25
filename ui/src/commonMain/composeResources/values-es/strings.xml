@@ -241,6 +241,12 @@
     <string name="calc_ind_cefuroxime_otitis">Otitis media (≥ 2 años) · máx. 250 mg por toma</string>
     <string name="widget_course_title">Tratamiento</string>
     <string name="widget_no_course">Ningún tratamiento en curso.</string>
+    <string name="notifications_rationale_title">Avisos de las tomas</string>
+    <string name="notifications_rationale_body">Para avisarte a la hora de cada toma, incluso con la app cerrada, Tempus Remedium necesita permiso para enviar notificaciones. Puedes cambiarlo cuando quieras en los ajustes del teléfono.</string>
+    <string name="action_allow">Permitir</string>
+    <string name="action_not_now">Ahora no</string>
+    <string name="notifications_blocked">Las notificaciones están desactivadas: no podremos avisarte de las tomas.</string>
+    <string name="notifications_turn_on">Activar</string>
     <string name="settings_language">Idioma</string>
     <string name="language_system">Automático (idioma del dispositivo)</string>
 </resources>
