@@ -38,6 +38,20 @@ enum class ThemeMode {
     DARK,
 }
 
+/** The app's language; [SYSTEM] follows the device or browser. pt-PT is the source language. */
+@Serializable
+enum class AppLanguage(
+    /** BCP 47 language tag, or null for the device language. */
+    val tag: String?,
+) {
+    SYSTEM(null),
+    PT("pt"),
+    EN("en"),
+    FR("fr"),
+    DE("de"),
+    ES("es"),
+}
+
 @Serializable
 data class Settings(
     val slotTimes: Map<TimeSlot, LocalTime> = TimeSlot.entries.associateWith { it.defaultTime },
@@ -45,6 +59,7 @@ data class Settings(
     val hideNamesInReminders: Boolean = false,
     val stockDisplay: StockDisplay = StockDisplay.JARS,
     val theme: ThemeMode = ThemeMode.SYSTEM,
+    val language: AppLanguage = AppLanguage.SYSTEM,
 ) {
     fun timeOf(slot: TimeSlot): LocalTime = slotTimes[slot] ?: slot.defaultTime
 }

@@ -39,7 +39,7 @@ calm blues, frosted cards, and a light and a dark theme.
 | Home-screen widgets: Hoje, Repor em breve and Tratamento (also offered for the lock screen where the system supports it) | ✅ | — |
 | Data storage | On the device | In the browser (localStorage) |
 
-pt-PT by default; English when the device or browser language is English. No account and no
+Português (pt-PT), English, Français, Deutsch and Español: the device or browser language by default, or the one chosen in Definições → Idioma. No account and no
 server: data never leaves the device or browser. The app supports care and does not replace
 advice from a doctor or pharmacist.
 

@@ -74,6 +74,18 @@ class ScreensScreenshotTest {
     fun todayInEnglish() = capture("screen_today_en") { Today(ReferenceFixtures.data) }
 
     @Test
+    @Config(qualifiers = "fr-rFR-w360dp-h800dp-xxhdpi")
+    fun todayInFrench() = capture("screen_today_fr") { Today(CourseFixtures.data) }
+
+    @Test
+    @Config(qualifiers = "de-rDE-w360dp-h800dp-xxhdpi")
+    fun todayInGerman() = capture("screen_today_de") { Today(CourseFixtures.data) }
+
+    @Test
+    @Config(qualifiers = "es-rES-w360dp-h800dp-xxhdpi")
+    fun todayInSpanish() = capture("screen_today_es") { Today(CourseFixtures.data) }
+
+    @Test
     fun todayAllTaken() =
         capture("screen_today_all_taken", dark = true) {
             Today(TimeSlot.entries.fold(ReferenceFixtures.data) { data, slot -> data.logSlot(date, slot, DoseStatus.TAKEN, 0L) })

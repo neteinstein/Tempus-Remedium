@@ -264,4 +264,12 @@
     <!-- Android only: course widget -->
     <string name="widget_course_title">Tratamento</string>
     <string name="widget_no_course">Nenhum tratamento em curso.</string>
+    <!-- Language setting: language names are written in their own language. -->
+    <string name="settings_language">Idioma</string>
+    <string name="language_system">Automático (idioma do dispositivo)</string>
+    <string name="language_pt">Português</string>
+    <string name="language_en">English</string>
+    <string name="language_fr">Français</string>
+    <string name="language_de">Deutsch</string>
+    <string name="language_es">Español</string>
 </resources>
