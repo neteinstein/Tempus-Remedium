@@ -122,7 +122,10 @@ roborazzi {
 // Uploads the release App Bundle to the Play Console (`publishReleaseBundle`, run by release.yml
 // only when the ANDROID_PUBLISHER_CREDENTIALS secret exists). Goes to the "internal" track unless
 // PLAY_TRACK says otherwise, so nothing reaches production without a promotion in the console.
+// release.yml validates the secret's JSON and writes it to PLAY_SERVICE_ACCOUNT_FILE
+// (scripts/play-credentials.py); without that variable the plugin reads ANDROID_PUBLISHER_CREDENTIALS.
 play {
+    System.getenv("PLAY_SERVICE_ACCOUNT_FILE")?.takeIf { it.isNotBlank() }?.let { serviceAccountCredentials.set(file(it)) }
     track.set(System.getenv("PLAY_TRACK")?.takeIf { it.isNotBlank() } ?: "internal")
     defaultToAppBundles.set(true)
 }

@@ -155,11 +155,23 @@ jobs:
       # Optional: only runs once a Play Console service account key is configured (see CI_CD.md).
       # Uploads the release App Bundle to the Play Console's "internal" track (or PLAY_TRACK, if set
       # as a repo variable) via the Gradle Play Publisher plugin (androidApp/build.gradle.kts).
+      # The secret holds the key's JSON itself; this tolerates the stray BOM, quotes, base64 or
+      # escaping a paste can add (the plugin's strict parser fails on those at "line 1 column 1"),
+      # validates it, and writes it to a temporary file that the publish step points the plugin at.
+      - name: Prepare Play publisher credentials
+        id: play_key
+        if: steps.play_creds.outputs.has_credentials == 'true'
+        env:
+          ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.ANDROID_PUBLISHER_CREDENTIALS }}
+        run: |
+          python3 scripts/play-credentials.py "$RUNNER_TEMP/play-service-account.json"
+          echo "path=$RUNNER_TEMP/play-service-account.json" >> "$GITHUB_OUTPUT"
+
       - name: Publish to Play Store
         id: publish_play
         if: steps.play_creds.outputs.has_credentials == 'true'
         env:
-          ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.ANDROID_PUBLISHER_CREDENTIALS }}
+          PLAY_SERVICE_ACCOUNT_FILE: ${{ steps.play_key.outputs.path }}
           PLAY_TRACK: ${{ vars.PLAY_TRACK }}
           KEYSTORE_FILE: ${{ runner.temp }}/release.keystore
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -176,6 +188,10 @@ jobs:
         if: failure() && steps.publish_play.outcome == 'failure'
         run: |
           echo "::error::publishReleaseBundle failed. If this was a 403/PERMISSION_DENIED from androidpublisher.googleapis.com, see 'Troubleshooting a 403 PERMISSION_DENIED' in CI_CD.md - it is almost always the service account's Play Console permissions/app access, a missing first manual release, or the Android Publisher API not being enabled, not this workflow."
+
+      - name: Remove Play publisher credentials
+        if: always()
+        run: rm -f "$RUNNER_TEMP/play-service-account.json"
 
       - name: Skip Play Store publish
         if: steps.play_creds.outputs.has_credentials != 'true'
