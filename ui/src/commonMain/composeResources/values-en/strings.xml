@@ -114,7 +114,6 @@
     <string name="settings_reminders">Reminders</string>
     <string name="settings_reminders_body">A notification at each time with doses.</string>
     <string name="settings_hide_names">Hide names on the lock screen</string>
-    <string name="settings_notifications_permission">Allow notifications</string>
     <string name="settings_exact_alarms">On-time reminders</string>
     <string name="settings_exact_alarms_body">Without this permission reminders may arrive a few minutes late.</string>
     <string name="settings_widgets_hint">Add the Today and Refill soon widgets to your home screen.</string>
@@ -259,12 +258,17 @@
     <!-- Android only: course widget -->
     <string name="widget_course_title">Course</string>
     <string name="widget_no_course">No course under way.</string>
-    <string name="notifications_rationale_title">Dose reminders</string>
-    <string name="notifications_rationale_body">To remind you at the time of each dose, even with the app closed, Tempus Remedium needs permission to send notifications. You can change this at any time in your phone’s settings.</string>
+    <string name="notifications_rationale_title">Permissions for reminders</string>
+    <string name="notifications_rationale_body">Please give the app permission so it can remind you to take your medicines on time, even when it is closed. You can see and change them in the app’s Settings.</string>
     <string name="action_allow">Allow</string>
     <string name="action_not_now">Not now</string>
-    <string name="notifications_blocked">Notifications are off: we can’t remind you of your doses.</string>
-    <string name="notifications_turn_on">Turn on</string>
+    <string name="action_open_permissions">See in Settings</string>
+    <string name="permissions_missing">Permissions missing: the app can’t remind you of your doses.</string>
+    <string name="permissions_fix">Fix</string>
+    <string name="settings_permissions">Permissions</string>
+    <string name="permission_notifications">Notifications</string>
+    <string name="permission_granted">Granted</string>
+    <string name="permission_missing">Missing · tap to grant</string>
     <string name="settings_language">Language</string>
     <string name="language_system">Automatic (device language)</string>
 </resources>

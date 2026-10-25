@@ -49,8 +49,8 @@ import org.mariacf.tempusremedium.core.schedule.activeCourses
 import org.mariacf.tempusremedium.core.schedule.adherence
 import org.mariacf.tempusremedium.core.schedule.lowStock
 import org.mariacf.tempusremedium.core.schedule.planFor
-import org.mariacf.tempusremedium.ui.components.NotificationsBlockedBanner
 import org.mariacf.tempusremedium.ui.components.NotificationsRationaleDialog
+import org.mariacf.tempusremedium.ui.components.PermissionsMissingBanner
 import org.mariacf.tempusremedium.ui.components.brandBackground
 import org.mariacf.tempusremedium.ui.resources.Res
 import org.mariacf.tempusremedium.ui.resources.nav_history
@@ -81,12 +81,13 @@ class PlatformUi(
     val settingsExtras: @Composable ColumnScope.(Settings, (Settings) -> Unit) -> Unit = { _, _ -> },
     /** Lets the platform match its system bars to the theme in use. */
     val onDarkThemeChange: (Boolean) -> Unit = {},
-    /** True while reminders cannot reach the user (Android: notifications off or not allowed). Read in composition. */
-    val notificationsBlocked: () -> Boolean = { false },
-    /** Asks the system for notification permission. */
-    val requestNotifications: () -> Unit = {},
-    /** Opens the system screen where notifications for the app are turned on. */
-    val openNotificationSettings: () -> Unit = {},
+    /**
+     * True while a permission reminders need is missing (Android: notifications, or exact alarms
+     * on Android 12+). Read in composition, so platforms back it with snapshot state.
+     */
+    val permissionsMissing: () -> Boolean = { false },
+    /** Asks for the first missing permission (the system dialog, or its settings screen). */
+    val requestPermissions: () -> Unit = {},
 )
 
 /** Whether [ThemeMode] resolves to dark right now. */
@@ -114,11 +115,19 @@ fun App(
     // null = closed, NEW = adding, otherwise the id being edited.
     var editingId by rememberSaveable { mutableStateOf<String?>(null) }
     var askNotifications by rememberSaveable { mutableStateOf(false) }
-    val notificationsBlocked = platform.notificationsBlocked()
+    // Set by the red bar or the explanation: Definições opens at the permissions.
+    var focusPermissions by rememberSaveable { mutableStateOf(false) }
+    val permissionsMissing = platform.permissionsMissing()
 
-    // Saves; with the first medication, explains why reminders need notifications.
+    fun openPermissions() {
+        editingId = null
+        tab = Tab.SETTINGS
+        focusPermissions = true
+    }
+
+    // Saves; with the first medication or course, explains why reminders need permissions.
     fun save(medication: Medication) {
-        if (data.medications.isEmpty() && notificationsBlocked && data.settings.remindersEnabled) askNotifications = true
+        if (data.medications.isEmpty() && permissionsMissing && data.settings.remindersEnabled) askNotifications = true
         viewModel.saveMedication(medication)
         editingId = null
     }
@@ -169,8 +178,8 @@ fun App(
                 Scaffold(
                     containerColor = Color.Transparent,
                     topBar = {
-                        if (notificationsBlocked && data.settings.remindersEnabled && data.activeMedications.isNotEmpty()) {
-                            NotificationsBlockedBanner(onTurnOn = platform.openNotificationSettings)
+                        if (permissionsMissing && data.settings.remindersEnabled && data.activeMedications.isNotEmpty()) {
+                            PermissionsMissingBanner(onFix = ::openPermissions)
                         }
                     },
                     bottomBar = {
@@ -253,6 +262,8 @@ fun App(
                                     settings = data.settings,
                                     onChange = viewModel::updateSettings,
                                     extras = { platform.settingsExtras(this, data.settings, viewModel::updateSettings) },
+                                    focusExtras = focusPermissions,
+                                    onExtrasFocus = { focusPermissions = false },
                                 )
                             }
                         }
@@ -262,7 +273,11 @@ fun App(
                     NotificationsRationaleDialog(
                         onAllow = {
                             askNotifications = false
-                            platform.requestNotifications()
+                            platform.requestPermissions()
+                        },
+                        onOpenSettings = {
+                            askNotifications = false
+                            openPermissions()
                         },
                         onDismiss = { askNotifications = false },
                     )

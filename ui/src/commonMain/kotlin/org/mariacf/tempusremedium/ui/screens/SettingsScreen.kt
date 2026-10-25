@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
@@ -27,9 +29,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -95,8 +99,19 @@ fun SettingsScreen(
     onChange: (Settings) -> Unit,
     modifier: Modifier = Modifier,
     extras: @Composable ColumnScope.() -> Unit = {},
+    /** Scroll to the platform extras (reminders and permissions), e.g. from the red bar. */
+    focusExtras: Boolean = false,
+    onExtrasFocus: () -> Unit = {},
 ) {
     var editing by remember { mutableStateOf<TimeSlot?>(null) }
+    val extrasRequester = remember { BringIntoViewRequester() }
+    val extrasFocus by rememberUpdatedState(onExtrasFocus)
+    LaunchedEffect(focusExtras) {
+        if (focusExtras) {
+            extrasRequester.bringIntoView()
+            extrasFocus()
+        }
+    }
     Column(
         modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -150,7 +165,7 @@ fun SettingsScreen(
             }
         }
 
-        extras()
+        Column(Modifier.bringIntoViewRequester(extrasRequester), verticalArrangement = Arrangement.spacedBy(12.dp)) { extras() }
 
         SettingsSection(stringResource(Res.string.settings_about)) { AboutCard() }
     }
@@ -193,7 +208,10 @@ fun SettingsRow(
     onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
     body: String? = null,
+    /** Something is wrong here (a missing permission): title, body and value in red. */
+    danger: Boolean = false,
 ) {
+    val palette = TempusTheme.colors
     Row(
         modifier
             .fillMaxWidth()
@@ -202,10 +220,10 @@ fun SettingsRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
-            Text(title, style = TempusTheme.type.rowTitle, color = TempusTheme.colors.ink)
-            body?.let { Text(it, style = TempusTheme.type.bodySmall, color = TempusTheme.colors.inkMute) }
+            Text(title, style = TempusTheme.type.rowTitle, color = if (danger) palette.danger else palette.ink)
+            body?.let { Text(it, style = TempusTheme.type.bodySmall, color = if (danger) palette.danger else palette.inkMute) }
         }
-        Text(value, style = TempusTheme.type.rowTitle, color = TempusTheme.colors.accent)
+        Text(value, style = TempusTheme.type.rowTitle, color = if (danger) palette.danger else palette.accent)
     }
 }
 

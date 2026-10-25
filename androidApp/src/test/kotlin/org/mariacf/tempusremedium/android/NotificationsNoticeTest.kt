@@ -27,15 +27,16 @@ class NotificationsNoticeTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    private val blockedText = "As notificações estão desligadas: não vamos conseguir avisar das tomas."
+    private val missingText = "Faltam permissões: a app não consegue lembrar as tomas."
+    private val dialogTitle = "Permissões para os lembretes"
 
     private fun repository(data: AppData) =
         MedicationRepository(InMemoryDocumentStorage(MedicationRepository.json.encodeToString(AppData.serializer(), data)))
 
     private fun show(
         data: AppData,
-        blocked: Boolean,
-        platform: PlatformUi = PlatformUi(notificationsBlocked = { blocked }),
+        missing: Boolean,
+        platform: PlatformUi = PlatformUi(permissionsMissing = { missing }),
     ) {
         val repository = repository(data)
         runBlocking { repository.load() }
@@ -44,42 +45,62 @@ class NotificationsNoticeTest {
     }
 
     @Test
-    fun barShowsWhenNotificationsAreBlockedAndOpensSettings() {
-        var opened = 0
-        show(ReferenceFixtures.data, blocked = true, PlatformUi(notificationsBlocked = { true }, openNotificationSettings = { opened++ }))
-        composeRule.onNodeWithText(blockedText).assertExists()
-        composeRule.onNodeWithText("Ativar").performClick()
-        assertEquals(1, opened)
+    fun barShowsWhenPermissionsAreMissingAndOpensDefinicoes() {
+        show(ReferenceFixtures.data, missing = true)
+        composeRule.onNodeWithText(missingText).assertExists()
+        composeRule.onNodeWithText("Resolver").performClick()
+        // The app's own Definições, not the system settings.
+        composeRule.onNodeWithText("Horários".uppercase()).assertExists()
     }
 
     @Test
-    fun noBarWhenNotificationsWork() {
-        show(ReferenceFixtures.data, blocked = false)
-        composeRule.onNodeWithText(blockedText).assertDoesNotExist()
+    fun noBarWhenPermissionsAreGiven() {
+        show(ReferenceFixtures.data, missing = false)
+        composeRule.onNodeWithText(missingText).assertDoesNotExist()
     }
 
     @Test
-    fun noBarWithoutMedicationsOrWithRemindersOff() {
-        show(AppData(), blocked = true)
-        composeRule.onNodeWithText(blockedText).assertDoesNotExist()
+    fun noBarWithoutMedications() {
+        show(AppData(), missing = true)
+        composeRule.onNodeWithText(missingText).assertDoesNotExist()
     }
 
     @Test
     fun noBarWhenRemindersAreOff() {
-        show(ReferenceFixtures.data.copy(settings = Settings(remindersEnabled = false)), blocked = true)
-        composeRule.onNodeWithText(blockedText).assertDoesNotExist()
+        show(ReferenceFixtures.data.copy(settings = Settings(remindersEnabled = false)), missing = true)
+        composeRule.onNodeWithText(missingText).assertDoesNotExist()
+    }
+
+    private fun addFirstMedication() {
+        composeRule.onNodeWithText("Adicionar medicamento").performClick()
+        composeRule.onNodeWithText("Nome").performTextInput("Metformina")
+        composeRule.onNodeWithText("Guardar").performClick()
     }
 
     @Test
     fun savingTheFirstMedicationExplainsWhyThenAsks() {
         var requested = 0
-        show(AppData(), blocked = true, PlatformUi(notificationsBlocked = { true }, requestNotifications = { requested++ }))
-        composeRule.onNodeWithText("Adicionar medicamento").performClick()
-        composeRule.onNodeWithText("Nome").performTextInput("Metformina")
-        composeRule.onNodeWithText("Guardar").performClick()
-        composeRule.onNodeWithText("Avisos das tomas").assertExists()
+        show(AppData(), missing = true, PlatformUi(permissionsMissing = { true }, requestPermissions = { requested++ }))
+        addFirstMedication()
+        composeRule.onNodeWithText(dialogTitle).assertExists()
         composeRule.onNodeWithText("Permitir").performClick()
         assertEquals(1, requested)
-        composeRule.onNodeWithText("Avisos das tomas").assertDoesNotExist()
+        composeRule.onNodeWithText(dialogTitle).assertDoesNotExist()
+    }
+
+    @Test
+    fun theExplanationCanOpenDefinicoes() {
+        show(AppData(), missing = true)
+        addFirstMedication()
+        composeRule.onNodeWithText("Ver nas Definições ›").performClick()
+        composeRule.onNodeWithText(dialogTitle).assertDoesNotExist()
+        composeRule.onNodeWithText("Horários".uppercase()).assertExists()
+    }
+
+    @Test
+    fun noExplanationWhenPermissionsAreGiven() {
+        show(AppData(), missing = false)
+        addFirstMedication()
+        composeRule.onNodeWithText(dialogTitle).assertDoesNotExist()
     }
 }

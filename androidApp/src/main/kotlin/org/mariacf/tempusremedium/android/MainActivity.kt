@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import org.mariacf.tempusremedium.android.settings.AndroidSettingsExtras
 import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.ui.App
@@ -24,11 +25,11 @@ import org.mariacf.tempusremedium.ui.screens.LaunchRequest
 class MainActivity : ComponentActivity() {
     private var launchRequest by mutableStateOf<LaunchRequest?>(null)
 
-    /** Refreshed on resume and after the permission dialog: the user can change it in system settings. */
-    private var notificationsBlocked by mutableStateOf(false)
+    /** Refreshed on resume and after the permission dialog: the user can change them in system settings. */
+    private var permissionsMissing by mutableStateOf(false)
 
     private val notificationPermission =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { refreshNotificationsBlocked() }
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { refreshPermissions() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -42,6 +43,7 @@ class MainActivity : ComponentActivity() {
                         settings = settings,
                         onChange = onChange,
                         onRequestNotifications = ::requestNotificationPermission,
+                        onRequestExactAlarms = ::openExactAlarmSettings,
                     )
                 },
                 onDarkThemeChange = { dark ->
@@ -54,9 +56,8 @@ class MainActivity : ComponentActivity() {
                         }
                     enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
                 },
-                notificationsBlocked = { notificationsBlocked },
-                requestNotifications = ::requestNotificationPermission,
-                openNotificationSettings = ::openNotificationSettings,
+                permissionsMissing = { permissionsMissing },
+                requestPermissions = ::requestMissingPermission,
             )
         setContent {
             App(
@@ -66,16 +67,32 @@ class MainActivity : ComponentActivity() {
                 onConsumeLaunchRequest = { launchRequest = null },
             )
         }
-        refreshNotificationsBlocked()
+        refreshPermissions()
     }
 
     override fun onResume() {
         super.onResume()
-        refreshNotificationsBlocked()
+        refreshPermissions()
     }
 
-    private fun refreshNotificationsBlocked() {
-        notificationsBlocked = !container.notifications.canPost()
+    private fun refreshPermissions() {
+        permissionsMissing = !container.notifications.canPost() || !container.reminders.canScheduleExact()
+    }
+
+    /** Notifications first (the system dialog), then exact alarms (their settings screen). */
+    private fun requestMissingPermission() {
+        when {
+            !container.notifications.canPost() -> requestNotificationPermission()
+            !container.reminders.canScheduleExact() -> openExactAlarmSettings()
+        }
+    }
+
+    private fun openExactAlarmSettings() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
+        startActivity(
+            Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, "package:$packageName".toUri())
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+        )
     }
 
     override fun onNewIntent(intent: Intent) {

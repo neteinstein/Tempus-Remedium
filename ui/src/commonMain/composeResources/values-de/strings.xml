@@ -102,7 +102,6 @@
     <string name="settings_reminders">Erinnerungen</string>
     <string name="settings_reminders_body">Eine Benachrichtigung zu jeder Uhrzeit mit Dosen.</string>
     <string name="settings_hide_names">Namen auf dem Sperrbildschirm ausblenden</string>
-    <string name="settings_notifications_permission">Benachrichtigungen erlauben</string>
     <string name="settings_exact_alarms">Pünktliche Erinnerungen</string>
     <string name="settings_exact_alarms_body">Ohne diese Berechtigung können Erinnerungen einige Minuten später kommen.</string>
     <string name="settings_widgets_hint">Fügen Sie die Widgets Heute und Bald nachfüllen zum Startbildschirm hinzu.</string>
@@ -241,12 +240,17 @@
     <string name="calc_ind_cefuroxime_otitis">Mittelohrentzündung (≥ 2 Jahre) · max. 250 mg pro Einnahme</string>
     <string name="widget_course_title">Behandlung</string>
     <string name="widget_no_course">Keine laufende Behandlung.</string>
-    <string name="notifications_rationale_title">Erinnerungen an Einnahmen</string>
-    <string name="notifications_rationale_body">Damit Tempus Remedium Sie zu jeder Einnahme erinnern kann, auch wenn die App geschlossen ist, braucht es die Erlaubnis, Benachrichtigungen zu senden. Sie können das jederzeit in den Telefoneinstellungen ändern.</string>
+    <string name="notifications_rationale_title">Berechtigungen für Erinnerungen</string>
+    <string name="notifications_rationale_body">Erteilen Sie der App die Berechtigungen, damit sie Sie pünktlich an Ihre Medikamente erinnern kann, auch wenn sie geschlossen ist. Sie können sie in den Einstellungen der App sehen und ändern.</string>
     <string name="action_allow">Erlauben</string>
     <string name="action_not_now">Nicht jetzt</string>
-    <string name="notifications_blocked">Benachrichtigungen sind aus: Wir können Sie nicht an Ihre Einnahmen erinnern.</string>
-    <string name="notifications_turn_on">Einschalten</string>
+    <string name="action_open_permissions">In den Einstellungen ansehen</string>
+    <string name="permissions_missing">Berechtigungen fehlen: Die App kann Sie nicht an Ihre Einnahmen erinnern.</string>
+    <string name="permissions_fix">Beheben</string>
+    <string name="settings_permissions">Berechtigungen</string>
+    <string name="permission_notifications">Benachrichtigungen</string>
+    <string name="permission_granted">Erteilt</string>
+    <string name="permission_missing">Fehlt · zum Erteilen tippen</string>
     <string name="settings_language">Sprache</string>
     <string name="language_system">Automatisch (Gerätesprache)</string>
 </resources>

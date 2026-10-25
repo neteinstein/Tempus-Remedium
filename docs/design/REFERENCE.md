@@ -107,7 +107,7 @@ Metformina 500mg (MANHÃ and DEITAR, 6 left), Vitamina D 1000IU (MANHÃ), Ómega
 Everything outside the two panels is a product addition, not reference content: the greeting
 header on Hoje ("Boa tarde, *faltam 3 doses.*"), the TRATAMENTOS card below HOJE (courses taken
 every few hours, which never appear inside the HOJE panel or change its dose count), the course
-editor with the dose calculator, the Tratamento widget, the red "notificações desligadas" bar and the notification explanation shown with the first medication, the Medicamentos list and editor, Histórico,
+editor with the dose calculator, the Tratamento widget, the red "Faltam permissões" bar and the permissions explanation shown with the first medication, the Permissões section of Definições, the Medicamentos list and editor, Histórico,
 Definições (including the stock display and theme options and the Sobre card crediting the
 author), the refill dialog, reminders and low-stock notifications, the Android widgets, and the
 four extra pill colours.

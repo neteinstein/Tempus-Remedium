@@ -118,7 +118,6 @@
     <string name="settings_reminders">Lembretes</string>
     <string name="settings_reminders_body">Notificação a cada horário com doses.</string>
     <string name="settings_hide_names">Ocultar nomes no ecrã de bloqueio</string>
-    <string name="settings_notifications_permission">Permitir notificações</string>
     <string name="settings_exact_alarms">Lembretes à hora certa</string>
     <string name="settings_exact_alarms_body">Sem esta permissão, os lembretes podem chegar alguns minutos depois.</string>
     <string name="settings_widgets_hint">Adicione os widgets Hoje e Repor em breve ao ecrã principal.</string>
@@ -265,12 +264,17 @@
     <string name="widget_course_title">Tratamento</string>
     <string name="widget_no_course">Nenhum tratamento em curso.</string>
     <!-- Notification permission: asked when the first medication is saved -->
-    <string name="notifications_rationale_title">Avisos das tomas</string>
-    <string name="notifications_rationale_body">Para avisar à hora de cada toma, mesmo com a app fechada, o Tempus Remedium precisa de autorização para enviar notificações. Pode mudar isto quando quiser nas definições do telemóvel.</string>
+    <string name="notifications_rationale_title">Permissões para os lembretes</string>
+    <string name="notifications_rationale_body">Deve dar permissões para a app o poder lembrar de tomar os medicamentos, à hora certa e mesmo com a app fechada. Pode vê-las e mudá-las nas Definições da app.</string>
     <string name="action_allow">Permitir</string>
     <string name="action_not_now">Agora não</string>
-    <string name="notifications_blocked">As notificações estão desligadas: não vamos conseguir avisar das tomas.</string>
-    <string name="notifications_turn_on">Ativar</string>
+    <string name="action_open_permissions">Ver nas Definições</string>
+    <string name="permissions_missing">Faltam permissões: a app não consegue lembrar as tomas.</string>
+    <string name="permissions_fix">Resolver</string>
+    <string name="settings_permissions">Permissões</string>
+    <string name="permission_notifications">Notificações</string>
+    <string name="permission_granted">Dada</string>
+    <string name="permission_missing">Em falta · toque para dar</string>
 
     <!-- Language setting: language names are written in their own language. -->
     <string name="settings_language">Idioma</string>

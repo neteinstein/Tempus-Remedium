@@ -102,7 +102,6 @@
     <string name="settings_reminders">Rappels</string>
     <string name="settings_reminders_body">Une notification à chaque horaire avec des doses.</string>
     <string name="settings_hide_names">Masquer les noms sur l’écran de verrouillage</string>
-    <string name="settings_notifications_permission">Autoriser les notifications</string>
     <string name="settings_exact_alarms">Rappels à l’heure exacte</string>
     <string name="settings_exact_alarms_body">Sans cette autorisation, les rappels peuvent arriver quelques minutes en retard.</string>
     <string name="settings_widgets_hint">Ajoutez les widgets Aujourd’hui et À renouveler à l’écran d’accueil.</string>
@@ -241,12 +240,17 @@
     <string name="calc_ind_cefuroxime_otitis">Otite moyenne (≥ 2 ans) · max. 250 mg par prise</string>
     <string name="widget_course_title">Traitement</string>
     <string name="widget_no_course">Aucun traitement en cours.</string>
-    <string name="notifications_rationale_title">Rappels des prises</string>
-    <string name="notifications_rationale_body">Pour vous prévenir à l’heure de chaque prise, même app fermée, Tempus Remedium a besoin de l’autorisation d’envoyer des notifications. Vous pouvez la modifier à tout moment dans les réglages du téléphone.</string>
+    <string name="notifications_rationale_title">Autorisations pour les rappels</string>
+    <string name="notifications_rationale_body">Donnez à l’app les autorisations nécessaires pour qu’elle puisse vous rappeler de prendre vos médicaments à l’heure, même fermée. Vous pouvez les voir et les modifier dans les Réglages de l’app.</string>
     <string name="action_allow">Autoriser</string>
     <string name="action_not_now">Plus tard</string>
-    <string name="notifications_blocked">Les notifications sont désactivées : nous ne pourrons pas vous rappeler vos prises.</string>
-    <string name="notifications_turn_on">Activer</string>
+    <string name="action_open_permissions">Voir dans les Réglages</string>
+    <string name="permissions_missing">Autorisations manquantes : l’app ne peut pas vous rappeler vos prises.</string>
+    <string name="permissions_fix">Résoudre</string>
+    <string name="settings_permissions">Autorisations</string>
+    <string name="permission_notifications">Notifications</string>
+    <string name="permission_granted">Accordée</string>
+    <string name="permission_missing">Manquante · touchez pour l’accorder</string>
     <string name="settings_language">Langue</string>
     <string name="language_system">Automatique (langue de l’appareil)</string>
 </resources>
