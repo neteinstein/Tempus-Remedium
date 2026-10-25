@@ -87,8 +87,6 @@ import org.mariacf.tempusremedium.ui.resources.action_cancel
 import org.mariacf.tempusremedium.ui.resources.action_delete
 import org.mariacf.tempusremedium.ui.resources.action_save
 import org.mariacf.tempusremedium.ui.resources.contraceptive_hint
-import org.mariacf.tempusremedium.ui.resources.contraceptive_weeks_off
-import org.mariacf.tempusremedium.ui.resources.contraceptive_weeks_on
 import org.mariacf.tempusremedium.ui.resources.cycle_days_off
 import org.mariacf.tempusremedium.ui.resources.cycle_days_on
 import org.mariacf.tempusremedium.ui.resources.day_today
@@ -169,8 +167,8 @@ fun MedicationEditor(
     var everyMonths by remember { mutableStateOf((initialFrequency as? Frequency.Monthly)?.everyMonths ?: 1) }
     var daysOn by remember { mutableStateOf((initialFrequency as? Frequency.Cycle)?.daysOn ?: 21) }
     var daysOff by remember { mutableStateOf((initialFrequency as? Frequency.Cycle)?.daysOff ?: 7) }
-    var weeksOn by remember { mutableStateOf((initialFrequency as? Frequency.Contraceptive)?.weeksOn ?: 3) }
-    var weeksOff by remember { mutableStateOf((initialFrequency as? Frequency.Contraceptive)?.weeksOff ?: 1) }
+    var pillDaysOn by remember { mutableStateOf((initialFrequency as? Frequency.Contraceptive)?.daysOn ?: 21) }
+    var pillDaysOff by remember { mutableStateOf((initialFrequency as? Frequency.Contraceptive)?.daysOff ?: 7) }
     // Dates are edited as day offsets: the start from today, the end from the start.
     val initialStart = medication?.schedule?.startDate ?: today
     var startOffset by remember { mutableStateOf(today.daysUntil(initialStart)) }
@@ -218,7 +216,7 @@ fun MedicationEditor(
                     FrequencyKind.EVERY_N_DAYS -> Frequency.EveryNDays(interval)
                     FrequencyKind.MONTHLY -> Frequency.Monthly(everyMonths)
                     FrequencyKind.CYCLE -> Frequency.Cycle(daysOn, daysOff)
-                    FrequencyKind.CONTRACEPTIVE -> Frequency.Contraceptive(weeksOn, weeksOff)
+                    FrequencyKind.CONTRACEPTIVE -> Frequency.Contraceptive(pillDaysOn, pillDaysOff)
                 },
             startDate = startDate,
             endDate = if (endKind == ScheduleEnd.DATE) startDate.plus(DatePeriod(days = lastDayOffset)) else null,
@@ -373,8 +371,8 @@ fun MedicationEditor(
                 }
 
                 FrequencyKind.CONTRACEPTIVE -> {
-                    QuantityRow(stringResource(Res.string.contraceptive_weeks_on), weeksOn, { weeksOn = it }, range = 1..12)
-                    QuantityRow(stringResource(Res.string.contraceptive_weeks_off), weeksOff, { weeksOff = it }, range = 1..4)
+                    QuantityRow(stringResource(Res.string.cycle_days_on), pillDaysOn, { pillDaysOn = it }, range = 1..90)
+                    QuantityRow(stringResource(Res.string.cycle_days_off), pillDaysOff, { pillDaysOff = it }, range = 0..90)
                     Text(
                         stringResource(Res.string.contraceptive_hint),
                         style = TempusTheme.type.bodySmall,

@@ -23,7 +23,6 @@ import org.mariacf.tempusremedium.ui.resources.color_pink
 import org.mariacf.tempusremedium.ui.resources.color_teal
 import org.mariacf.tempusremedium.ui.resources.color_white
 import org.mariacf.tempusremedium.ui.resources.color_yellow
-import org.mariacf.tempusremedium.ui.resources.contraceptive_summary
 import org.mariacf.tempusremedium.ui.resources.cycle_summary
 import org.mariacf.tempusremedium.ui.resources.day_label
 import org.mariacf.tempusremedium.ui.resources.every_months
@@ -74,7 +73,6 @@ import org.mariacf.tempusremedium.ui.resources.weekday_sunday
 import org.mariacf.tempusremedium.ui.resources.weekday_thursday
 import org.mariacf.tempusremedium.ui.resources.weekday_tuesday
 import org.mariacf.tempusremedium.ui.resources.weekday_wednesday
-import org.mariacf.tempusremedium.ui.resources.weeks_count
 
 val TimeSlot.label: StringResource
     get() =
@@ -206,11 +204,7 @@ fun frequencyLabel(
         }
 
         is Frequency.Contraceptive -> {
-            stringResource(
-                Res.string.contraceptive_summary,
-                pluralStringResource(Res.plurals.weeks_count, frequency.weeksOn, frequency.weeksOn),
-                frequency.weeksOff,
-            )
+            stringResource(Res.string.cycle_summary, frequency.daysOn, frequency.daysOff)
         }
     }
 
