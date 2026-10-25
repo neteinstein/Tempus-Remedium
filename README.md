@@ -1,6 +1,29 @@
+<div align="center">
+
+<img src="docs/icon.svg" width="128" height="128" alt="Ícone do Tempus Remedium">
+
 # Tempus Remedium
 
-**Por [Dra. Maria Cortês Ferreira](https://mariacf.pt)**, médica de família · [mariacf.pt](https://mariacf.pt)
+**Os seus medicamentos e doses de hoje, em dia.**
+
+**Por [Dra. Maria Cortês Ferreira](https://mariacf.pt)**, médica de família · [mariacf.pt/apps](https://mariacf.pt/apps/)
+
+[![PR Checks](https://github.com/neteinstein/Tempus-Remedium/actions/workflows/pr.yml/badge.svg)](https://github.com/neteinstein/Tempus-Remedium/actions/workflows/pr.yml)
+![Android 8+](https://img.shields.io/badge/Android-8%2B-3DDC84?logo=android&logoColor=white)
+![Kotlin 2.4](https://img.shields.io/badge/Kotlin-2.4-7F52FF?logo=kotlin&logoColor=white)
+![Compose Multiplatform](https://img.shields.io/badge/Compose-Multiplatform-4285F4?logo=jetpackcompose&logoColor=white)
+![Languages](https://img.shields.io/badge/idiomas-PT%20%C2%B7%20EN%20%C2%B7%20FR%20%C2%B7%20DE%20%C2%B7%20ES-026A9F)
+![No account, no server](https://img.shields.io/badge/sem%20conta-sem%20servidor-14B8A6)
+
+<a href="https://github.com/neteinstein/Tempus-Remedium/raw/main/docs/tempus-remedium.mp4">
+  <img src="docs/demo.webp" width="860" alt="Demonstração do Tempus Remedium: escreve-se o antibiótico, a calculadora da Dra. Maria Cortês Ferreira sugere 6 mL de 12 em 12 horas, e a app avisa a cada toma até ao fim do tratamento">
+</a>
+
+<sub>▶ <a href="https://github.com/neteinstein/Tempus-Remedium/raw/main/docs/tempus-remedium.mp4">Ver com som</a> · 22 segundos</sub>
+
+</div>
+
+---
 
 Medication and dose manager, in European Portuguese. It shows what to take today and when
 (**HOJE**), which medications are running out (**REPOR EM BREVE**, as jars or blister packs),
