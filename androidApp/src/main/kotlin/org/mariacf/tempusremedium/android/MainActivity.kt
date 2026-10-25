@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -29,8 +30,16 @@ class MainActivity : ComponentActivity() {
     /** Refreshed on resume and after the permission dialog: the user can change them in system settings. */
     private var permissionsMissing by mutableStateOf(false)
 
+    /** When the notification dialog was requested, to tell a real answer from an instant refusal. */
+    private var askedAt = 0L
+
     private val notificationPermission =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { refreshPermissions() }
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            // Refused with no dialog on screen: the system stopped asking (e.g. denied twice in an
+            // older version, before we kept track). Only system settings can turn it on now.
+            if (!granted && SystemClock.elapsedRealtime() - askedAt < NO_DIALOG_MILLIS) openNotificationSettings()
+            refreshPermissions()
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -109,6 +118,7 @@ class MainActivity : ComponentActivity() {
             !permissionDeniedForGood()
         ) {
             getSharedPreferences(PREFS, MODE_PRIVATE).edit().putBoolean(ASKED_KEY, true).apply()
+            askedAt = SystemClock.elapsedRealtime()
             notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
         } else {
             // Denied twice (the system no longer asks) or turned off: only system settings can change it.
@@ -134,6 +144,9 @@ class MainActivity : ComponentActivity() {
         const val EXTRA_REFILL = "refill"
         private const val PREFS = "permissions"
         private const val ASKED_KEY = "notifications_asked"
+
+        /** Faster than anyone can read and answer the permission dialog. */
+        private const val NO_DIALOG_MILLIS = 500L
 
         fun Intent.toLaunchRequest(): LaunchRequest? {
             getStringExtra(EXTRA_SLOT)
