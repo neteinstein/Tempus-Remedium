@@ -18,8 +18,6 @@ import org.mariacf.tempusremedium.core.model.Settings
 import org.mariacf.tempusremedium.ui.components.GroupCard
 import org.mariacf.tempusremedium.ui.components.GroupDivider
 import org.mariacf.tempusremedium.ui.resources.Res
-import org.mariacf.tempusremedium.ui.resources.permission_granted
-import org.mariacf.tempusremedium.ui.resources.permission_missing
 import org.mariacf.tempusremedium.ui.resources.permission_notifications
 import org.mariacf.tempusremedium.ui.resources.settings_exact_alarms
 import org.mariacf.tempusremedium.ui.resources.settings_exact_alarms_body
@@ -28,7 +26,7 @@ import org.mariacf.tempusremedium.ui.resources.settings_permissions
 import org.mariacf.tempusremedium.ui.resources.settings_reminders
 import org.mariacf.tempusremedium.ui.resources.settings_reminders_body
 import org.mariacf.tempusremedium.ui.resources.settings_widgets_hint
-import org.mariacf.tempusremedium.ui.screens.SettingsRow
+import org.mariacf.tempusremedium.ui.screens.PermissionRow
 import org.mariacf.tempusremedium.ui.screens.SettingsSection
 import org.mariacf.tempusremedium.ui.screens.SettingsSwitchRow
 import org.mariacf.tempusremedium.ui.theme.TempusTheme
@@ -96,24 +94,4 @@ fun AndroidSettingsExtras(
             modifier = Modifier.padding(horizontal = 8.dp),
         )
     }
-}
-
-/** "Notificações · Dada" or, in red, "Notificações · Em falta · toque para dar ›". */
-@Composable
-fun PermissionRow(
-    title: String,
-    granted: Boolean,
-    onGrant: () -> Unit,
-    modifier: Modifier = Modifier,
-    explanation: String? = null,
-) {
-    val status = stringResource(if (granted) Res.string.permission_granted else Res.string.permission_missing)
-    SettingsRow(
-        title = title,
-        body = if (granted || explanation == null) status else "$status\n$explanation",
-        value = if (granted) "✓" else "›",
-        onClick = if (granted) null else onGrant,
-        danger = !granted,
-        modifier = modifier,
-    )
 }

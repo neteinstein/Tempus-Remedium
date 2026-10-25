@@ -100,7 +100,13 @@
 
     <string name="settings_times">Times</string>
     <string name="settings_browser_storage">Your data is stored only in this browser.</string>
-    <string name="settings_web_reduced">The web version has no reminders, widgets or lock screen.</string>
+    <string name="settings_web_reduced">The web version only alerts you while it is open: no reminders when it is closed, no widgets, no lock screen.</string>
+    <string name="settings_web_alerts">Alerts while the app is open</string>
+    <string name="settings_web_alerts_body">A notification when a dose is due, and the number of doses still to take on the app icon, while the app is open.</string>
+    <string name="install_home_screen">Install the app: tap Share, then “Add to Home Screen”.</string>
+    <string name="install_store">Get the Android app, with reminders and widgets.</string>
+    <string name="install_store_action">Install</string>
+    <string name="install_banner_close">Close install tip</string>
 
     <string name="channel_reminders">Dose reminders</string>
     <string name="channel_low_stock">Low stock</string>

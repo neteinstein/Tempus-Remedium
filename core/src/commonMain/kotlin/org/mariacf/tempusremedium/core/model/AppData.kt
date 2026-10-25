@@ -62,6 +62,8 @@ data class Settings(
     val language: AppLanguage = AppLanguage.SYSTEM,
     /** The user closed the "add a widget" banner. */
     val widgetPromptDismissed: Boolean = false,
+    /** The user closed the web's "install the app" banner. */
+    val installPromptDismissed: Boolean = false,
 ) {
     fun timeOf(slot: TimeSlot): LocalTime = slotTimes[slot] ?: slot.defaultTime
 }

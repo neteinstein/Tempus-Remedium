@@ -10,6 +10,8 @@ import org.mariacf.tempusremedium.core.model.DoseStatus
 import org.mariacf.tempusremedium.core.model.Settings
 import org.mariacf.tempusremedium.core.model.Stock
 import org.mariacf.tempusremedium.core.model.TimeSlot
+import org.mariacf.tempusremedium.core.schedule.dueDoseCount
+import org.mariacf.tempusremedium.core.schedule.logCourseDose
 import org.mariacf.tempusremedium.core.schedule.logDose
 import org.mariacf.tempusremedium.core.schedule.logSlot
 import org.mariacf.tempusremedium.core.schedule.newlyLowStock
@@ -64,5 +66,24 @@ class RemindersTest {
         assertEquals(listOf(omega3.id), taken.newlyLowStock(plenty).map { it.medication.id })
         val takenAgain = taken.logDose(omega3.id, LocalDate(2026, 10, 23), TimeSlot.MIDDAY, DoseStatus.TAKEN, 2L)
         assertTrue(takenAgain.newlyLowStock(taken).isEmpty())
+    }
+
+    @Test
+    fun dueDosesAreThoseWhoseTimeHasComeAndAreNotLogged() {
+        // 16:37: MANHÃ (Metformina, Vitamina D) and ALMOÇO (Ómega 3) are still open.
+        assertEquals(3, data.dueDoseCount(ReferenceFixtures.now))
+        assertEquals(1, data.logSlot(date, TimeSlot.MORNING, DoseStatus.TAKEN, 1L).dueDoseCount(ReferenceFixtures.now))
+        // A slot counts from its own minute.
+        assertEquals(4, data.dueDoseCount(LocalDateTime(date, LocalTime(19, 0))))
+        assertEquals(0, data.dueDoseCount(LocalDateTime(date, LocalTime(7, 0))))
+    }
+
+    @Test
+    fun dueDosesIncludeCourseDoses() {
+        val withCourse = CourseFixtures.data
+        // Course doses at 08:00 and 16:00 are due by 16:37; the one at 00:00 is tomorrow's.
+        assertEquals(5, withCourse.dueDoseCount(ReferenceFixtures.now))
+        val logged = withCourse.logCourseDose(CourseFixtures.amoxicilina.id, 0, DoseStatus.TAKEN, 1L)
+        assertEquals(4, logged.dueDoseCount(ReferenceFixtures.now))
     }
 }

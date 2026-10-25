@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ComposeViewport
 import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.getString
@@ -19,7 +20,9 @@ import org.jetbrains.compose.resources.stringResource
 import org.mariacf.tempusremedium.core.data.LocalStorageDocumentStorage
 import org.mariacf.tempusremedium.core.data.MedicationRepository
 import org.mariacf.tempusremedium.ui.App
+import org.mariacf.tempusremedium.ui.InstallPrompt
 import org.mariacf.tempusremedium.ui.PlatformUi
+import org.mariacf.tempusremedium.ui.components.GroupCard
 import org.mariacf.tempusremedium.ui.resources.Res
 import org.mariacf.tempusremedium.ui.resources.app_name
 import org.mariacf.tempusremedium.ui.resources.fraunces_medium
@@ -31,16 +34,34 @@ import org.mariacf.tempusremedium.ui.resources.jakarta_extrabold
 import org.mariacf.tempusremedium.ui.resources.jakarta_medium
 import org.mariacf.tempusremedium.ui.resources.jakarta_regular
 import org.mariacf.tempusremedium.ui.resources.jakarta_semibold
+import org.mariacf.tempusremedium.ui.resources.permission_notifications
 import org.mariacf.tempusremedium.ui.resources.settings_browser_storage
+import org.mariacf.tempusremedium.ui.resources.settings_web_alerts
+import org.mariacf.tempusremedium.ui.resources.settings_web_alerts_body
 import org.mariacf.tempusremedium.ui.resources.settings_web_reduced
+import org.mariacf.tempusremedium.ui.screens.PermissionRow
+import org.mariacf.tempusremedium.ui.screens.SettingsSection
 import org.mariacf.tempusremedium.ui.theme.TempusTheme
 
 /**
- * The reduced web version: the shared screens with data kept in localStorage.
- * There are no reminders, widgets or lock screen on the web.
+ * The reduced web version: the shared screens with data kept in localStorage, installable as a
+ * web app (manifest and service worker in index.html). It only alerts while open: there are no
+ * reminders with the page closed, widgets or lock screen on the web.
  */
 private const val SPLASH_SETTLE_MS = 250L
 private const val SPLASH_FADE_MS = 320L
+
+/** The native app, which has the reminders and widgets the web lacks. */
+private const val STORE_URL = "https://play.google.com/store/apps/details?id=org.mariacf.tempusremedium"
+
+/** In a phone's browser, what to install instead: the home screen web app (iOS) or the native app (Android). */
+private fun installPrompt(): InstallPrompt? =
+    when {
+        isStandalone() -> null
+        isIos() -> InstallPrompt.HomeScreen
+        isAndroid() -> InstallPrompt.Store { window.open(STORE_URL, "_blank") }
+        else -> null
+    }
 
 /** Every font the theme uses (see TempusTheme). */
 private val webFonts =
@@ -62,6 +83,23 @@ fun main() {
     val platform =
         PlatformUi(
             settingsExtras = { _, _ ->
+                if (WebNotifications.supported) {
+                    SettingsSection(stringResource(Res.string.settings_web_alerts)) {
+                        GroupCard {
+                            PermissionRow(
+                                title = stringResource(Res.string.permission_notifications),
+                                granted = WebNotifications.granted,
+                                onGrant = WebNotifications::request,
+                            )
+                        }
+                        Text(
+                            stringResource(Res.string.settings_web_alerts_body),
+                            style = TempusTheme.type.bodySmall,
+                            color = TempusTheme.colors.inkMute,
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                        )
+                    }
+                }
                 listOf(Res.string.settings_browser_storage, Res.string.settings_web_reduced).forEach {
                     Text(
                         stringResource(it),
@@ -71,6 +109,7 @@ fun main() {
                     )
                 }
             },
+            installPrompt = installPrompt(),
         )
     // A container of its own: the viewport takes over its element, and the splash must stay visible.
     ComposeViewport(document.getElementById("app")!!) {
@@ -92,6 +131,7 @@ fun main() {
                 delay(SPLASH_FADE_MS)
                 splash.remove()
             }
+            LaunchedEffect(Unit) { remindWhileOpen(repository) }
             App(repository, platform = platform)
         }
     }
