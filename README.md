@@ -16,7 +16,7 @@
 ![No account, no server](https://img.shields.io/badge/sem%20conta-sem%20servidor-14B8A6)
 
 <a href="https://github.com/neteinstein/Tempus-Remedium/raw/main/docs/tempus-remedium.mp4">
-  <img src="docs/demo.webp" width="860" alt="Demonstração do Tempus Remedium: escreve-se o antibiótico e a aplicação tenta auto-completar os dados para ajudar a preencher (6 mL de 12 em 12 horas), e a app avisa a cada toma até ao fim do tratamento">
+  <img src="docs/demo.webp" width="860" alt="Demonstração do Tempus Remedium: todas as formas de medicamentos (comprimidos, inaladores, pensos, gotas…), o lembrete com Tomei e Adiar 10 min, o horário em atraso que fica a vermelho e o frasco que pisca quando está a acabar">
 </a>
 
 <sub>▶ <a href="https://github.com/neteinstein/Tempus-Remedium/raw/main/docs/tempus-remedium.mp4">Ver com som</a> · 22 segundos</sub>

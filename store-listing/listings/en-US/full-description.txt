@@ -1,0 +1,47 @@
+Tempus Remedium shows at a glance what to take today and when, reminds you of every dose, marks in red what was missed and warns you when a medication is running low. It was created by Dr Maria Cortês Ferreira, a family doctor.
+
+TODAY
+• The day's doses at four times: Morning, Midday, Evening and Bedtime.
+• Each medication is drawn in the form and colour you chose, so you recognise it straight away.
+• Tap a time to mark each dose as taken or skipped, or use "Took all". Made a mistake? Undo it with one tap.
+• The next time is highlighted; once its time has passed with doses still to take, it turns red.
+
+REMINDERS
+• A notification at each time with doses, with "Taken" and "Snooze 10 min" actions, on the lock screen too.
+• On-time reminders, even with the app closed. If a permission is missing, the app shows it in red and takes you to it.
+• You can hide medication names on the lock screen.
+
+EVERY FORM, EACH ON ITS OWN SCHEDULE
+• Tablets, capsules, softgels, inhalers, transdermal patches, nasal sprays, drops and injections, in several colours.
+• Every day, on chosen days of the week (every other week too), every N days, monthly or in cycles with breaks.
+• With a start date, and no end, until a date or after N times.
+
+COURSES
+• For antibiotics and other medications taken at set hours for a set time: one dose every N hours, in mL or in tablets.
+• Ends after a number of days, a number of doses, on a date or when the pack runs out, and every dose gets its reminder.
+• For some antibiotic oral suspensions, the app suggests the dose, interval and length from the child's weight, using the author's dose calculator. Suggestions are only saved if you accept them, and can be changed.
+
+REFILL SOON
+• Stock goes down by itself as you log your doses.
+• See which medications are running low, as jars or blister packs. One that runs out today or tomorrow pulses red.
+• By default you are warned when 7 days of medication are left; you can choose another limit.
+• Low-stock notifications, and adding stock when you buy a new pack.
+
+WIDGETS
+• "Today", "Refill soon" and "Course", on the home screen and, on devices that support it, on the lock screen, with a step-by-step guide.
+
+HISTORY
+• The share of doses taken over the last 30 days and a summary of each day.
+
+MADE TO FIT
+• Configurable times and an automatic, light or dark appearance.
+• In English, Portuguese, French, German and Spanish: the device's language or the one you choose in Settings.
+
+PRIVACY
+• No account, no sign-up and no ads.
+• The app does not access the internet: your data stays on your device only.
+
+IMPORTANT NOTICE
+Tempus Remedium is a tool to help you organise your medication. It is not a medical device and does not diagnose, treat, cure or prevent any medical condition. The dose calculator's suggestions are supporting information and do not replace a prescription. The app does not replace advice from your doctor or pharmacist: always consult a healthcare professional for medical advice, diagnosis or treatment.
+
+Dr Maria Cortês Ferreira, family doctor · mariacf.pt

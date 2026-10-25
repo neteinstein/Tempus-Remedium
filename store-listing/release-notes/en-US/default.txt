@@ -1,0 +1,7 @@
+First release of Tempus Remedium.
+• Today: the day's doses by time, with missed times in red.
+• Reminders with "Taken" and "Snooze 10 min", on the lock screen too.
+• Tablets, inhalers, patches, sprays, drops and injections, each on its own schedule.
+• Courses every N hours, to the last dose.
+• Refill soon, as jars or blister packs, and widgets.
+• In English, Portuguese, French, German and Spanish.

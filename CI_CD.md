@@ -116,7 +116,9 @@ falling back to debug signing and `1` / `1.0.0` locally.
 The Play Developer API can only update an app that already has one release, so the **first
 upload is manual**: download the `.aab` from the GitHub Release and upload it under Play Console →
 the app → Testing or Production → Create release. Every release after that is automated by
-`publishReleaseBundle`. The Play listing will also need a privacy policy URL.
+`publishReleaseBundle`. The listing text, graphics, privacy policy and App content answers, in
+pt-PT and English, are in [`store-listing/`](store-listing/README.md); the privacy policy still has
+to be hosted at a public URL.
 
 **`MalformedJsonException ... line 1 column 1`** meant the secret's value was not plain JSON (a
 byte-order mark, quotes or base64 from the paste). The "Prepare Play publisher credentials" step

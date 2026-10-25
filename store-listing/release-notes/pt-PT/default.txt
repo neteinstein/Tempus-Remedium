@@ -1,0 +1,7 @@
+Primeira versão do Tempus Remedium.
+• Hoje: as doses do dia por horário, com os horários em atraso a vermelho.
+• Lembretes com «Tomei» e «Adiar 10 min», também no ecrã de bloqueio.
+• Comprimidos, inaladores, pensos, sprays, gotas e injetáveis, cada um ao seu ritmo.
+• Tratamentos de N em N horas, até à última toma.
+• Repor em breve, em frascos ou blisters, e widgets.
+• Em português, inglês, francês, alemão e espanhol.
