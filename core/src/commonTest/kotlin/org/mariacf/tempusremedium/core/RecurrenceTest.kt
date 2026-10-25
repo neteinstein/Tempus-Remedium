@@ -94,9 +94,14 @@ class RecurrenceTest {
     }
 
     @Test
+    fun contraceptiveWithoutPauseIsTakenEveryDay() {
+        assertEquals((0 until 10).toList(), schedule(Frequency.Contraceptive(daysOn = 28, daysOff = 0)).dueOffsets(days = 10))
+    }
+
+    @Test
     fun contraceptiveCycleStartedOnAnEarlierPack() {
         // Pack started 25 days ago: today is in the pause week, the next pack starts in 3 days.
-        val schedule = schedule(Frequency.Contraceptive(weeksOn = 3, weeksOff = 1), startDate = start.plus(DatePeriod(days = -25)))
+        val schedule = schedule(Frequency.Contraceptive(daysOn = 21, daysOff = 7), startDate = start.plus(DatePeriod(days = -25)))
         assertEquals(listOf(3, 4, 5), schedule.dueOffsets(days = 6, from = start))
     }
 
@@ -111,7 +116,7 @@ class RecurrenceTest {
                             "Pílula",
                             shape = PillShape.ROUND_SCORED,
                             color = PillColor.PINK,
-                            schedule = schedule(Frequency.Contraceptive(4, 1)),
+                            schedule = schedule(Frequency.Contraceptive(28, 7)),
                         ),
                     ),
             )

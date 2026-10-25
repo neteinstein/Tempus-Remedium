@@ -314,14 +314,7 @@
     <string name="cycle_days_off">Jours de pause</string>
     <string name="cycle_summary">%1$d jours + %2$d de pause</string>
     <string name="frequency_contraceptive">Pilule contraceptive</string>
-    <string name="contraceptive_weeks_on">Semaines de prise</string>
-    <string name="contraceptive_weeks_off">Semaines de pause</string>
     <string name="contraceptive_hint">Le cycle compte à partir de la date de début : choisissez le jour où vous avez pris le premier comprimé de la plaquette.</string>
-    <string name="contraceptive_summary">%1$s + %2$d de pause</string>
-    <plurals name="weeks_count">
-        <item quantity="one">%1$d semaine</item>
-        <item quantity="other">%1$d semaines</item>
-    </plurals>
     <string name="field_start">Début</string>
     <string name="end_never">Jamais</string>
     <string name="end_kind_occurrences">Nombre de fois</string>
