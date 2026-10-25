@@ -27,3 +27,20 @@ kotlin {
         }
     }
 }
+
+// precache.json: every file of the web build, for the service worker (sw.js) to keep on install,
+// so the app installed on a phone's home screen opens offline from its first launch.
+tasks.named<Sync>("wasmJsBrowserDistribution") {
+    doLast {
+        val root = (this as Sync).destinationDir
+        val files =
+            root
+                .walkTopDown()
+                .filter { it.isFile }
+                .map { it.relativeTo(root).invariantSeparatorsPath }
+                .filterNot { it == "sw.js" || it == "precache.json" || it.endsWith(".map") }
+                .sorted()
+                .toList()
+        root.resolve("precache.json").writeText(files.joinToString(",\n  ", "[\n  ", "\n]\n") { "\"$it\"" })
+    }
+}

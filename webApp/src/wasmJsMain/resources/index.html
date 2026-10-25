@@ -8,6 +8,13 @@
     <meta name="author" content="Dra. Maria Cortês Ferreira">
     <link rel="author" href="https://mariacf.pt">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <!-- Installable web app: the manifest and service worker (sw.js), plus what iOS reads instead. -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Tempus Remedium">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="theme-color" content="#f9fafc" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0b1015" media="(prefers-color-scheme: dark)">
     <script>
@@ -38,6 +45,11 @@
         @keyframes pulse { 50% { transform: scale(.94); } }
         @media (prefers-reduced-motion: reduce) { #splash img { animation: none; } }
     </style>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+        }
+    </script>
     <script type="application/javascript" src="tempusremedium.js" defer></script>
 </head>
 <body>

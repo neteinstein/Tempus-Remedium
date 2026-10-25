@@ -89,7 +89,13 @@
     <string name="history_day">%1$d de %2$d tomadas</string>
     <string name="settings_times">Horarios</string>
     <string name="settings_browser_storage">Los datos se guardan solo en este navegador.</string>
-    <string name="settings_web_reduced">La versión web no tiene recordatorios, widgets ni pantalla de bloqueo.</string>
+    <string name="settings_web_reduced">La versión web solo avisa mientras está abierta: sin recordatorios con la app cerrada, widgets ni pantalla de bloqueo.</string>
+    <string name="settings_web_alerts">Avisos con la app abierta</string>
+    <string name="settings_web_alerts_body">Una notificación cuando toca una dosis, y el número de dosis pendientes en el icono de la app, mientras la app está abierta.</string>
+    <string name="install_home_screen">Instala la app: toca Compartir y luego «Añadir a pantalla de inicio».</string>
+    <string name="install_store">Instala la app para Android, con recordatorios y widgets.</string>
+    <string name="install_store_action">Instalar</string>
+    <string name="install_banner_close">Cerrar aviso de instalación</string>
     <string name="channel_reminders">Recordatorios de dosis</string>
     <string name="channel_low_stock">Pocas existencias</string>
     <string name="notification_slot_title">%1$s · %2$s</string>
