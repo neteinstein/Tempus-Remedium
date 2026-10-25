@@ -82,11 +82,14 @@ calm blues, frosted cards, and a light and a dark theme.
 | Courses (e.g. antibiotics): a dose every N hours, ending after N days, N doses, on a date or when the pack runs out; dose, interval and length suggested by the author's [dose calculator](https://mariacf.pt/calculadora-doses/) | ✅ | ✅ |
 | History: 30-day adherence | ✅ | ✅ |
 | Configurable slot times; automatic, light or dark theme | ✅ | ✅ |
-| Reminder notifications with **Tomei** / **Adiar 10 min**, shown on the lock screen (names can be hidden) | ✅ | — |
+| Reminder notifications with **Tomei** / **Adiar 10 min**, shown on the lock screen (names can be hidden) | ✅ | Only while the app is open, without names or buttons (Definições → Avisos com a app aberta) |
+| Number of doses due on the app icon | — | ✅ Installed web app, where the system supports it |
 | Low-stock notifications | ✅ | — |
 | Home-screen widgets: Hoje, Repor em breve and Tratamento (also offered for the lock screen where the system supports it), with previews in the widget picker | ✅ | — |
 | "Add the widget" bar and a step-by-step guide (home and lock screen), with one-tap pinning where the launcher allows it | ✅ | — |
 | Permissões section in Definições: a missing reminder permission (notifications, on-time alarms) shows in red, with a red bar on top that leads there | ✅ | — |
+| Installable on the home screen, works offline (manifest and service worker) | — | ✅ |
+| Install bar in a phone's browser: on iPhone/iPad, how to add the app to the home screen; on Android, a link to the native app on Google Play | — | ✅ |
 | Data storage | On the device | In the browser (localStorage) |
 
 Português (pt-PT), English, Français, Deutsch and Español: the device or browser language by default, or the one chosen in Definições → Idioma. No account and no

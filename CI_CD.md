@@ -70,6 +70,10 @@ for now** (GitHub Pages is disabled on the repository): a target's job only runs
 The site uses relative paths, so the same build works under the GitHub Pages subpath and at the root
 of `<project>.pages.dev`.
 
+The site is an installable web app: `manifest.webmanifest`, `sw.js` and the `precache.json` that
+`wasmJsBrowserDistribution` writes (every file of the build, so the installed app opens offline).
+The service worker needs HTTPS, which both targets serve; its scope is the folder the site is in.
+
 ### PR title
 
 Rejects titles that are not Conventional Commits (`type(scope): subject`, with type one of feat,

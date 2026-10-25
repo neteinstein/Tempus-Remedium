@@ -89,7 +89,13 @@
     <string name="history_day">%1$d von %2$d genommen</string>
     <string name="settings_times">Uhrzeiten</string>
     <string name="settings_browser_storage">Die Daten bleiben nur in diesem Browser.</string>
-    <string name="settings_web_reduced">Die Webversion hat keine Erinnerungen, Widgets oder Sperrbildschirm.</string>
+    <string name="settings_web_reduced">Die Webversion meldet sich nur, solange sie geöffnet ist: keine Erinnerungen bei geschlossener App, keine Widgets, kein Sperrbildschirm.</string>
+    <string name="settings_web_alerts">Hinweise bei geöffneter App</string>
+    <string name="settings_web_alerts_body">Eine Benachrichtigung, wenn eine Dosis fällig ist, und die Zahl der offenen Dosen am App-Symbol, solange die App geöffnet ist.</string>
+    <string name="install_home_screen">App installieren: Tippen Sie auf „Teilen“ und dann auf „Zum Home-Bildschirm“.</string>
+    <string name="install_store">Installieren Sie die Android-App mit Erinnerungen und Widgets.</string>
+    <string name="install_store_action">Installieren</string>
+    <string name="install_banner_close">Installationshinweis schließen</string>
     <string name="channel_reminders">Dosis-Erinnerungen</string>
     <string name="channel_low_stock">Niedriger Bestand</string>
     <string name="notification_slot_title">%1$s · %2$s</string>

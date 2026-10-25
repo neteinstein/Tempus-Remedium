@@ -89,7 +89,13 @@
     <string name="history_day">%1$d sur %2$d prises</string>
     <string name="settings_times">Horaires</string>
     <string name="settings_browser_storage">Les données restent uniquement dans ce navigateur.</string>
-    <string name="settings_web_reduced">La version web n’a ni rappels, ni widgets, ni écran de verrouillage.</string>
+    <string name="settings_web_reduced">La version web ne prévient que lorsqu’elle est ouverte : ni rappels app fermée, ni widgets, ni écran de verrouillage.</string>
+    <string name="settings_web_alerts">Alertes app ouverte</string>
+    <string name="settings_web_alerts_body">Une notification à l’heure d’une prise, et le nombre de doses à prendre sur l’icône de l’app, tant que l’app est ouverte.</string>
+    <string name="install_home_screen">Installez l’app : touchez Partager, puis « Sur l’écran d’accueil ».</string>
+    <string name="install_store">Installez l’app Android, avec rappels et widgets.</string>
+    <string name="install_store_action">Installer</string>
+    <string name="install_banner_close">Fermer l’astuce d’installation</string>
     <string name="channel_reminders">Rappels de doses</string>
     <string name="channel_low_stock">Stock bas</string>
     <string name="notification_slot_title">%1$s · %2$s</string>

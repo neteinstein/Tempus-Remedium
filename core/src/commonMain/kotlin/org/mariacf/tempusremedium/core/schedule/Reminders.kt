@@ -64,6 +64,20 @@ private fun AppData.nextSlotReminder(
     return null
 }
 
+/**
+ * Doses of [now]'s day whose time has come and that are not logged yet, HOJE slots and courses
+ * alike: the count on the app icon's badge.
+ */
+fun AppData.dueDoseCount(now: LocalDateTime): Int {
+    val slotDoses =
+        planFor(now.date)
+            .slots
+            .filter { it.time <= now.time }
+            .sumOf { slot -> slot.doses.count { it.status == null } }
+    val courseDoses = courseDosesOn(now.date).count { it.at <= now && it.status == null }
+    return slotDoses + courseDoses
+}
+
 /** Medications that ran low between [before] and this state, to warn about once. */
 fun AppData.newlyLowStock(before: AppData): List<LowStockItem> {
     val wasLow = before.lowStock().map { it.medication.id }.toSet()

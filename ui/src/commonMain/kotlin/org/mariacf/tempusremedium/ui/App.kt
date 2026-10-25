@@ -54,6 +54,7 @@ import org.mariacf.tempusremedium.core.schedule.adherence
 import org.mariacf.tempusremedium.core.schedule.lowStock
 import org.mariacf.tempusremedium.core.schedule.planFor
 import org.mariacf.tempusremedium.core.schedule.stockAlerts
+import org.mariacf.tempusremedium.ui.components.InstallBanner
 import org.mariacf.tempusremedium.ui.components.NotificationsRationaleDialog
 import org.mariacf.tempusremedium.ui.components.PermissionsMissingBanner
 import org.mariacf.tempusremedium.ui.components.brandBackground
@@ -94,6 +95,17 @@ interface WidgetSupport {
     fun pin()
 }
 
+/** What the web suggests installing, by the phone it runs on. */
+sealed interface InstallPrompt {
+    /** iPhone or iPad browser: add the web app to the home screen through Share. */
+    data object HomeScreen : InstallPrompt
+
+    /** Android browser: the native app, with reminders and widgets, on the store. */
+    class Store(
+        val open: () -> Unit,
+    ) : InstallPrompt
+}
+
 /** What a platform adds to the shared app (Android: reminders and widgets; web: storage notice). */
 class PlatformUi(
     val settingsExtras: @Composable ColumnScope.(Settings, (Settings) -> Unit) -> Unit = { _, _ -> },
@@ -107,6 +119,8 @@ class PlatformUi(
     /** Asks for the first missing permission (the system dialog, or its settings screen). */
     val requestPermissions: () -> Unit = {},
     val widgets: WidgetSupport? = null,
+    /** Shown at the top until the user closes it (web in a phone's browser). */
+    val installPrompt: InstallPrompt? = null,
 )
 
 /** Whether [ThemeMode] resolves to dark right now. */
@@ -214,11 +228,19 @@ fun App(
                 val showPermissionsBanner =
                     permissionsMissing && data.settings.remindersEnabled && data.activeMedications.isNotEmpty()
                 val showWidgetBanner = !widgetPlaced && data.medications.isNotEmpty() && !data.settings.widgetPromptDismissed
+                val installPrompt = platform.installPrompt?.takeUnless { data.settings.installPromptDismissed }
                 Scaffold(
                     containerColor = Color.Transparent,
                     topBar = {
-                        // Missing permissions come first; the widget tip sits below, without a second status-bar gap.
+                        // The web's install tip, then missing permissions; the widget tip sits below, without a
+                        // second status-bar gap. The install tip never shows with the other two (web vs Android).
                         Column {
+                            if (installPrompt != null) {
+                                InstallBanner(
+                                    prompt = installPrompt,
+                                    onClose = { viewModel.updateSettings(data.settings.copy(installPromptDismissed = true)) },
+                                )
+                            }
                             if (showPermissionsBanner) {
                                 PermissionsMissingBanner(onFix = ::openPermissions)
                             }

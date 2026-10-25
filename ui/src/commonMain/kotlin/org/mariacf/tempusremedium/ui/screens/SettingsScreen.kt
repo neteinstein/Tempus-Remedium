@@ -77,6 +77,8 @@ import org.mariacf.tempusremedium.ui.resources.language_fr
 import org.mariacf.tempusremedium.ui.resources.language_pt
 import org.mariacf.tempusremedium.ui.resources.language_system
 import org.mariacf.tempusremedium.ui.resources.nav_settings
+import org.mariacf.tempusremedium.ui.resources.permission_granted
+import org.mariacf.tempusremedium.ui.resources.permission_missing
 import org.mariacf.tempusremedium.ui.resources.settings_about
 import org.mariacf.tempusremedium.ui.resources.settings_language
 import org.mariacf.tempusremedium.ui.resources.settings_stock_display
@@ -370,3 +372,23 @@ private val AppLanguage.label: StringResource
             AppLanguage.DE -> Res.string.language_de
             AppLanguage.ES -> Res.string.language_es
         }
+
+/** "Notificações · Dada" or, in red, "Notificações · Em falta · toque para dar ›". */
+@Composable
+fun PermissionRow(
+    title: String,
+    granted: Boolean,
+    onGrant: () -> Unit,
+    modifier: Modifier = Modifier,
+    explanation: String? = null,
+) {
+    val status = stringResource(if (granted) Res.string.permission_granted else Res.string.permission_missing)
+    SettingsRow(
+        title = title,
+        body = if (granted || explanation == null) status else "$status\n$explanation",
+        value = if (granted) "✓" else "›",
+        onClick = if (granted) null else onGrant,
+        danger = !granted,
+        modifier = modifier,
+    )
+}

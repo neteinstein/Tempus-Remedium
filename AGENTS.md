@@ -14,7 +14,7 @@ Kotlin Multiplatform + Compose Multiplatform. Gradle modules:
 | `core` | JVM, Wasm | Model (`Medication`, `Schedule`, `DoseLog`, `AppData`), the day plan, stock, adherence, reminder maths, the JSON repository and storage (`FileDocumentStorage` on JVM/Android, `LocalStorageDocumentStorage` on the web), `ReferenceFixtures`. Pure Kotlin, fully unit-tested. |
 | `ui` | Android, Wasm | Theme (`TempusTheme`, light and dark `TempusPalette`), pill, jar and blister painters, the HOJE and REPOR EM BREVE panels, all screens, `App`, `AppViewModel`, string resources (`composeResources/values` = pt-PT, `values-en`, `values-fr`, `values-de`, `values-es` = translations), the Fraunces and Plus Jakarta Sans fonts. |
 | `androidApp` | Android | `MainActivity`, `AppContainer`, reminders (`AlarmManager`, notification actions, reschedule on boot/time change), Glance widgets, Android-only settings, Robolectric and Roborazzi tests. |
-| `webApp` | Wasm | `main()` with `ComposeViewport`, `index.html`. |
+| `webApp` | Wasm | `main()` with `ComposeViewport`, `index.html`; the installable web app (`manifest.webmanifest`, `sw.js` with the `precache.json` the build writes, icons), the install bar (iOS: add to home screen; Android: Google Play), notifications and icon badge while the page is open (`WebReminders.kt`). |
 
 Key ideas:
 
