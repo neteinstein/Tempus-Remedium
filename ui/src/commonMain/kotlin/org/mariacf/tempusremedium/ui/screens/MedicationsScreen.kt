@@ -117,7 +117,7 @@ private fun MedicationRow(
             Spacer(Modifier.width(8.dp))
             val low = Inventory.isLow(medication)
             Text(
-                pluralStringResource(Res.plurals.units_left, stock.remaining, stock.remaining),
+                pluralStringResource(Res.plurals.units_left, medication.stockTablets ?: 0, medication.stockTablets ?: 0),
                 style = TempusTheme.type.bodySmall,
                 color = if (low) palette.stock else palette.inkMute,
                 modifier =

@@ -5,7 +5,9 @@ import org.mariacf.tempusremedium.core.ReferenceFixtures.metformina
 import org.mariacf.tempusremedium.core.ReferenceFixtures.omega3
 import org.mariacf.tempusremedium.core.model.AppData
 import org.mariacf.tempusremedium.core.model.Frequency
+import org.mariacf.tempusremedium.core.model.PillPortion
 import org.mariacf.tempusremedium.core.model.Stock
+import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.core.schedule.Inventory
 import org.mariacf.tempusremedium.core.schedule.lowStock
 import kotlin.test.Test
@@ -48,5 +50,14 @@ class InventoryTest {
         assertEquals(0, Inventory.threshold(ReferenceFixtures.vitaminaD))
         val data = AppData(medications = listOf(omega3.copy(archived = true)))
         assertTrue(data.lowStock().isEmpty())
+    }
+
+    @Test
+    fun halfTabletsCountStockInPortionsAndReportWholeTablets() {
+        // 10 tablets in halves = 20 portions; 2 portions a day (1 tablet) -> threshold of 14 portions.
+        val halves = omega3.copy(portion = PillPortion.HALF, stock = Stock(remaining = 20))
+        assertEquals(10, halves.stockTablets)
+        assertEquals(14, Inventory.threshold(halves.copy(schedule = halves.schedule.copy(doses = mapOf(TimeSlot.MORNING to 2)))))
+        assertEquals(listOf(3), AppData(medications = listOf(halves.copy(stock = Stock(remaining = 6)))).lowStock().map { it.remaining })
     }
 }

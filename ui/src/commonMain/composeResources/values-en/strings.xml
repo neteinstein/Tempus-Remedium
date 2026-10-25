@@ -68,6 +68,12 @@
     <string name="field_name">Name</string>
     <string name="field_strength">Strength (e.g. 500mg)</string>
     <string name="field_shape">Shape</string>
+    <string name="field_portion">Tablet portion</string>
+    <string name="portion_whole">Whole</string>
+    <string name="portion_half">Half</string>
+    <string name="portion_quarter">Quarter</string>
+    <string name="dose_fraction_one">%1$s unit</string>
+    <string name="dose_fraction_other">%1$s units</string>
     <string name="field_color">Colour</string>
     <string name="field_when">When to take</string>
     <string name="field_frequency">Frequency</string>

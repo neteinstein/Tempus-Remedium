@@ -335,7 +335,7 @@ private fun DoseRow(
             Text(dose.medication.displayName, style = TempusTheme.type.rowTitle, color = palette.ink)
             val detail =
                 when (dose.status) {
-                    null -> pluralStringResource(Res.plurals.units, dose.quantity, dose.quantity)
+                    null -> doseLabel(dose.medication, dose.quantity)
                     DoseStatus.TAKEN -> stringResource(Res.string.status_taken_at, dose.loggedAtEpochMillis.localTime())
                     DoseStatus.SKIPPED -> stringResource(Res.string.status_skipped)
                 }

@@ -22,6 +22,26 @@ enum class PillShape {
 }
 
 /**
+ * How much of a tablet one dose unit is, for scored round and square tablets taken in halves or
+ * quarters. Dose quantities, stock and logs count these portions, so 4 portions of
+ * [QUARTER] are one whole tablet.
+ */
+@Serializable
+enum class PillPortion(
+    val parts: Int,
+) {
+    WHOLE(1),
+    HALF(2),
+    QUARTER(4),
+    ;
+
+    companion object {
+        /** Only these shapes can be split. */
+        fun canSplit(shape: PillShape): Boolean = shape == PillShape.ROUND_SCORED || shape == PillShape.SQUARE
+    }
+}
+
+/**
  * Colour of a pill. The first four entries are the colours in docs/design/reference;
  * the rest are product additions so more medications can be told apart.
  */
@@ -46,6 +66,8 @@ data class Medication(
     val color: PillColor,
     val schedule: Schedule,
     val stock: Stock? = null,
+    /** Fraction of a tablet that one dose unit and one stock unit stand for. */
+    val portion: PillPortion = PillPortion.WHOLE,
     val notes: String = "",
     val archived: Boolean = false,
     /** Set for a course taken every few hours (see [Course]); its slot doses are then empty. */
@@ -54,6 +76,10 @@ data class Medication(
     /** "Metformina 500mg": the name plus strength, as shown in the HOJE legend. */
     val displayName: String
         get() = if (strength.isBlank()) name else "$name $strength"
+
+    /** Whole tablets left (a started tablet does not count). */
+    val stockTablets: Int?
+        get() = stock?.let { it.remaining / portion.parts }
 }
 
 /**
