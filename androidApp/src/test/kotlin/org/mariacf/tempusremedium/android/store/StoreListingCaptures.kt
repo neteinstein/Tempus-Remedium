@@ -233,6 +233,10 @@ abstract class StoreListingCaptures(
             sample().logSlot(date, TimeSlot.MORNING, DoseStatus.TAKEN, millis(date, 8, 0))
         }
 
+    /** Video: HOJE and REPOR EM BREVE on a light home screen at midday, without a course. */
+    @Test
+    fun videoHome() = homeScreen("video_home", at = LocalTime(12, 40)) { morningTaken() }
+
     /** HOJE on the lock screen at midday, large, under the clock. */
     @Test
     fun lockScreenWidget() = lockScreen("09_lock_screen", at = LocalTime(12, 40)) { morningTaken() }
@@ -476,10 +480,13 @@ abstract class StoreListingCaptures(
         val hoje = runBlocking { HojeWidgetUi.build(context, appData, date) }
         val course = runBlocking { CourseWidgetUi.build(context, appData, LocalDateTime(date, at)) }
         val repor = runBlocking { ReporWidgetUi.build(context, appData) }
+        // The course widget only when there is a course to show.
         val widgets =
-            listOf(
+            listOfNotNull(
                 renderWidget(context, DpSize(WIDGET_WIDTH_DP.dp, 236.dp)) { HojeWidgetContent(hoje) },
-                renderWidget(context, DpSize(WIDGET_WIDTH_DP.dp, 132.dp)) { CourseWidgetContent(course) },
+                course.courses.takeIf { it.isNotEmpty() }?.let {
+                    renderWidget(context, DpSize(WIDGET_WIDTH_DP.dp, 132.dp)) { CourseWidgetContent(course) }
+                },
                 renderWidget(context, DpSize(WIDGET_WIDTH_DP.dp, 224.dp)) { ReporWidgetContent(repor) },
             )
         val dark = WidgetStyle.palette(context) == TempusPalette.Dark

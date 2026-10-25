@@ -109,8 +109,9 @@ Screens are rendered at 412 × 824 dp, a common phone width. Three details of th
 ## The demo video
 
 Built with the brag workflow (brag-slim): `video/brag-plan.md` has the angle and the storyboard.
-22 s, 1920 × 1080, 30 fps, focused on the medication forms, the reminder with **Tomei** /
-**Adiar 10 min**, and the red highlight of a missed time and of a medication running out. Every
+24 s, 1920 × 1080, 30 fps, focused on day-to-day medication: today's doses, the reminder with
+**Tomei** / **Adiar 10 min**, the HOJE widget on the lock screen and the widgets on the home
+screen, and the red highlight of a missed time and of a medication running out. Every
 frame is drawn from the same Robolectric captures with the app's fonts and colours; the music and
 effects are synthesised in `scripts/make_video.py` at 120 BPM, with every cut on a beat. The
 notification card is drawn from the strings the app's reminder uses, because Robolectric cannot
