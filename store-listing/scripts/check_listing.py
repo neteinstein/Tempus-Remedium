@@ -54,7 +54,7 @@ def check_image(path, size=None, alpha_ok=False, max_bytes=8 * 1024 * 1024, side
 
 
 def main():
-    for listing in sorted((STORE / "listings").iterdir()):
+    for listing in sorted(path for path in (STORE / "listings").iterdir() if path.is_dir()):
         counts = {name: check_text(listing / name, limit) for name, limit in TEXT_LIMITS.items()}
         graphics = listing / "graphics"
         check_image(graphics / "icon/1.png", (512, 512), alpha_ok=True, max_bytes=1024 * 1024)

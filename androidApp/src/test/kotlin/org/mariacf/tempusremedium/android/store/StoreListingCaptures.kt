@@ -233,9 +233,9 @@ abstract class StoreListingCaptures(
             sample().logSlot(date, TimeSlot.MORNING, DoseStatus.TAKEN, millis(date, 8, 0))
         }
 
-    /** The three widgets on a light home screen at midday: HOJE, the antibiotic's next dose, REPOR EM BREVE. */
+    /** HOJE on the lock screen at midday, large, under the clock. */
     @Test
-    fun widgets() = homeScreen("09_widgets", at = LocalTime(12, 40)) { morningTaken().withCourse(dosesTaken = 1) }
+    fun lockScreenWidget() = lockScreen("09_lock_screen", at = LocalTime(12, 40)) { morningTaken() }
 
     /** The same widgets at night, in the dark theme and with blister packs. */
     @Test
@@ -482,15 +482,70 @@ abstract class StoreListingCaptures(
                 renderWidget(context, DpSize(WIDGET_WIDTH_DP.dp, 132.dp)) { CourseWidgetContent(course) },
                 renderWidget(context, DpSize(WIDGET_WIDTH_DP.dp, 224.dp)) { ReporWidgetContent(repor) },
             )
+        val dark = WidgetStyle.palette(context) == TempusPalette.Dark
+        deviceScreen(name, dark) { canvas, dp, text ->
+            val margin = (canvas.width - WIDGET_WIDTH_DP * dp) / 2
+            canvas.drawText(at.toString(), margin + 8 * dp, 30 * dp, text(14f, Typeface.BOLD))
+            canvas.drawText(homeDate, margin + 8 * dp, 92 * dp, text(24f, Typeface.NORMAL))
+            var y = 124 * dp
+            for (widget in widgets) {
+                canvas.drawBitmap(widget, margin, y, null)
+                y += widget.height + 14 * dp
+            }
+        }
+    }
 
-        val metrics = context.resources.displayMetrics
+    /**
+     * The HOJE widget alone on a lock screen: padlock, large clock, date, then the widget, on the
+     * dark wallpaper. Drawn like [homeScreen]; the widget follows the qualifiers' day/night setting.
+     */
+    private fun lockScreen(
+        name: String,
+        at: LocalTime,
+        data: () -> AppData,
+    ) {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val hoje = runBlocking { HojeWidgetUi.build(context, data(), date) }
+        val widget = renderWidget(context, DpSize(WIDGET_WIDTH_DP.dp, 240.dp)) { HojeWidgetContent(hoje) }
+        deviceScreen(name, darkWallpaper = true) { canvas, dp, text ->
+            val center = canvas.width / 2f
+            // Padlock: shackle and body.
+            val lock =
+                text(0f, Typeface.NORMAL).apply {
+                    style = Paint.Style.STROKE
+                    strokeWidth = 2 * dp
+                }
+            canvas.drawArc(RectF(center - 5 * dp, 30 * dp, center + 5 * dp, 42 * dp), 180f, 180f, false, lock)
+            canvas.drawRoundRect(RectF(center - 8 * dp, 37 * dp, center + 8 * dp, 50 * dp), 3 * dp, 3 * dp, text(0f, Typeface.NORMAL))
+            val clock =
+                text(104f, Typeface.NORMAL).apply {
+                    textAlign = Paint.Align.CENTER
+                    typeface =
+                        Typeface.create("sans-serif-light", Typeface.NORMAL)
+                }
+            canvas.drawText(at.toString(), center, 182 * dp, clock)
+            canvas.drawText(homeDate, center, 222 * dp, text(18f, Typeface.NORMAL).apply { textAlign = Paint.Align.CENTER })
+            canvas.drawBitmap(widget, (canvas.width - widget.width) / 2f, 290 * dp, null)
+        }
+    }
+
+    /**
+     * A phone screen drawn by hand: the wallpaper in the brand blues with soft blobs, whatever
+     * [content] draws (given the canvas, the density and a text paint factory) and the gesture bar.
+     */
+    private fun deviceScreen(
+        name: String,
+        darkWallpaper: Boolean,
+        content: (android.graphics.Canvas, Float, (Float, Int) -> Paint) -> Unit,
+    ) {
+        val metrics = ApplicationProvider.getApplicationContext<Context>().resources.displayMetrics
         val dp = metrics.density
         val width = metrics.widthPixels
         val height = metrics.heightPixels
-        val dark = WidgetStyle.palette(context) == TempusPalette.Dark
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = android.graphics.Canvas(bitmap)
-        val (top, bottom, blob) = if (dark) Triple(0xFF0E2E52, 0xFF050D18, 0x55125A98) else Triple(0xFFE4F0FA, 0xFFB7D3EC, 0x99FFFFFF)
+        val (top, bottom, blob) =
+            if (darkWallpaper) Triple(0xFF0E2E52, 0xFF050D18, 0x55125A98) else Triple(0xFFE4F0FA, 0xFFB7D3EC, 0x99FFFFFF)
         canvas.drawPaint(
             Paint(Paint.ANTI_ALIAS_FLAG).apply {
                 shader = LinearGradient(0f, 0f, width * 0.4f, height.toFloat(), top.toInt(), bottom.toInt(), Shader.TileMode.CLAMP)
@@ -509,26 +564,17 @@ abstract class StoreListingCaptures(
             )
         }
 
-        val ink = if (dark) android.graphics.Color.WHITE else TempusPalette.Light.ink.toArgb()
-
-        fun text(
-            size: Float,
-            bold: Boolean,
-        ) = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = ink
-            textSize = size * dp
-            typeface = Typeface.create(Typeface.SANS_SERIF, if (bold) Typeface.BOLD else Typeface.NORMAL)
+        val ink = if (darkWallpaper) android.graphics.Color.WHITE else TempusPalette.Light.ink.toArgb()
+        val text = { size: Float, style: Int ->
+            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = ink
+                textSize = size * dp
+                typeface = Typeface.create(Typeface.SANS_SERIF, style)
+            }
         }
-        val margin = (width - WIDGET_WIDTH_DP * dp) / 2
-        canvas.drawText(at.toString(), margin + 8 * dp, 30 * dp, text(14f, bold = true))
-        canvas.drawText(homeDate, margin + 8 * dp, 92 * dp, text(24f, bold = false))
-        var y = 124 * dp
-        for (widget in widgets) {
-            canvas.drawBitmap(widget, margin, y, null)
-            y += widget.height + 14 * dp
-        }
+        content(canvas, dp, text)
         val bar = RectF(width / 2 - 54 * dp, height - 14 * dp, width / 2 + 54 * dp, height - 10 * dp)
-        canvas.drawRoundRect(bar, 2 * dp, 2 * dp, text(0f, bold = false).apply { alpha = 0xCC })
+        canvas.drawRoundRect(bar, 2 * dp, 2 * dp, text(0f, Typeface.NORMAL).apply { alpha = 0xCC })
 
         val file = File(output(name))
         file.parentFile?.mkdirs()

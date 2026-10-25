@@ -1,7 +1,7 @@
 {
   "pt-PT": {
     "01_today": ["O que tomar hoje,", "e a que horas."],
-    "09_widgets": ["As doses de hoje,", "no ecrã principal."],
+    "09_lock_screen": ["As doses de hoje,", "no ecrã de bloqueio."],
     "02_overdue": ["Esqueceu-se de uma toma?", "Fica a vermelho."],
     "03_slot": ["Marque cada dose", "com um toque."],
     "04_medications": ["Comprimidos, inaladores,", "pensos, gotas e mais."],
@@ -11,7 +11,7 @@
   },
   "en-US": {
     "01_today": ["What to take today,", "and when."],
-    "09_widgets": ["Today's doses,", "on your home screen."],
+    "09_lock_screen": ["Today's doses,", "on your lock screen."],
     "02_overdue": ["Missed a dose?", "It turns red."],
     "03_slot": ["Log each dose", "with one tap."],
     "04_medications": ["Pills, inhalers, patches,", "drops and more."],

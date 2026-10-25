@@ -79,7 +79,7 @@ listing (Play takes at most 8 phone screenshots).
 | # | Screen | pt-PT caption | en-US caption |
 | --- | --- | --- | --- |
 | 1 | Hoje, midday | O que tomar hoje, *e a que horas.* | What to take today, *and when.* |
-| 2 | Home screen, light: the HOJE, Tratamento and REPOR EM BREVE widgets | As doses de hoje, *no ecrã principal.* | Today's doses, *on your home screen.* |
+| 2 | Lock screen at midday: the HOJE widget under the clock | As doses de hoje, *no ecrã de bloqueio.* | Today's doses, *on your lock screen.* |
 | 3 | Hoje at 13:40: MEIO-DIA in red, Ómega 3's jar pulsing | Esqueceu-se de uma toma? *Fica a vermelho.* | Missed a dose? *It turns red.* |
 | 4 | Manhã sheet: one dose taken, one to take | Marque cada dose *com um toque.* | Log each dose *with one tap.* |
 | 5 | Medicamentos: tablets, inhaler, patch, spray, drops, injection | Comprimidos, inaladores, *pensos, gotas e mais.* | Pills, inhalers, patches, *drops and more.* |
@@ -102,9 +102,9 @@ Screens are rendered at 412 × 824 dp, a common phone width. Three details of th
 - Tests never run infinite animations, so the running-out pulse is captured at its start (alpha
   0.15) next to the same screen with the alert seen. The glow is alpha-blended, so
   `scripts/captures.py` rebuilds any phase exactly from the pair; screenshot 3 uses the brightest.
-- Robolectric cannot run a launcher, so the home screens are drawn in the capture (wallpaper,
-  clock, date, gesture bar) around the real Glance widgets, rendered the way the widget preview
-  images are.
+- Robolectric cannot run a launcher or a lock screen, so they are drawn in the capture
+  (wallpaper, clock, date, padlock, gesture bar) around the real Glance widgets, rendered the way
+  the widget preview images are.
 
 ## The demo video
 
@@ -128,7 +128,7 @@ python3 store-listing/scripts/check_listing.py
 ```
 
 1. `StoreListingCaptures` (`androidApp/src/test/.../store/`) writes the raw phone and tablet
-   screens, the widget home screens, the feature graphic, the icon and the medication forms to
+   screens, the widget lock and home screens, the feature graphic, the icon and the medication forms to
    `store-listing/source/` (git-ignored). It only
    runs with `STORE_LISTING=1`, so CI skips it; `--rerun` stops Gradle from reusing a cached result.
 2. `compose_graphics.py` frames the phone and tablet screens, flattens the feature graphic and writes everything
