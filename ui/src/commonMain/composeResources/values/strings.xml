@@ -113,6 +113,7 @@
 
     <!-- Android only: reminders and settings -->
     <string name="channel_reminders">Lembretes de doses</string>
+    <string name="channel_reminders_alarm">Lembretes (alarme)</string>
     <string name="channel_low_stock">Stock baixo</string>
     <string name="notification_slot_title">%1$s · %2$s</string>
     <plurals name="notification_hidden_body">
@@ -124,6 +125,8 @@
     <string name="settings_reminders">Lembretes</string>
     <string name="settings_reminders_body">Notificação a cada horário com doses.</string>
     <string name="settings_hide_names">Ocultar nomes no ecrã de bloqueio</string>
+    <string name="settings_alarm_reminders">Tocar como alarme</string>
+    <string name="settings_alarm_reminders_body">O som de alarme repete-se até tocar em Tomei ou Adiar, ou dispensar o lembrete.</string>
     <string name="settings_exact_alarms">Lembretes à hora certa</string>
     <string name="settings_exact_alarms_body">Sem esta permissão, os lembretes podem chegar alguns minutos depois.</string>
     <string name="settings_widgets_hint">Adicione os widgets Hoje e Repor em breve ao ecrã principal.</string>
@@ -339,6 +342,15 @@
     <string name="cycle_days_on">Dias a tomar</string>
     <string name="cycle_days_off">Dias de pausa</string>
     <string name="cycle_summary">%1$d dias + %2$d de pausa</string>
+    <string name="frequency_contraceptive">Pílula contracetiva</string>
+    <string name="contraceptive_weeks_on">Semanas a tomar</string>
+    <string name="contraceptive_weeks_off">Semanas de pausa</string>
+    <string name="contraceptive_hint">O ciclo conta a partir da data de início: escolha o dia em que tomou o primeiro comprimido da embalagem.</string>
+    <string name="contraceptive_summary">%1$s + %2$d de pausa</string>
+    <plurals name="weeks_count">
+        <item quantity="one">%1$d semana</item>
+        <item quantity="other">%1$d semanas</item>
+    </plurals>
     <string name="field_start">Começa</string>
     <string name="end_never">Nunca</string>
     <string name="end_kind_occurrences">N.º de vezes</string>

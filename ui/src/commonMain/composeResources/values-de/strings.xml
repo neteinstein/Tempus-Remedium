@@ -97,6 +97,7 @@
     <string name="install_store_action">Installieren</string>
     <string name="install_banner_close">Installationshinweis schließen</string>
     <string name="channel_reminders">Dosis-Erinnerungen</string>
+    <string name="channel_reminders_alarm">Erinnerungen (Wecker)</string>
     <string name="channel_low_stock">Niedriger Bestand</string>
     <string name="notification_slot_title">%1$s · %2$s</string>
     <plurals name="notification_hidden_body">
@@ -108,6 +109,8 @@
     <string name="settings_reminders">Erinnerungen</string>
     <string name="settings_reminders_body">Eine Benachrichtigung zu jeder Uhrzeit mit Dosen.</string>
     <string name="settings_hide_names">Namen auf dem Sperrbildschirm ausblenden</string>
+    <string name="settings_alarm_reminders">Wie ein Wecker klingeln</string>
+    <string name="settings_alarm_reminders_body">Der Weckton wiederholt sich, bis Sie Genommen oder Später tippen oder die Erinnerung schließen.</string>
     <string name="settings_exact_alarms">Pünktliche Erinnerungen</string>
     <string name="settings_exact_alarms_body">Ohne diese Berechtigung können Erinnerungen einige Minuten später kommen.</string>
     <string name="settings_widgets_hint">Fügen Sie die Widgets Heute und Bald nachfüllen zum Startbildschirm hinzu.</string>
@@ -308,6 +311,15 @@
     <string name="cycle_days_on">Einnahmetage</string>
     <string name="cycle_days_off">Pausentage</string>
     <string name="cycle_summary">%1$d Tage + %2$d Pause</string>
+    <string name="frequency_contraceptive">Antibabypille</string>
+    <string name="contraceptive_weeks_on">Einnahmewochen</string>
+    <string name="contraceptive_weeks_off">Pausenwochen</string>
+    <string name="contraceptive_hint">Der Zyklus zählt ab dem Startdatum: Wählen Sie den Tag, an dem Sie die erste Pille der Packung genommen haben.</string>
+    <string name="contraceptive_summary">%1$s + %2$d Pause</string>
+    <plurals name="weeks_count">
+        <item quantity="one">%1$d Woche</item>
+        <item quantity="other">%1$d Wochen</item>
+    </plurals>
     <string name="field_start">Beginnt</string>
     <string name="end_never">Nie</string>
     <string name="end_kind_occurrences">Anzahl</string>

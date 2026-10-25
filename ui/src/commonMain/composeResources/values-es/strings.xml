@@ -97,6 +97,7 @@
     <string name="install_store_action">Instalar</string>
     <string name="install_banner_close">Cerrar aviso de instalación</string>
     <string name="channel_reminders">Recordatorios de dosis</string>
+    <string name="channel_reminders_alarm">Recordatorios (alarma)</string>
     <string name="channel_low_stock">Pocas existencias</string>
     <string name="notification_slot_title">%1$s · %2$s</string>
     <plurals name="notification_hidden_body">
@@ -108,6 +109,8 @@
     <string name="settings_reminders">Recordatorios</string>
     <string name="settings_reminders_body">Una notificación en cada horario con dosis.</string>
     <string name="settings_hide_names">Ocultar nombres en la pantalla de bloqueo</string>
+    <string name="settings_alarm_reminders">Sonar como una alarma</string>
+    <string name="settings_alarm_reminders_body">El sonido de alarma se repite hasta que toque Tomado o Posponer, o descarte el recordatorio.</string>
     <string name="settings_exact_alarms">Recordatorios puntuales</string>
     <string name="settings_exact_alarms_body">Sin este permiso, los recordatorios pueden llegar unos minutos tarde.</string>
     <string name="settings_widgets_hint">Añade los widgets Hoy y Reponer pronto a la pantalla de inicio.</string>
@@ -308,6 +311,15 @@
     <string name="cycle_days_on">Días de toma</string>
     <string name="cycle_days_off">Días de pausa</string>
     <string name="cycle_summary">%1$d días + %2$d de pausa</string>
+    <string name="frequency_contraceptive">Píldora anticonceptiva</string>
+    <string name="contraceptive_weeks_on">Semanas de toma</string>
+    <string name="contraceptive_weeks_off">Semanas de pausa</string>
+    <string name="contraceptive_hint">El ciclo cuenta desde la fecha de inicio: elija el día en que tomó la primera pastilla del envase.</string>
+    <string name="contraceptive_summary">%1$s + %2$d de pausa</string>
+    <plurals name="weeks_count">
+        <item quantity="one">%1$d semana</item>
+        <item quantity="other">%1$d semanas</item>
+    </plurals>
     <string name="field_start">Empieza</string>
     <string name="end_never">Nunca</string>
     <string name="end_kind_occurrences">N.º de veces</string>

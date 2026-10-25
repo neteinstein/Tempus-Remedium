@@ -6,6 +6,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.plus
+import org.mariacf.tempusremedium.core.data.MedicationRepository
 import org.mariacf.tempusremedium.core.model.AppData
 import org.mariacf.tempusremedium.core.model.Frequency
 import org.mariacf.tempusremedium.core.model.Medication
@@ -21,6 +22,7 @@ import org.mariacf.tempusremedium.core.schedule.nextReminder
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class RecurrenceTest {
     /** Thursday. */
@@ -86,6 +88,39 @@ class RecurrenceTest {
     }
 
     @Test
+    fun contraceptivePillTakesThreeWeeksThenPausesOne() {
+        val due = schedule(Frequency.Contraceptive()).dueOffsets(days = 56)
+        assertEquals((0 until 21) + (28 until 49), due)
+    }
+
+    @Test
+    fun contraceptiveCycleStartedOnAnEarlierPack() {
+        // Pack started 25 days ago: today is in the pause week, the next pack starts in 3 days.
+        val schedule = schedule(Frequency.Contraceptive(weeksOn = 3, weeksOff = 1), startDate = start.plus(DatePeriod(days = -25)))
+        assertEquals(listOf(3, 4, 5), schedule.dueOffsets(days = 6, from = start))
+    }
+
+    @Test
+    fun contraceptiveSurvivesTheJsonDocument() {
+        val data =
+            AppData(
+                medications =
+                    listOf(
+                        Medication(
+                            "p",
+                            "Pílula",
+                            shape = PillShape.ROUND_SCORED,
+                            color = PillColor.PINK,
+                            schedule = schedule(Frequency.Contraceptive(4, 1)),
+                        ),
+                    ),
+            )
+        val json = MedicationRepository.json.encodeToString(AppData.serializer(), data)
+        assertTrue("\"contraceptive\"" in json)
+        assertEquals(data, MedicationRepository.json.decodeFromString(AppData.serializer(), json))
+    }
+
+    @Test
     fun endsOnDate() {
         val schedule = schedule(Frequency.EveryNDays(3), endDate = start.plus(DatePeriod(days = 7)))
         assertEquals(listOf(0, 3, 6), schedule.dueOffsets())
@@ -108,6 +143,7 @@ class RecurrenceTest {
             )
         assertEquals(1.0 / 7, usage(Frequency.Weekdays(setOf(DayOfWeek.MONDAY, DayOfWeek.FRIDAY), everyWeeks = 2)), 1e-9)
         assertEquals(21.0 / 28, usage(Frequency.Cycle(21, 7)), 1e-9)
+        assertEquals(21.0 / 28, usage(Frequency.Contraceptive()), 1e-9)
         assertEquals(12 / 365.25, usage(Frequency.Monthly()), 1e-9)
     }
 

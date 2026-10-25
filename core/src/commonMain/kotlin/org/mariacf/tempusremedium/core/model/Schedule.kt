@@ -74,4 +74,18 @@ sealed interface Frequency {
         val daysOn: Int,
         val daysOff: Int,
     ) : Frequency
+
+    /**
+     * A contraceptive pill: [weeksOn] weeks taken then [weeksOff] weeks of pause, repeating from
+     * [Schedule.startDate], the first day of a pack (usually 3 + 1).
+     */
+    @Serializable
+    @SerialName("contraceptive")
+    data class Contraceptive(
+        val weeksOn: Int = 3,
+        val weeksOff: Int = 1,
+    ) : Frequency {
+        val daysOn: Int get() = weeksOn * 7
+        val daysOff: Int get() = weeksOff * 7
+    }
 }

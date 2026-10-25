@@ -1,10 +1,13 @@
 package org.mariacf.tempusremedium.android.reminders
 
 import android.Manifest
+import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.AudioAttributes
+import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
@@ -30,6 +33,7 @@ import org.mariacf.tempusremedium.ui.resources.Res
 import org.mariacf.tempusremedium.ui.resources.action_taken
 import org.mariacf.tempusremedium.ui.resources.channel_low_stock
 import org.mariacf.tempusremedium.ui.resources.channel_reminders
+import org.mariacf.tempusremedium.ui.resources.channel_reminders_alarm
 import org.mariacf.tempusremedium.ui.resources.course_dose_of
 import org.mariacf.tempusremedium.ui.resources.decimal_separator
 import org.mariacf.tempusremedium.ui.resources.dose_ml
@@ -52,6 +56,16 @@ class ReminderNotifications(
             NotificationChannelCompat
                 .Builder(CHANNEL_REMINDERS, NotificationManagerCompat.IMPORTANCE_HIGH)
                 .setName(getString(Res.string.channel_reminders))
+                .build(),
+        )
+        // A channel's sound cannot change once created, so the alarm style has its own channel.
+        manager.createNotificationChannel(
+            NotificationChannelCompat
+                .Builder(CHANNEL_REMINDERS_ALARM, NotificationManagerCompat.IMPORTANCE_HIGH)
+                .setName(getString(Res.string.channel_reminders_alarm))
+                .setSound(alarmSound(), ALARM_AUDIO)
+                .setVibrationEnabled(true)
+                .setVibrationPattern(ALARM_VIBRATION)
                 .build(),
         )
         manager.createNotificationChannel(
@@ -86,7 +100,7 @@ class ReminderNotifications(
         val hidden = getPluralString(Res.plurals.notification_hidden_body, pending.size, pending.size)
         val builder =
             NotificationCompat
-                .Builder(context, CHANNEL_REMINDERS)
+                .Builder(context, reminderChannel(data))
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(title)
                 .setContentText(names)
@@ -111,7 +125,7 @@ class ReminderNotifications(
         } else {
             builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
         }
-        post(slotNotificationId(slot), builder)
+        post(slotNotificationId(slot), builder, insistent = data.settings.alarmReminders)
     }
 
     fun cancelSlot(slot: TimeSlot) = manager.cancel(slotNotificationId(slot))
@@ -151,7 +165,7 @@ class ReminderNotifications(
         val hidden = getPluralString(Res.plurals.notification_hidden_body, pending.size, pending.size)
         val builder =
             NotificationCompat
-                .Builder(context, CHANNEL_REMINDERS)
+                .Builder(context, reminderChannel(data))
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(title)
                 .setContentText(body)
@@ -176,7 +190,7 @@ class ReminderNotifications(
         } else {
             builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
         }
-        post(COURSE_NOTIFICATION_ID, builder)
+        post(COURSE_NOTIFICATION_ID, builder, insistent = data.settings.alarmReminders)
     }
 
     fun cancelCourseDoses() = manager.cancel(COURSE_NOTIFICATION_ID)
@@ -197,16 +211,27 @@ class ReminderNotifications(
         post(LOW_STOCK_ID_BASE + item.medication.id.hashCode(), builder)
     }
 
+    private fun reminderChannel(data: AppData) = if (data.settings.alarmReminders) CHANNEL_REMINDERS_ALARM else CHANNEL_REMINDERS
+
+    private fun alarmSound() =
+        RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_ALARM)
+            ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+            ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+    /** [insistent] repeats the sound until the reminder is acted on, dismissed or the shade is opened. */
     private fun post(
         id: Int,
         builder: NotificationCompat.Builder,
+        insistent: Boolean = false,
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
             return
         }
-        manager.notify(id, builder.build())
+        val notification = builder.build()
+        if (insistent) notification.flags = notification.flags or Notification.FLAG_INSISTENT
+        manager.notify(id, notification)
     }
 
     private fun openApp(
@@ -225,7 +250,15 @@ class ReminderNotifications(
 
     companion object {
         const val CHANNEL_REMINDERS = "reminders"
+        const val CHANNEL_REMINDERS_ALARM = "reminders_alarm"
         const val CHANNEL_LOW_STOCK = "low_stock"
+        private val ALARM_AUDIO =
+            AudioAttributes
+                .Builder()
+                .setUsage(AudioAttributes.USAGE_ALARM)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build()
+        private val ALARM_VIBRATION = longArrayOf(0, 800, 600, 800, 600)
         private const val LOW_STOCK_ID_BASE = 1_000
         private const val LOW_STOCK_REQUEST = 100
         private const val COURSE_REQUEST = 200
