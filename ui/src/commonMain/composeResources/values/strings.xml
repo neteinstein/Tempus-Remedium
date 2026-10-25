@@ -264,6 +264,14 @@
     <!-- Android only: course widget -->
     <string name="widget_course_title">Tratamento</string>
     <string name="widget_no_course">Nenhum tratamento em curso.</string>
+    <!-- Notification permission: asked when the first medication is saved -->
+    <string name="notifications_rationale_title">Avisos das tomas</string>
+    <string name="notifications_rationale_body">Para avisar à hora de cada toma, mesmo com a app fechada, o Tempus Remedium precisa de autorização para enviar notificações. Pode mudar isto quando quiser nas definições do telemóvel.</string>
+    <string name="action_allow">Permitir</string>
+    <string name="action_not_now">Agora não</string>
+    <string name="notifications_blocked">As notificações estão desligadas: não vamos conseguir avisar das tomas.</string>
+    <string name="notifications_turn_on">Ativar</string>
+
     <!-- Language setting: language names are written in their own language. -->
     <string name="settings_language">Idioma</string>
     <string name="language_system">Automático (idioma do dispositivo)</string>

@@ -29,6 +29,8 @@ import org.mariacf.tempusremedium.core.schedule.logDose
 import org.mariacf.tempusremedium.core.schedule.logSlot
 import org.mariacf.tempusremedium.core.schedule.lowStock
 import org.mariacf.tempusremedium.core.schedule.planFor
+import org.mariacf.tempusremedium.ui.components.NotificationsBlockedBanner
+import org.mariacf.tempusremedium.ui.components.NotificationsRationaleDialog
 import org.mariacf.tempusremedium.ui.components.brandBackground
 import org.mariacf.tempusremedium.ui.screens.CourseEditor
 import org.mariacf.tempusremedium.ui.screens.HistoryScreen
@@ -123,6 +125,18 @@ class ScreensScreenshotTest {
         capture("screen_medications_course") {
             MedicationsScreen(CourseFixtures.data.medications, onEdit = {}, onAdd = {})
         }
+
+    @Test
+    fun notificationsBanner() = capture("notifications_banner", height = 300) { NotificationsBlockedBanner(onTurnOn = {}) }
+
+    @Test
+    fun notificationsBannerDark() =
+        capture("notifications_banner_dark", dark = true, height = 300) {
+            NotificationsBlockedBanner(onTurnOn = {})
+        }
+
+    @Test
+    fun notificationsRationale() = capture("notifications_rationale") { NotificationsRationaleDialog(onAllow = {}, onDismiss = {}) }
 
     @Test
     fun medications() =

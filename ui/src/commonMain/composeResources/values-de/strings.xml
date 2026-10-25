@@ -241,6 +241,12 @@
     <string name="calc_ind_cefuroxime_otitis">Mittelohrentzündung (≥ 2 Jahre) · max. 250 mg pro Einnahme</string>
     <string name="widget_course_title">Behandlung</string>
     <string name="widget_no_course">Keine laufende Behandlung.</string>
+    <string name="notifications_rationale_title">Erinnerungen an Einnahmen</string>
+    <string name="notifications_rationale_body">Damit Tempus Remedium Sie zu jeder Einnahme erinnern kann, auch wenn die App geschlossen ist, braucht es die Erlaubnis, Benachrichtigungen zu senden. Sie können das jederzeit in den Telefoneinstellungen ändern.</string>
+    <string name="action_allow">Erlauben</string>
+    <string name="action_not_now">Nicht jetzt</string>
+    <string name="notifications_blocked">Benachrichtigungen sind aus: Wir können Sie nicht an Ihre Einnahmen erinnern.</string>
+    <string name="notifications_turn_on">Einschalten</string>
     <string name="settings_language">Sprache</string>
     <string name="language_system">Automatisch (Gerätesprache)</string>
 </resources>
