@@ -67,8 +67,8 @@ fun DrawScope.drawBlister(
                 cell,
                 cellCorner,
             )
-            if (shape == PillShape.CAPSULE) {
-                // Capsules lie flat along the cell.
+            if (shape == PillShape.CAPSULE || shape == PillShape.INJECTION) {
+                // Capsules (and syringes) lie flat along the cell.
                 val unit = cellW * 0.6f
                 drawPill(
                     shape = shape,

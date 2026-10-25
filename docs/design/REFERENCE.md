@@ -112,8 +112,11 @@ every few hours, which never appear inside the HOJE panel or change its dose cou
 editor with the dose calculator, the Tratamento widget, the red "Faltam permissões" bar and the permissions explanation shown with the first medication, the Permissões section of Definições, the "add the widget"
 banner (shown below the red bar when both apply) and its guide screen, the Medicamentos list and editor, Histórico,
 Definições (including the stock display and theme options and the Sobre card crediting the
-author), the refill dialog, reminders and low-stock notifications, the Android widgets, and the
-four extra pill colours.
+author), the refill dialog, reminders and low-stock notifications, the Android widgets, the
+four extra pill colours, the five forms that are not swallowed (inalador, penso transdérmico,
+spray nasal, gotas, injetável; drawn in the same style as the pills, see `pill_forms.png`) and
+the recurrence options of the editor (every N weeks, monthly, cycles, start date, end by date or
+number of times).
 
 ## pt-PT ↔ English
 

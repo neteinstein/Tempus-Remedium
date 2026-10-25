@@ -1,10 +1,13 @@
 package org.mariacf.tempusremedium.android.screenshots
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -12,6 +15,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.takahirom.roborazzi.captureRoboImage
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import org.junit.Rule
 import org.junit.Test
@@ -23,6 +27,11 @@ import org.mariacf.tempusremedium.core.ReferenceFixtures.date
 import org.mariacf.tempusremedium.core.dosing.CalculatorMedication
 import org.mariacf.tempusremedium.core.model.AppData
 import org.mariacf.tempusremedium.core.model.DoseStatus
+import org.mariacf.tempusremedium.core.model.Frequency
+import org.mariacf.tempusremedium.core.model.Medication
+import org.mariacf.tempusremedium.core.model.PillColor
+import org.mariacf.tempusremedium.core.model.PillShape
+import org.mariacf.tempusremedium.core.model.Schedule
 import org.mariacf.tempusremedium.core.model.Stock
 import org.mariacf.tempusremedium.core.model.StockDisplay
 import org.mariacf.tempusremedium.core.model.TimeSlot
@@ -36,6 +45,7 @@ import org.mariacf.tempusremedium.core.schedule.stockAlerts
 import org.mariacf.tempusremedium.ui.components.NotificationsRationaleDialog
 import org.mariacf.tempusremedium.ui.components.PermissionsMissingBanner
 import org.mariacf.tempusremedium.ui.components.brandBackground
+import org.mariacf.tempusremedium.ui.pill.PillIcon
 import org.mariacf.tempusremedium.ui.screens.CourseEditor
 import org.mariacf.tempusremedium.ui.screens.HistoryScreen
 import org.mariacf.tempusremedium.ui.screens.MedicationEditor
@@ -201,6 +211,104 @@ class ScreensScreenshotTest {
             MedicationEditor(ReferenceFixtures.omega3, today = date, onSave = {}, onDelete = {}, onClose = {})
         }
 
+    /** A transdermal patch changed every 3 days, ten times: the new forms and the recurrence options. */
+    @Test
+    @Config(qualifiers = "+h1700dp")
+    fun editorPatch() =
+        capture("screen_editor_patch") {
+            MedicationEditor(patch, today = date, onSave = {}, onDelete = {}, onClose = {})
+        }
+
+    @Test
+    @Config(qualifiers = "+h1700dp")
+    fun editorCycleDark() =
+        capture("screen_editor_cycle_dark", dark = true) {
+            MedicationEditor(
+                patch.copy(
+                    name = "Pílula",
+                    strength = "",
+                    shape = PillShape.ROUND_SCORED,
+                    color = PillColor.PINK,
+                    schedule =
+                        patch.schedule.copy(
+                            frequency = Frequency.Cycle(21, 7),
+                            occurrences = null,
+                            endDate = LocalDate(2027, 4, 22),
+                        ),
+                ),
+                today = date,
+                onSave = {},
+                onDelete = {},
+                onClose = {},
+            )
+        }
+
+    /** The list summarises each recurrence: every 3 days ten times, every other week, monthly, a cycle. */
+    @Test
+    fun medicationsRecurrences() =
+        capture("screen_medications_recurrences", height = 3000) {
+            val inhaler =
+                patch.copy(
+                    id = "inhaler",
+                    name = "Salbutamol",
+                    strength = "100µg",
+                    shape = PillShape.INHALER,
+                    color = PillColor.BLUE,
+                    schedule =
+                        patch.schedule.copy(
+                            doses = mapOf(TimeSlot.MORNING to 2, TimeSlot.EVENING to 2),
+                            frequency = Frequency.Weekdays(setOf(DayOfWeek.MONDAY, DayOfWeek.THURSDAY), everyWeeks = 2),
+                            occurrences = null,
+                        ),
+                )
+            val spray =
+                inhaler.copy(
+                    id = "spray",
+                    name = "Mometasona",
+                    strength = "50µg",
+                    shape = PillShape.NASAL_SPRAY,
+                    color = PillColor.GREEN,
+                    schedule = inhaler.schedule.copy(frequency = Frequency.Daily, endDate = LocalDate(2026, 11, 5)),
+                )
+            val injection =
+                inhaler.copy(
+                    id = "injection",
+                    name = "Vitamina B12",
+                    strength = "1mg",
+                    shape = PillShape.INJECTION,
+                    color = PillColor.PINK,
+                    schedule = patch.schedule.copy(frequency = Frequency.Monthly(), occurrences = null),
+                )
+            val drops =
+                inhaler.copy(
+                    id = "drops",
+                    name = "Latanoprost",
+                    strength = "",
+                    shape = PillShape.DROPS,
+                    color = PillColor.TEAL,
+                    schedule = inhaler.schedule.copy(doses = mapOf(TimeSlot.BEDTIME to 1), frequency = Frequency.Cycle(21, 7)),
+                )
+            MedicationsScreen(listOf(patch, inhaler, spray, injection, drops), onEdit = {}, onAdd = {})
+        }
+
+    /** Every form in every colour, as drawn by the shared painter. */
+    @Test
+    fun forms() = capture("pill_forms", height = 1500) { FormsGallery() }
+
+    @Test
+    fun formsDark() = capture("pill_forms_dark", dark = true, height = 1500) { FormsGallery() }
+
+    @Composable
+    private fun FormsGallery() {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            PillShape.entries.forEach { shape ->
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    PillColor.entries.forEach { color -> PillIcon(shape, color, height = 26.dp) }
+                }
+            }
+        }
+    }
+
     @Test
     fun history() {
         val data =
@@ -225,6 +333,23 @@ class ScreensScreenshotTest {
         capture("screen_editor_dark", dark = true) {
             MedicationEditor(ReferenceFixtures.metformina, today = date, onSave = {}, onDelete = {}, onClose = {})
         }
+
+    private val patch =
+        Medication(
+            id = "patch",
+            name = "Nicotina",
+            strength = "14mg/24h",
+            shape = PillShape.PATCH,
+            color = PillColor.PEACH,
+            schedule =
+                Schedule(
+                    doses = mapOf(TimeSlot.MORNING to 1),
+                    frequency = Frequency.EveryNDays(3),
+                    startDate = date,
+                    occurrences = 10,
+                ),
+            stock = Stock(remaining = 8),
+        )
 
     @Composable
     private fun Today(

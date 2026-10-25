@@ -3,10 +3,8 @@ package org.mariacf.tempusremedium.core.schedule
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.daysUntil
 import org.mariacf.tempusremedium.core.model.AppData
 import org.mariacf.tempusremedium.core.model.DoseStatus
-import org.mariacf.tempusremedium.core.model.Frequency
 import org.mariacf.tempusremedium.core.model.Medication
 import org.mariacf.tempusremedium.core.model.TimeSlot
 
@@ -57,16 +55,7 @@ data class DayPlan(
             .mapTo(mutableSetOf()) { it.slot }
 }
 
-fun Medication.isDueOn(date: LocalDate): Boolean {
-    if (archived) return false
-    if (date < schedule.startDate) return false
-    schedule.endDate?.let { if (date > it) return false }
-    return when (val frequency = schedule.frequency) {
-        Frequency.Daily -> true
-        is Frequency.Weekdays -> date.dayOfWeek in frequency.days
-        is Frequency.EveryNDays -> schedule.startDate.daysUntil(date) % frequency.interval.coerceAtLeast(1) == 0
-    }
-}
+fun Medication.isDueOn(date: LocalDate): Boolean = !archived && schedule.isDueOn(date)
 
 fun Medication.quantityAt(slot: TimeSlot): Int = schedule.doses[slot] ?: 0
 

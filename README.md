@@ -43,6 +43,14 @@ calm blues, frosted cards, and a light and a dark theme.
   <img src="androidApp/src/test/screenshots/screen_settings_dark.png" width="250" alt="Definições">
 </p>
 
+**Forms and recurrence**
+
+<p>
+  <img src="androidApp/src/test/screenshots/screen_medications_recurrences.png" width="250" alt="Medicamentos: penso transdérmico a cada 3 dias, inalador de 2 em 2 semanas, spray nasal até uma data, injetável mensal e gotas em ciclo">
+  <img src="androidApp/src/test/screenshots/pill_forms.png" width="250" alt="Todas as formas em todas as cores: comprimidos, cápsulas, inalador, penso, spray nasal, gotas e injetável">
+  <img src="androidApp/src/test/screenshots/screen_editor_patch.png" width="250" alt="Editor: penso transdérmico a cada 3 dias, a partir de hoje, 10 vezes">
+</p>
+
 **Widgets, alerts and reminders**
 
 <p>
@@ -70,7 +78,7 @@ calm blues, frosted cards, and a light and a dark theme.
 | --- | :---: | :---: |
 | HOJE: doses by MANHÃ / MEIO-DIA / NOITE / DEITAR, mark as taken or skipped; slots past their time with doses still pending turn **red** | ✅ | ✅ |
 | REPOR EM BREVE: stock tracking, low-stock list, refill, shown as **jars or blister packs**; a jar or blister that runs out today or tomorrow **pulses red** until tapped | ✅ | ✅ |
-| Medications: name, strength, pill shape and colour, slots, frequency, stock | ✅ | ✅ |
+| Medications: name, strength, form (pills, capsules, inhaler, patch, nasal spray, drops, injection) and colour, slots, recurrence (daily, weekdays every N weeks, every N days, monthly, on/off cycles; start date; ends never, on a date or after N times), stock | ✅ | ✅ |
 | Courses (e.g. antibiotics): a dose every N hours, ending after N days, N doses, on a date or when the pack runs out; dose, interval and length suggested by the author's [dose calculator](https://mariacf.pt/calculadora-doses/) | ✅ | ✅ |
 | History: 30-day adherence | ✅ | ✅ |
 | Configurable slot times; automatic, light or dark theme | ✅ | ✅ |
