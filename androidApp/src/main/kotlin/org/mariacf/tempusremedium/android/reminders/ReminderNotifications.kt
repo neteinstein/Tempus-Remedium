@@ -8,11 +8,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioAttributes
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.getPluralString
@@ -21,6 +23,7 @@ import org.mariacf.tempusremedium.android.MainActivity
 import org.mariacf.tempusremedium.android.R
 import org.mariacf.tempusremedium.core.model.AppData
 import org.mariacf.tempusremedium.core.model.DoseUnit
+import org.mariacf.tempusremedium.core.model.Settings
 import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.core.schedule.LowStockItem
 import org.mariacf.tempusremedium.core.schedule.courseDoseCount
@@ -51,21 +54,15 @@ class ReminderNotifications(
 ) {
     private val manager = NotificationManagerCompat.from(context)
 
-    suspend fun ensureChannels() {
+    /**
+     * Creates the channels. With [settings], also the alarm channel for the chosen sound, and
+     * deletes the ones left from earlier sounds.
+     */
+    suspend fun ensureChannels(settings: Settings? = null) {
         manager.createNotificationChannel(
             NotificationChannelCompat
                 .Builder(CHANNEL_REMINDERS, NotificationManagerCompat.IMPORTANCE_HIGH)
                 .setName(getString(Res.string.channel_reminders))
-                .build(),
-        )
-        // A channel's sound cannot change once created, so the alarm style has its own channel.
-        manager.createNotificationChannel(
-            NotificationChannelCompat
-                .Builder(CHANNEL_REMINDERS_ALARM, NotificationManagerCompat.IMPORTANCE_HIGH)
-                .setName(getString(Res.string.channel_reminders_alarm))
-                .setSound(alarmSound(), ALARM_AUDIO)
-                .setVibrationEnabled(true)
-                .setVibrationPattern(ALARM_VIBRATION)
                 .build(),
         )
         manager.createNotificationChannel(
@@ -74,6 +71,22 @@ class ReminderNotifications(
                 .setName(getString(Res.string.channel_low_stock))
                 .build(),
         )
+        if (settings == null) return
+        // A channel's sound cannot change once created, so each alarm sound has its own channel.
+        val alarmChannel = alarmChannelId(settings.alarmSound)
+        manager.createNotificationChannel(
+            NotificationChannelCompat
+                .Builder(alarmChannel, NotificationManagerCompat.IMPORTANCE_HIGH)
+                .setName(getString(Res.string.channel_reminders_alarm))
+                .setSound(alarmSound(settings.alarmSound), ALARM_AUDIO)
+                .setVibrationEnabled(true)
+                .setVibrationPattern(ALARM_VIBRATION)
+                .build(),
+        )
+        manager.notificationChannelsCompat
+            .map { it.id }
+            .filter { it.startsWith(CHANNEL_REMINDERS_ALARM) && it != alarmChannel }
+            .forEach(manager::deleteNotificationChannel)
     }
 
     fun canPost(): Boolean =
@@ -93,7 +106,7 @@ class ReminderNotifications(
         val plan = data.planFor(date).slot(slot)
         val pending = plan.doses.filter { it.status == null }
         if (pending.isEmpty() || !data.settings.remindersEnabled) return
-        ensureChannels()
+        ensureChannels(data.settings)
 
         val title = getString(Res.string.notification_slot_title, getString(slot.label), plan.time.hhmm())
         val names = pending.joinToString(", ") { it.medication.displayName }
@@ -137,7 +150,7 @@ class ReminderNotifications(
     ) {
         val pending = data.courseDosesOn(at.date).filter { it.at == at && it.status == null }
         if (pending.isEmpty() || !data.settings.remindersEnabled) return
-        ensureChannels()
+        ensureChannels(data.settings)
 
         val time = at.time.hhmm()
         val title = getString(Res.string.notification_slot_title, pending.joinToString(", ") { it.medication.displayName }, time)
@@ -211,10 +224,12 @@ class ReminderNotifications(
         post(LOW_STOCK_ID_BASE + item.medication.id.hashCode(), builder)
     }
 
-    private fun reminderChannel(data: AppData) = if (data.settings.alarmReminders) CHANNEL_REMINDERS_ALARM else CHANNEL_REMINDERS
+    private fun reminderChannel(data: AppData) =
+        if (data.settings.alarmReminders) alarmChannelId(data.settings.alarmSound) else CHANNEL_REMINDERS
 
-    private fun alarmSound() =
-        RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_ALARM)
+    private fun alarmSound(chosen: String?): Uri? =
+        chosen?.toUri()
+            ?: RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_ALARM)
             ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
             ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
@@ -266,5 +281,12 @@ class ReminderNotifications(
         private const val EXTRA_NONE = "none"
 
         fun slotNotificationId(slot: TimeSlot) = 100 + slot.ordinal
+
+        /** The alarm channel for a chosen sound ([CHANNEL_REMINDERS_ALARM] for the device's alarm sound). */
+        fun alarmChannelId(sound: String?): String =
+            when (sound) {
+                null -> CHANNEL_REMINDERS_ALARM
+                else -> CHANNEL_REMINDERS_ALARM + "_" + sound.hashCode().toUInt().toString(16)
+            }
     }
 }

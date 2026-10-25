@@ -34,10 +34,12 @@ class AppContainer(
         if (!started.compareAndSet(false, true)) return
         scope.launch {
             repository.load()
-            notifications.ensureChannels()
             var previous: AppData? = null
             repository.data.collect { data ->
                 applyLanguage(data.settings.language)
+                if (previous == null || previous?.settings?.alarmSound != data.settings.alarmSound) {
+                    notifications.ensureChannels(data.settings)
+                }
                 reminders.schedule(data)
                 previous?.let { before -> data.newlyLowStock(before).forEach { notifications.showLowStock(it) } }
                 previous = data

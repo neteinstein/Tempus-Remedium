@@ -56,7 +56,8 @@ class ReminderNotificationsTest {
     @Test
     fun plainRemindersDoNotRepeatTheSound() =
         runBlocking {
-            notifications.showSlot(ReferenceFixtures.data, ReferenceFixtures.date, TimeSlot.MORNING)
+            val data = ReferenceFixtures.data.copy(settings = Settings(alarmReminders = false))
+            notifications.showSlot(data, ReferenceFixtures.date, TimeSlot.MORNING)
 
             val notification = posted(TimeSlot.MORNING)
             assertEquals(ReminderNotifications.CHANNEL_REMINDERS, notification.channelId)
@@ -84,6 +85,34 @@ class ReminderNotificationsTest {
                     ).getNotificationChannel(ReminderNotifications.CHANNEL_REMINDERS_ALARM)
             assertEquals(AudioAttributes.USAGE_ALARM, channel.audioAttributes.usage)
             assertEquals(NotificationManager.IMPORTANCE_HIGH, channel.importance)
+        }
+
+    @Test
+    fun alarmIsTheDefault() = assertTrue(Settings().alarmReminders)
+
+    @Test
+    fun aChosenSoundGetsItsOwnChannelAndReplacesTheOldOne() =
+        runBlocking {
+            val sound = "content://media/internal/audio/media/42"
+            val system = context.getSystemService(NotificationManager::class.java)
+            notifications.ensureChannels(Settings())
+            notifications.showSlot(
+                ReferenceFixtures.data.copy(settings = Settings(alarmSound = sound)),
+                ReferenceFixtures.date,
+                TimeSlot.MORNING,
+            )
+
+            val channelId = ReminderNotifications.alarmChannelId(sound)
+            assertEquals(channelId, posted(TimeSlot.MORNING).channelId)
+            assertEquals(sound, system.getNotificationChannel(channelId).sound.toString())
+            assertEquals(AudioAttributes.USAGE_ALARM, system.getNotificationChannel(channelId).audioAttributes.usage)
+            val alarmChannels =
+                system.notificationChannels.map { it.id }.filter {
+                    it.startsWith(
+                        ReminderNotifications.CHANNEL_REMINDERS_ALARM,
+                    )
+                }
+            assertEquals(listOf(channelId), alarmChannels)
         }
 
     @Test
@@ -136,5 +165,10 @@ class ReminderNotificationsTest {
             val notification = manager.allNotifications.single()
             assertEquals("Repor em breve", notification.extras.getString(Notification.EXTRA_TITLE))
             assertEquals("Ómega 3 · Restam 3", notification.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
+            assertEquals(ReminderNotifications.CHANNEL_LOW_STOCK, notification.channelId)
+            assertTrue(
+                context.getSystemService(NotificationManager::class.java).getNotificationChannel(ReminderNotifications.CHANNEL_LOW_STOCK) !=
+                    null,
+            )
         }
 }

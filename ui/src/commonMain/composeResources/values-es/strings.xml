@@ -111,6 +111,8 @@
     <string name="settings_hide_names">Ocultar nombres en la pantalla de bloqueo</string>
     <string name="settings_alarm_reminders">Sonar como una alarma</string>
     <string name="settings_alarm_reminders_body">El sonido de alarma se repite hasta que toque Tomado o Posponer, o descarte el recordatorio.</string>
+    <string name="alarm_sound">Sonido de la alarma</string>
+    <string name="alarm_sound_default">Sonido de alarma predeterminado</string>
     <string name="settings_exact_alarms">Recordatorios puntuales</string>
     <string name="settings_exact_alarms_body">Sin este permiso, los recordatorios pueden llegar unos minutos tarde.</string>
     <string name="settings_widgets_hint">Añade los widgets Hoy y Reponer pronto a la pantalla de inicio.</string>

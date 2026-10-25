@@ -58,7 +58,9 @@ data class Settings(
     val remindersEnabled: Boolean = true,
     val hideNamesInReminders: Boolean = false,
     /** Reminders ring with the alarm sound, over and over, until the dose is handled. */
-    val alarmReminders: Boolean = false,
+    val alarmReminders: Boolean = true,
+    /** Content URI of the tone alarm reminders ring with; null is the device's alarm sound. */
+    val alarmSound: String? = null,
     val stockDisplay: StockDisplay = StockDisplay.JARS,
     val theme: ThemeMode = ThemeMode.SYSTEM,
     val language: AppLanguage = AppLanguage.SYSTEM,
