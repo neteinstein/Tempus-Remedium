@@ -1,11 +1,18 @@
 package org.mariacf.tempusremedium.android
 
+import android.content.res.Configuration
 import androidx.compose.material3.Text
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.jetbrains.compose.resources.stringResource
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -54,5 +61,23 @@ class AppLocaleTest {
     fun systemKeepsTheDeviceLanguage() {
         showSettingsLabel(AppLanguage.SYSTEM)
         composeRule.onNodeWithText("Definições").assertExists()
+    }
+
+    @Test
+    fun systemFollowsTheDeviceWhenItChanges() {
+        var device by mutableStateOf(Locale.forLanguageTag("pt-PT"))
+        composeRule.setContent {
+            // The activity's configuration, which the system updates when the phone's language changes.
+            val configuration = Configuration(LocalConfiguration.current).apply { setLocale(device) }
+            CompositionLocalProvider(LocalConfiguration provides configuration) {
+                AppLocale(AppLanguage.SYSTEM.tag) { Text(stringResource(Res.string.nav_settings)) }
+            }
+        }
+        composeRule.onNodeWithText("Definições").assertExists()
+
+        device = Locale.ENGLISH
+        composeRule.onNodeWithText("Settings").assertExists()
+        // Notifications and widgets read the default locale.
+        assertEquals(Locale.ENGLISH, Locale.getDefault())
     }
 }
