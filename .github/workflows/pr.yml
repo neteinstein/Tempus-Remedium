@@ -186,7 +186,7 @@ jobs:
           comment_title: '🧪 Unit Test Results'
 
   # ─── Web (wasmJs) Compile ───────────────────────────────────────────────────
-  # deploy-pages.yml runs this same task on every push to main, but only after the merge - this
+  # deploy-web.yml runs this same task on pushes to main, but only after the merge - this
   # job catches a broken wasmJs build before that, on the PR itself.
   compile-web:
     name: Compile Web
