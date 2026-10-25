@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +36,7 @@ import org.mariacf.tempusremedium.core.schedule.SlotPlan
 import org.mariacf.tempusremedium.ui.pill.PillIcon
 import org.mariacf.tempusremedium.ui.resources.Res
 import org.mariacf.tempusremedium.ui.resources.doses
+import org.mariacf.tempusremedium.ui.resources.slot_overdue
 import org.mariacf.tempusremedium.ui.resources.today
 import org.mariacf.tempusremedium.ui.resources.today_meta
 import org.mariacf.tempusremedium.ui.theme.TempusTheme
@@ -47,13 +49,15 @@ private const val MAX_PILLS_PER_SLOT = 6
 
 /**
  * The HOJE panel of docs/design/reference/hoje.png. [highlight] outlines the slot that needs
- * attention next (a product addition; null renders exactly the reference).
+ * attention next and [overdue] marks slots whose time passed with doses still pending (product
+ * additions; the defaults render exactly the reference).
  */
 @Composable
 fun HojePanel(
     plan: DayPlan,
     modifier: Modifier = Modifier,
     highlight: TimeSlot? = null,
+    overdue: Set<TimeSlot> = emptySet(),
     onSlotClick: ((TimeSlot) -> Unit)? = null,
 ) {
     val palette = TempusTheme.colors
@@ -79,6 +83,7 @@ fun HojePanel(
                 SlotCard(
                     slot = slot,
                     highlighted = slot.slot == highlight,
+                    overdue = slot.slot in overdue,
                     onClick = onSlotClick?.let { { it(slot.slot) } },
                     modifier = Modifier.weight(1f).height(129.dp),
                 )
@@ -91,33 +96,62 @@ fun HojePanel(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SlotCard(
     slot: SlotPlan,
     highlighted: Boolean,
+    overdue: Boolean,
+    onClick: (() -> Unit)?,
+    modifier: Modifier = Modifier,
+) {
+    val palette = TempusTheme.colors
+    val label = stringResource(slot.slot.label)
+    val overdueLabel = stringResource(Res.string.slot_overdue)
+    val description =
+        listOf(label, slot.time.hhmm()) + listOfNotNull(overdueLabel.takeIf { overdue }) + slot.doses.map { it.medication.displayName }
+    val outline =
+        when {
+            overdue -> palette.danger
+            highlighted -> palette.accent
+            else -> null
+        }
+    SlotCardContent(slot, label, highlighted, overdue, outline, description.joinToString(", "), onClick, modifier)
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun SlotCardContent(
+    slot: SlotPlan,
+    label: String,
+    highlighted: Boolean,
+    overdue: Boolean,
+    outline: Color?,
+    description: String,
     onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     val palette = TempusTheme.colors
     val type = TempusTheme.type
     val shape = RoundedCornerShape(18.dp)
-    val label = stringResource(slot.slot.label)
-    val description = listOf(label, slot.time.hhmm()) + slot.doses.map { it.medication.displayName }
     Column(
         modifier
             .clip(shape)
             .glass(shape, palette, strong = true)
-            .then(if (highlighted) Modifier.border(1.5.dp, palette.accent, shape) else Modifier)
+            .then(if (outline != null) Modifier.border(1.5.dp, outline, shape) else Modifier)
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
-            .semantics(mergeDescendants = true) { contentDescription = description.joinToString(", ") }
+            .semantics(mergeDescendants = true) { contentDescription = description }
             .padding(top = 10.dp, bottom = 9.dp, start = 4.dp, end = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             label.uppercase(),
             style = type.slotLabel,
-            color = if (highlighted) palette.accent else palette.inkSoft,
+            color =
+                when {
+                    overdue -> palette.danger
+                    highlighted -> palette.accent
+                    else -> palette.inkSoft
+                },
             maxLines = 1,
             softWrap = false,
             textAlign = TextAlign.Center,
@@ -125,7 +159,7 @@ private fun SlotCard(
         Text(
             slot.time.hhmm(),
             style = type.slotTime,
-            color = palette.ink,
+            color = if (overdue) palette.danger else palette.ink,
             modifier = Modifier.padding(top = 2.dp),
         )
         Spacer(Modifier.weight(1f))

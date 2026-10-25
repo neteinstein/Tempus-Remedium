@@ -144,9 +144,7 @@
     <string name="month_november">novembro</string>
     <string name="month_december">dezembro</string>
     <string name="long_date">%1$s, %2$d de %3$s</string>
-    <string name="greeting_morning">Bom dia,</string>
-    <string name="greeting_afternoon">Boa tarde,</string>
-    <string name="greeting_evening">Boa noite,</string>
+    <string name="greeting">Olá,</string>
     <plurals name="greeting_pending">
         <item quantity="one">falta %1$d dose.</item>
         <item quantity="other">faltam %1$d doses.</item>
@@ -284,4 +282,32 @@
     <string name="language_fr">Français</string>
     <string name="language_de">Deutsch</string>
     <string name="language_es">Español</string>
+
+    <!-- Widget prompt and guide, overdue and running-out highlights -->
+    <string name="slot_overdue">em atraso</string>
+    <string name="stock_running_out">acaba hoje ou amanhã</string>
+    <string name="widget_banner">Adicione o widget ao ecrã principal ou de bloqueio</string>
+    <string name="widget_banner_close">Fechar aviso do widget</string>
+    <string name="widget_guide_eyebrow">Widget</string>
+    <string name="widget_guide_title">As doses de hoje, sem abrir a app</string>
+    <string name="widget_guide_what_title">O que é</string>
+    <string name="widget_guide_what_body">Um widget é um pequeno painel da app que fica no ecrã principal ou no ecrã de bloqueio do telemóvel. O Tempus Remedium tem três: «Hoje», com as doses de cada horário, «Repor em breve», com os medicamentos que estão a acabar, e «Tratamento», com a próxima toma do tratamento em curso.</string>
+    <string name="widget_guide_why_title">Porque vale a pena</string>
+    <string name="widget_guide_why_1">Vê de relance o que falta tomar, sempre que olha para o telemóvel.</string>
+    <string name="widget_guide_why_2">Lembra-se de repor um medicamento antes de ele acabar.</string>
+    <string name="widget_guide_why_3">Um toque num horário abre a app logo nessas doses.</string>
+    <string name="widget_guide_home_title">Como adicionar ao ecrã principal</string>
+    <string name="widget_guide_home_1">Toque sem soltar numa zona vazia do ecrã principal.</string>
+    <string name="widget_guide_home_2">Toque em «Widgets».</string>
+    <string name="widget_guide_home_3">Procure «Tempus Remedium» na lista ou na pesquisa.</string>
+    <string name="widget_guide_home_4">Toque sem soltar no widget «Hoje» (ou «Repor em breve») e arraste-o para o ecrã.</string>
+    <string name="widget_guide_home_5">Solte-o onde quiser. Para mudar o tamanho, toque sem soltar no widget e arraste as margens.</string>
+    <string name="widget_guide_lock_title">Como adicionar ao ecrã de bloqueio</string>
+    <string name="widget_guide_lock_intro">Só alguns telemóveis e tablets permitem widgets no ecrã de bloqueio, e os passos variam de marca para marca.</string>
+    <string name="widget_guide_lock_1">Com o ecrã bloqueado, toque sem soltar numa zona vazia (ou deslize a partir da margem direita).</string>
+    <string name="widget_guide_lock_2">Toque em «Personalizar» ou «Adicionar widget» e desbloqueie se for pedido.</string>
+    <string name="widget_guide_lock_3">Escolha «Tempus Remedium» e depois o widget «Hoje».</string>
+    <string name="widget_guide_lock_4">Toque em «Concluído».</string>
+    <string name="widget_guide_privacy">No ecrã de bloqueio, qualquer pessoa que pegue no telemóvel vê os nomes dos medicamentos.</string>
+    <string name="widget_guide_add">Adicionar ao ecrã principal</string>
 </resources>

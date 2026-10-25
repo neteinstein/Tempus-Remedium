@@ -121,6 +121,19 @@ fun AppData.refill(
     units: Int,
 ): AppData = adjustStock(medicationId, units)
 
+/** Silences the "running out" alert of a medication until the end of [today]. */
+fun AppData.acknowledgeStockAlert(
+    medicationId: String,
+    today: LocalDate,
+): AppData =
+    copy(
+        medications =
+            medications.map { medication ->
+                val stock = medication.stock
+                if (medication.id != medicationId || stock == null) medication else medication.copy(stock = stock.copy(alertSeenOn = today))
+            },
+    )
+
 private fun AppData.adjustStock(
     medicationId: String,
     delta: Int,

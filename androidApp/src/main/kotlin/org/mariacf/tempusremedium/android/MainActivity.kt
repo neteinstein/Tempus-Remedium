@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import org.mariacf.tempusremedium.android.settings.AndroidSettingsExtras
+import org.mariacf.tempusremedium.android.widgets.AndroidWidgetSupport
 import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.ui.App
 import org.mariacf.tempusremedium.ui.PlatformUi
@@ -58,6 +59,7 @@ class MainActivity : ComponentActivity() {
                 },
                 permissionsMissing = { permissionsMissing },
                 requestPermissions = ::requestMissingPermission,
+                widgets = AndroidWidgetSupport(applicationContext),
             )
         setContent {
             App(

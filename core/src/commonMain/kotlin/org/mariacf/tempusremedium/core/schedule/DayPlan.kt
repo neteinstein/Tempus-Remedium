@@ -1,6 +1,7 @@
 package org.mariacf.tempusremedium.core.schedule
 
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.daysUntil
 import org.mariacf.tempusremedium.core.model.AppData
@@ -24,6 +25,9 @@ data class SlotPlan(
 ) {
     val isDone: Boolean
         get() = doses.isNotEmpty() && doses.all { it.status != null }
+
+    val hasPending: Boolean
+        get() = doses.any { it.status == null }
 }
 
 /** The HOJE panel for one date: always the four slots, in order, plus the course doses of the day. */
@@ -45,6 +49,12 @@ data class DayPlan(
                 .distinctBy { it.id }
 
     fun slot(slot: TimeSlot): SlotPlan = slots.first { it.slot == slot }
+
+    /** Slots whose time has passed at [now] with doses neither taken nor skipped. */
+    fun overdueSlots(now: LocalDateTime): Set<TimeSlot> =
+        slots
+            .filter { it.hasPending && (date < now.date || (date == now.date && it.time <= now.time)) }
+            .mapTo(mutableSetOf()) { it.slot }
 }
 
 fun Medication.isDueOn(date: LocalDate): Boolean {

@@ -84,10 +84,8 @@ import org.mariacf.tempusremedium.ui.resources.courses_title
 import org.mariacf.tempusremedium.ui.resources.days_count
 import org.mariacf.tempusremedium.ui.resources.empty_body
 import org.mariacf.tempusremedium.ui.resources.empty_title
-import org.mariacf.tempusremedium.ui.resources.greeting_afternoon
+import org.mariacf.tempusremedium.ui.resources.greeting
 import org.mariacf.tempusremedium.ui.resources.greeting_done
-import org.mariacf.tempusremedium.ui.resources.greeting_evening
-import org.mariacf.tempusremedium.ui.resources.greeting_morning
 import org.mariacf.tempusremedium.ui.resources.greeting_nothing
 import org.mariacf.tempusremedium.ui.resources.greeting_pending
 import org.mariacf.tempusremedium.ui.resources.refill_dialog_title
@@ -126,6 +124,8 @@ fun TodayScreen(
     onAddMedication: () -> Unit,
     modifier: Modifier = Modifier,
     stockDisplay: StockDisplay = StockDisplay.JARS,
+    stockAlerts: Set<String> = emptySet(),
+    onAcknowledgeStockAlert: (Medication) -> Unit = {},
     launchRequest: LaunchRequest? = null,
     onConsumeLaunchRequest: () -> Unit = {},
     courses: List<CourseProgress> = emptyList(),
@@ -160,7 +160,8 @@ fun TodayScreen(
         }
         HojePanel(
             plan,
-            highlight = plan.slots.firstOrNull { slot -> slot.doses.any { it.status == null } }?.slot,
+            highlight = plan.slots.firstOrNull { it.hasPending }?.slot,
+            overdue = plan.overdueSlots(now),
             onSlotClick = { openSlot = it },
         )
         if (courses.isNotEmpty()) {
@@ -169,7 +170,15 @@ fun TodayScreen(
         }
         if (lowStock.isNotEmpty()) {
             Spacer(Modifier.height(36.dp))
-            ReporEmBrevePanel(lowStock, display = stockDisplay, onItemClick = { refillId = it.medication.id })
+            ReporEmBrevePanel(
+                lowStock,
+                display = stockDisplay,
+                alerts = stockAlerts,
+                onItemClick = { item ->
+                    if (item.medication.id in stockAlerts) onAcknowledgeStockAlert(item.medication)
+                    refillId = item.medication.id
+                },
+            )
         }
     }
 
@@ -198,7 +207,7 @@ fun TodayScreen(
         }
 }
 
-/** "● QUINTA-FEIRA, 22 DE OUTUBRO / Boa tarde, *faltam 3 doses.*" */
+/** "● QUINTA-FEIRA, 22 DE OUTUBRO / Olá, *faltam 3 doses.*" */
 @Composable
 private fun Greeting(
     now: LocalDateTime,
@@ -206,14 +215,7 @@ private fun Greeting(
 ) {
     val palette = TempusTheme.colors
     val type = TempusTheme.type
-    val hello =
-        stringResource(
-            when (now.hour) {
-                in 5..11 -> Res.string.greeting_morning
-                in 12..19 -> Res.string.greeting_afternoon
-                else -> Res.string.greeting_evening
-            },
-        )
+    val hello = stringResource(Res.string.greeting)
     val pending = plan.slots.sumOf { slot -> slot.doses.count { it.status == null } } + plan.courseDoses.count { it.status == null }
     val status =
         when {

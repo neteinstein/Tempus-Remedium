@@ -126,9 +126,7 @@
     <string name="month_november">novembre</string>
     <string name="month_december">décembre</string>
     <string name="long_date">%1$s %2$d %3$s</string>
-    <string name="greeting_morning">Bonjour,</string>
-    <string name="greeting_afternoon">Bon après-midi,</string>
-    <string name="greeting_evening">Bonsoir,</string>
+    <string name="greeting">Bonjour,</string>
     <plurals name="greeting_pending">
         <item quantity="one">encore %1$d dose.</item>
         <item quantity="other">encore %1$d doses.</item>
@@ -253,4 +251,32 @@
     <string name="permission_missing">Manquante · touchez pour l’accorder</string>
     <string name="settings_language">Langue</string>
     <string name="language_system">Automatique (langue de l’appareil)</string>
+
+    <!-- Widget prompt and guide, overdue and running-out highlights -->
+    <string name="slot_overdue">en retard</string>
+    <string name="stock_running_out">s’épuise aujourd’hui ou demain</string>
+    <string name="widget_banner">Ajoutez le widget à l’écran d’accueil ou de verrouillage</string>
+    <string name="widget_banner_close">Fermer l’astuce du widget</string>
+    <string name="widget_guide_eyebrow">Widget</string>
+    <string name="widget_guide_title">Les doses du jour, sans ouvrir l’app</string>
+    <string name="widget_guide_what_title">Qu’est-ce que c’est</string>
+    <string name="widget_guide_what_body">Un widget est un petit panneau de l’app qui reste sur l’écran d’accueil ou l’écran de verrouillage du téléphone. Tempus Remedium en a trois : « Aujourd’hui », avec les doses de chaque horaire, « À renouveler », avec les médicaments qui s’épuisent, et « Traitement », avec la prochaine prise du traitement en cours.</string>
+    <string name="widget_guide_why_title">Pourquoi c’est utile</string>
+    <string name="widget_guide_why_1">Voyez d’un coup d’œil ce qu’il reste à prendre, chaque fois que vous regardez le téléphone.</string>
+    <string name="widget_guide_why_2">Pensez à renouveler un médicament avant qu’il ne s’épuise.</string>
+    <string name="widget_guide_why_3">Un appui sur un horaire ouvre l’app directement sur ces doses.</string>
+    <string name="widget_guide_home_title">Comment l’ajouter à l’écran d’accueil</string>
+    <string name="widget_guide_home_1">Appuyez longuement sur une zone vide de l’écran d’accueil.</string>
+    <string name="widget_guide_home_2">Appuyez sur « Widgets ».</string>
+    <string name="widget_guide_home_3">Cherchez « Tempus Remedium » dans la liste ou avec la recherche.</string>
+    <string name="widget_guide_home_4">Appuyez longuement sur le widget « Aujourd’hui » (ou « À renouveler ») et faites-le glisser sur l’écran.</string>
+    <string name="widget_guide_home_5">Déposez-le où vous voulez. Pour changer sa taille, appuyez longuement sur le widget et faites glisser ses bords.</string>
+    <string name="widget_guide_lock_title">Comment l’ajouter à l’écran de verrouillage</string>
+    <string name="widget_guide_lock_intro">Seuls certains téléphones et tablettes acceptent des widgets sur l’écran de verrouillage, et les étapes varient selon la marque.</string>
+    <string name="widget_guide_lock_1">Écran verrouillé, appuyez longuement sur une zone vide (ou balayez depuis le bord droit).</string>
+    <string name="widget_guide_lock_2">Appuyez sur « Personnaliser » ou « Ajouter un widget » et déverrouillez si on vous le demande.</string>
+    <string name="widget_guide_lock_3">Choisissez « Tempus Remedium », puis le widget « Aujourd’hui ».</string>
+    <string name="widget_guide_lock_4">Appuyez sur « OK ».</string>
+    <string name="widget_guide_privacy">Sur l’écran de verrouillage, toute personne qui prend le téléphone voit le nom des médicaments.</string>
+    <string name="widget_guide_add">Ajouter à l’écran d’accueil</string>
 </resources>
