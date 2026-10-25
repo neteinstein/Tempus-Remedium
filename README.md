@@ -51,6 +51,10 @@ calm blues, frosted cards, and a light and a dark theme.
   <img src="androidApp/src/test/screenshots/screen_settings_permissions.png" width="250" alt="Definições: secção Permissões com as permissões em falta a vermelho">
 </p>
 <p>
+  <img src="docs/images/phone_home_widgets.png" width="280" alt="Ecrã principal com os widgets Hoje, Tratamento e Repor em breve">
+  <img src="docs/images/phone_lock_widget.png" width="280" alt="Ecrã de bloqueio com o widget Hoje">
+</p>
+<p>
   <img src="androidApp/src/main/res/drawable-nodpi/widget_hoje_preview.webp" width="250" alt="Widget Hoje">
   <img src="androidApp/src/main/res/drawable-night-nodpi/widget_repor_preview.webp" width="250" alt="Widget Repor em breve (escuro)">
   <img src="androidApp/src/main/res/drawable-nodpi/widget_course_preview.webp" width="250" alt="Widget Tratamento">
