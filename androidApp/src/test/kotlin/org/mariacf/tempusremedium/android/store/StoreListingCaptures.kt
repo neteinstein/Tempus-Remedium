@@ -1,6 +1,14 @@
 package org.mariacf.tempusremedium.android.store
 
 import android.Manifest
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.LinearGradient
+import android.graphics.Paint
+import android.graphics.RadialGradient
+import android.graphics.RectF
+import android.graphics.Shader
+import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -25,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasScrollAction
@@ -34,6 +43,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -61,6 +71,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mariacf.tempusremedium.android.R
 import org.mariacf.tempusremedium.android.settings.AndroidSettingsExtras
+import org.mariacf.tempusremedium.android.widgets.CourseWidgetContent
+import org.mariacf.tempusremedium.android.widgets.CourseWidgetUi
+import org.mariacf.tempusremedium.android.widgets.HojeWidgetContent
+import org.mariacf.tempusremedium.android.widgets.HojeWidgetUi
+import org.mariacf.tempusremedium.android.widgets.ReporWidgetContent
+import org.mariacf.tempusremedium.android.widgets.ReporWidgetUi
+import org.mariacf.tempusremedium.android.widgets.WidgetStyle
+import org.mariacf.tempusremedium.android.widgets.renderWidget
 import org.mariacf.tempusremedium.core.CourseFixtures
 import org.mariacf.tempusremedium.core.ReferenceFixtures
 import org.mariacf.tempusremedium.core.data.InMemoryDocumentStorage
@@ -90,11 +108,13 @@ import org.mariacf.tempusremedium.ui.PlatformUi
 import org.mariacf.tempusremedium.ui.components.HojePanel
 import org.mariacf.tempusremedium.ui.pill.PillIcon
 import org.mariacf.tempusremedium.ui.screens.LaunchRequest
+import org.mariacf.tempusremedium.ui.theme.TempusPalette
 import org.mariacf.tempusremedium.ui.theme.TempusTheme
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import org.robolectric.shadows.ShadowAlarmManager
+import java.io.File
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -118,6 +138,8 @@ abstract class StoreListingCaptures(
     private val tabs: Map<String, String>,
     private val tagline: String,
     private val byline: String,
+    /** The reference day as a launcher writes it above the widgets. */
+    private val homeDate: String,
 ) {
     @get:Rule
     val composeRule = createComposeRule()
@@ -144,7 +166,7 @@ abstract class StoreListingCaptures(
 
     /** Middle of the day: MANHÃ taken, MEIO-DIA up next. */
     @Test
-    fun today() = screen("01_today", at = LocalTime(12, 40)) { morningTaken() }
+    fun today() = todayScreen()
 
     /**
      * 13:40 with MEIO-DIA not taken: its card is red, and Ómega 3, down to its last unit, pulses
@@ -168,28 +190,23 @@ abstract class StoreListingCaptures(
 
     /** The MANHÃ sheet with one dose taken and one to take. */
     @Test
-    fun slotSheet() =
-        screen("03_slot", at = LocalTime(8, 20), launchRequest = LaunchRequest.OpenSlot(TimeSlot.MORNING)) {
-            sample().logDose(ReferenceFixtures.metformina.id, date, TimeSlot.MORNING, DoseStatus.TAKEN, millis(date, 8, 5))
-        }
+    fun slotSheet() = slotScreen()
 
     /** Every kind of medication: tablets, an inhaler, a patch, a nasal spray, drops and an injection. */
     @Test
-    fun medications() = screen("04_medications", at = LocalTime(12, 40), tab = "medications") { forms() }
+    fun medications() = medicationsScreen()
 
     /** An antibiotic every 8 hours next to the daily medications, its 16:00 dose due. */
     @Test
     fun course() =
         screen("05_course", at = LocalTime(16, 5)) {
-            val course = CourseFixtures.amoxicilina.let { it.copy(name = names.getValue(it.id)) }
             morningTaken()
                 .logSlot(date, TimeSlot.MIDDAY, DoseStatus.TAKEN, millis(date, TimeSlot.MIDDAY))
-                .upsertMedication(course)
-                .logCourseDose(course.id, 0, DoseStatus.TAKEN, millis(date, 8, 2))
+                .withCourse(dosesTaken = 1)
         }
 
     @Test
-    fun history() = screen("06_history", at = LocalTime(21, 30), tab = "history") { eveningDone() }
+    fun history() = historyScreen()
 
     /** Evening, dark theme, blister packs: only DEITAR left. */
     @Test
@@ -215,6 +232,70 @@ abstract class StoreListingCaptures(
         screen("video_0801", at = LocalTime(8, 1)) {
             sample().logSlot(date, TimeSlot.MORNING, DoseStatus.TAKEN, millis(date, 8, 0))
         }
+
+    /** Video: HOJE and REPOR EM BREVE on a light home screen at midday, without a course. */
+    @Test
+    fun videoHome() = homeScreen("video_home", at = LocalTime(12, 40)) { morningTaken() }
+
+    /** HOJE on the lock screen at midday, large, under the clock. */
+    @Test
+    fun lockScreenWidget() = lockScreen("09_lock_screen", at = LocalTime(12, 40)) { morningTaken() }
+
+    /** The same widgets at night, in the dark theme and with blister packs. */
+    @Test
+    @Config(qualifiers = "+night")
+    fun widgetsDark() =
+        homeScreen("10_widgets_dark", at = LocalTime(21, 30)) {
+            eveningDone()
+                .withCourse(dosesTaken = 2)
+                .run { copy(settings = settings.copy(stockDisplay = StockDisplay.BLISTERS)) }
+        }
+
+    // Tablets, in landscape: the app has no tablet layout, so these show the phone layout at full width.
+
+    @Test
+    @Config(qualifiers = TABLET_7)
+    fun tablet7Today() = todayScreen(TABLET_7_DIR)
+
+    @Test
+    @Config(qualifiers = TABLET_7)
+    fun tablet7Slot() = slotScreen(TABLET_7_DIR)
+
+    @Test
+    @Config(qualifiers = TABLET_7)
+    fun tablet7Medications() = medicationsScreen(TABLET_7_DIR)
+
+    @Test
+    @Config(qualifiers = TABLET_7)
+    fun tablet7History() = historyScreen(TABLET_7_DIR)
+
+    @Test
+    @Config(qualifiers = TABLET_10)
+    fun tablet10Today() = todayScreen(TABLET_10_DIR)
+
+    @Test
+    @Config(qualifiers = TABLET_10)
+    fun tablet10Slot() = slotScreen(TABLET_10_DIR)
+
+    @Test
+    @Config(qualifiers = TABLET_10)
+    fun tablet10Medications() = medicationsScreen(TABLET_10_DIR)
+
+    @Test
+    @Config(qualifiers = TABLET_10)
+    fun tablet10History() = historyScreen(TABLET_10_DIR)
+
+    private fun todayScreen(dir: String = "") = screen("${dir}01_today", at = LocalTime(12, 40)) { morningTaken() }
+
+    private fun slotScreen(dir: String = "") =
+        screen("${dir}03_slot", at = LocalTime(8, 20), launchRequest = LaunchRequest.OpenSlot(TimeSlot.MORNING)) {
+            sample().logDose(ReferenceFixtures.metformina.id, date, TimeSlot.MORNING, DoseStatus.TAKEN, millis(date, 8, 5))
+        }
+
+    private fun medicationsScreen(dir: String = "") =
+        screen("${dir}04_medications", at = LocalTime(12, 40), tab = "medications") { forms() }
+
+    private fun historyScreen(dir: String = "") = screen("${dir}06_history", at = LocalTime(21, 30), tab = "history") { eveningDone() }
 
     @Test
     @Config(qualifiers = "+w512dp-h250dp-xhdpi")
@@ -339,6 +420,14 @@ abstract class StoreListingCaptures(
         )
     }
 
+    /** The antibiotic course from 08:00 today, with its first [dosesTaken] doses taken on time. */
+    private fun AppData.withCourse(dosesTaken: Int): AppData {
+        val course = CourseFixtures.amoxicilina.let { it.copy(name = names.getValue(it.id)) }
+        return (0 until dosesTaken).fold(upsertMedication(course)) { data, index ->
+            data.logCourseDose(course.id, index, DoseStatus.TAKEN, millis(date, 8 + index * 8, 2))
+        }
+    }
+
     private fun AppData.withStock(
         id: String,
         stock: Stock,
@@ -376,6 +465,129 @@ abstract class StoreListingCaptures(
         captureScreenRoboImage(output(name), recordOptions)
     }
 
+    /**
+     * The widgets as the launcher draws them, on a wallpaper in the brand blues, with a status bar,
+     * the date and the gesture bar. Robolectric cannot render a launcher, so this is drawn here;
+     * the widgets themselves are the real Glance layouts. Light or dark follows the qualifiers.
+     */
+    private fun homeScreen(
+        name: String,
+        at: LocalTime,
+        data: () -> AppData,
+    ) {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val appData = data()
+        val hoje = runBlocking { HojeWidgetUi.build(context, appData, date) }
+        val course = runBlocking { CourseWidgetUi.build(context, appData, LocalDateTime(date, at)) }
+        val repor = runBlocking { ReporWidgetUi.build(context, appData) }
+        // The course widget only when there is a course to show.
+        val widgets =
+            listOfNotNull(
+                renderWidget(context, DpSize(WIDGET_WIDTH_DP.dp, 236.dp)) { HojeWidgetContent(hoje) },
+                course.courses.takeIf { it.isNotEmpty() }?.let {
+                    renderWidget(context, DpSize(WIDGET_WIDTH_DP.dp, 132.dp)) { CourseWidgetContent(course) }
+                },
+                renderWidget(context, DpSize(WIDGET_WIDTH_DP.dp, 224.dp)) { ReporWidgetContent(repor) },
+            )
+        val dark = WidgetStyle.palette(context) == TempusPalette.Dark
+        deviceScreen(name, dark) { canvas, dp, text ->
+            val margin = (canvas.width - WIDGET_WIDTH_DP * dp) / 2
+            canvas.drawText(at.toString(), margin + 8 * dp, 30 * dp, text(14f, Typeface.BOLD))
+            canvas.drawText(homeDate, margin + 8 * dp, 92 * dp, text(24f, Typeface.NORMAL))
+            var y = 124 * dp
+            for (widget in widgets) {
+                canvas.drawBitmap(widget, margin, y, null)
+                y += widget.height + 14 * dp
+            }
+        }
+    }
+
+    /**
+     * The HOJE widget alone on a lock screen: padlock, large clock, date, then the widget, on the
+     * dark wallpaper. Drawn like [homeScreen]; the widget follows the qualifiers' day/night setting.
+     */
+    private fun lockScreen(
+        name: String,
+        at: LocalTime,
+        data: () -> AppData,
+    ) {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val hoje = runBlocking { HojeWidgetUi.build(context, data(), date) }
+        val widget = renderWidget(context, DpSize(WIDGET_WIDTH_DP.dp, 240.dp)) { HojeWidgetContent(hoje) }
+        deviceScreen(name, darkWallpaper = true) { canvas, dp, text ->
+            val center = canvas.width / 2f
+            // Padlock: shackle and body.
+            val lock =
+                text(0f, Typeface.NORMAL).apply {
+                    style = Paint.Style.STROKE
+                    strokeWidth = 2 * dp
+                }
+            canvas.drawArc(RectF(center - 5 * dp, 30 * dp, center + 5 * dp, 42 * dp), 180f, 180f, false, lock)
+            canvas.drawRoundRect(RectF(center - 8 * dp, 37 * dp, center + 8 * dp, 50 * dp), 3 * dp, 3 * dp, text(0f, Typeface.NORMAL))
+            val clock =
+                text(104f, Typeface.NORMAL).apply {
+                    textAlign = Paint.Align.CENTER
+                    typeface =
+                        Typeface.create("sans-serif-light", Typeface.NORMAL)
+                }
+            canvas.drawText(at.toString(), center, 182 * dp, clock)
+            canvas.drawText(homeDate, center, 222 * dp, text(18f, Typeface.NORMAL).apply { textAlign = Paint.Align.CENTER })
+            canvas.drawBitmap(widget, (canvas.width - widget.width) / 2f, 290 * dp, null)
+        }
+    }
+
+    /**
+     * A phone screen drawn by hand: the wallpaper in the brand blues with soft blobs, whatever
+     * [content] draws (given the canvas, the density and a text paint factory) and the gesture bar.
+     */
+    private fun deviceScreen(
+        name: String,
+        darkWallpaper: Boolean,
+        content: (android.graphics.Canvas, Float, (Float, Int) -> Paint) -> Unit,
+    ) {
+        val metrics = ApplicationProvider.getApplicationContext<Context>().resources.displayMetrics
+        val dp = metrics.density
+        val width = metrics.widthPixels
+        val height = metrics.heightPixels
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = android.graphics.Canvas(bitmap)
+        val (top, bottom, blob) =
+            if (darkWallpaper) Triple(0xFF0E2E52, 0xFF050D18, 0x55125A98) else Triple(0xFFE4F0FA, 0xFFB7D3EC, 0x99FFFFFF)
+        canvas.drawPaint(
+            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                shader = LinearGradient(0f, 0f, width * 0.4f, height.toFloat(), top.toInt(), bottom.toInt(), Shader.TileMode.CLAMP)
+            },
+        )
+        // Soft blobs, as on mariacf.pt.
+        for ((x, y, r) in listOf(Triple(0.15f, 0.2f, 0.6f), Triple(0.9f, 0.75f, 0.55f))) {
+            val transparent = blob.toInt() and 0x00FFFFFF
+            canvas.drawCircle(
+                x * width,
+                y * height,
+                r * width,
+                Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    shader = RadialGradient(x * width, y * height, r * width, blob.toInt(), transparent, Shader.TileMode.CLAMP)
+                },
+            )
+        }
+
+        val ink = if (darkWallpaper) android.graphics.Color.WHITE else TempusPalette.Light.ink.toArgb()
+        val text = { size: Float, style: Int ->
+            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = ink
+                textSize = size * dp
+                typeface = Typeface.create(Typeface.SANS_SERIF, style)
+            }
+        }
+        content(canvas, dp, text)
+        val bar = RectF(width / 2 - 54 * dp, height - 14 * dp, width / 2 + 54 * dp, height - 10 * dp)
+        canvas.drawRoundRect(bar, 2 * dp, 2 * dp, text(0f, Typeface.NORMAL).apply { alpha = 0xCC })
+
+        val file = File(output(name))
+        file.parentFile?.mkdirs()
+        file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+    }
+
     private fun millis(
         day: LocalDate,
         hour: Int,
@@ -391,6 +603,13 @@ abstract class StoreListingCaptures(
 
     companion object {
         private const val HISTORY_DAYS = 30
+        private const val WIDGET_WIDTH_DP = 380
+
+        /** A 7" tablet in landscape (Nexus 7 class) and a 10" one (Pixel Tablet class). */
+        const val TABLET_7 = "+w960dp-h600dp-land-xhdpi"
+        const val TABLET_10 = "+w1280dp-h800dp-land-xhdpi"
+        private const val TABLET_7_DIR = "tablet-7/"
+        private const val TABLET_10_DIR = "tablet-10/"
 
         /** A few missed doses, so the history looks lived in. */
         private val skipped =
@@ -439,6 +658,7 @@ class PortugueseStoreListingCaptures :
         tabs = mapOf("medications" to "Medicamentos", "history" to "Histórico", "settings" to "Definições"),
         tagline = "As doses de hoje,\na horas.",
         byline = "por Dra. Maria Cortês Ferreira",
+        homeDate = "quinta-feira, 22 de outubro",
     ) {
     /** The launcher icon's two layers at 512 px, cropped to the part a launcher shows (72 of 108 dp). */
     @Test
@@ -531,4 +751,5 @@ class EnglishStoreListingCaptures :
         tabs = mapOf("medications" to "Medications", "history" to "History", "settings" to "Settings"),
         tagline = "Today's doses,\non time.",
         byline = "by Dr Maria Cortês Ferreira",
+        homeDate = "Thursday, October 22",
     )

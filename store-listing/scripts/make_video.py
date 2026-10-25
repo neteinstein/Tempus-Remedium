@@ -21,19 +21,21 @@ from functools import lru_cache
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-from captures import FONTS, REPO, SOURCE, STORE, forms, load, pulse
+from captures import FONTS, REPO, SOURCE, STORE, load, pulse
 
 W, H, FPS = 1920, 1080, 30
 BPM = 120
 BEAT = 60 / BPM
-DURATION = 22.0
+DURATION = 24.0
 FRAMES = int(DURATION * FPS)
 POSTER_TIME = 2.2
 SR = 44100
 
 # Scene boundaries, all on beats (see the storyboard).
-HOOK, REVEAL, FORMS, REMIND, MISSED, OUTRO, END = 0.0, 2.5, 5.5, 9.0, 14.0, 18.5, DURATION
-NOTIFY_AT, TAP_AT, TAKEN_AT, STOCK_AT = 9.5, 11.5, 12.0, 16.0
+HOOK, REVEAL, REMIND, WIDGETS, MISSED, OUTRO, END = 0.0, 2.5, 5.5, 10.5, 16.5, 20.5, DURATION
+NOTIFY_AT, TAP_AT, TAKEN_AT, HOME_AT, STOCK_AT = 6.0, 8.0, 8.5, 13.5, 18.5
+# The drums stop and the final chord rings from the last bar.
+MUSIC_END = 22.0
 
 # TempusPalette.Light
 BG = (0xF9, 0xFA, 0xFC)
@@ -46,14 +48,14 @@ DOT = (0x04, 0x9F, 0xD6)
 DANGER = (0xC2, 0x41, 0x3A)
 BRAND = [(0x02, 0x6A, 0x9F), (0x12, 0x5A, 0x98), (0x00, 0x66, 0x8B)]
 
-# Store copy per language; UI words (slot names, actions, forms) are the app's own strings.
+# Store copy per language; UI words (slot names, actions) are the app's own strings.
 COPY = {
     "pt-PT": {
-        "hook": ["Esqueceu-se", "de uma toma?"],
+        "hook": ["Várias tomas", "por dia?"],
         "reveal": ("TEMPUS REMEDIUM", "O que tomar hoje,", "e a que horas."),
-        "forms": ("MEDICAMENTOS", "Comprimidos, inaladores,", "pensos, gotas e mais."),
-        "form_names": ["Redondo", "Quadrado", "Cápsula", "Cápsula mole", "Inalador", "Penso transdérmico", "Spray nasal", "Gotas", "Injetável"],
         "remind": ("LEMBRETES", "Avisa à hora certa.", "Tomei, num toque."),
+        "lock": ("WIDGETS", "No ecrã de bloqueio,", "sem abrir a app."),
+        "home": ("WIDGETS", "E no ecrã principal,", "o que falta repor."),
         "notification": ("Tempus Remedium", "agora", "Manhã · 08:00", "Metformina 500mg, Vitamina D 1000IU", "Tomei", "Adiar 10 min"),
         "missed": ("EM ATRASO", "Passou a hora?", "Fica a vermelho."),
         "stock": ("REPOR EM BREVE", "Está a acabar?", "Avisa antes de faltar."),
@@ -61,11 +63,11 @@ COPY = {
         "output": REPO / "docs/tempus-remedium.mp4",
     },
     "en-US": {
-        "hook": ["Missed", "a dose?"],
+        "hook": ["Several doses", "a day?"],
         "reveal": ("TEMPUS REMEDIUM", "What to take today,", "and when."),
-        "forms": ("MEDICATIONS", "Pills, inhalers,", "patches, drops and more."),
-        "form_names": ["Round", "Square", "Capsule", "Softgel", "Inhaler", "Transdermal patch", "Nasal spray", "Drops", "Injection"],
         "remind": ("REMINDERS", "Right on time.", "Taken, in one tap."),
+        "lock": ("WIDGETS", "On your lock screen,", "without opening the app."),
+        "home": ("WIDGETS", "And on your home screen,", "what to refill."),
         "notification": ("Tempus Remedium", "now", "Morning · 08:00", "Metformin 500mg, Vitamin D 1000IU", "Taken", "Snooze 10 min"),
         "missed": ("OVERDUE", "Time passed?", "It turns red."),
         "stock": ("REFILL SOON", "Running low?", "It warns you first."),
@@ -95,12 +97,6 @@ def ease_out(t):
 def ease_in_out(t):
     t = clamp(t)
     return 4 * t**3 if t < 0.5 else 1 - (-2 * t + 2) ** 3 / 2
-
-
-def ease_out_back(t):
-    t = clamp(t)
-    c = 1.4
-    return 1 + (c + 1) * (t - 1) ** 3 + c * (t - 1) ** 2
 
 
 def fast_out_slow_in(t):
@@ -246,8 +242,8 @@ def draw_phone(canvas, key, locale, scale, cx, top, opacity=1.0):
 
 @lru_cache(maxsize=2)
 def hook_panel(locale):
-    """HOJE, its four slots (MEIO-DIA in red) and the legend, cut from the 13:40 capture, as a card."""
-    crop = screen("02_overdue_base", locale).crop((40, 410, 1041, 1030))
+    """HOJE, its four slots (MEIO-DIA up next) and the legend, cut from the 12:40 capture, as a card."""
+    crop = screen("01_today", locale).crop((40, 410, 1041, 1030))
     scale = 0.78
     crop = crop.resize((round(crop.width * scale), round(crop.height * scale)), Image.LANCZOS)
     pad = 50
@@ -257,31 +253,6 @@ def hook_panel(locale):
     layer.paste(Image.new("RGBA", layer.size, (1, 40, 80, 255)), (0, 0), shadow.filter(ImageFilter.GaussianBlur(26)))
     layer.paste(crop, (pad, pad), rounded_mask(crop.size, 40))
     return layer
-
-
-@lru_cache(maxsize=2)
-def form_tiles(locale):
-    names = COPY[locale]["form_names"]
-    cutouts = forms()
-    tiles = []
-    label_font = font("jakarta_semibold.ttf", 22)
-    for (key, icon), name in zip(cutouts.items(), names):
-        tile = Image.new("RGBA", (210, 250), (0, 0, 0, 0))
-        card = Image.new("RGBA", (190, 170), (255, 255, 255, 235))
-        tile.paste(card, (10, 0), rounded_mask((190, 170), 34))
-        h = 104
-        w = round(icon.width * h / icon.height)
-        if w > 150:
-            w, h = 150, round(icon.height * 150 / icon.width)
-        art = icon.resize((w, h), Image.LANCZOS)
-        tile.alpha_composite(art, (105 - w // 2, 85 - h // 2))
-        draw = ImageDraw.Draw(tile)
-        fnt = label_font
-        while draw.textlength(name, font=fnt) > 208:
-            fnt = font("jakarta_semibold.ttf", fnt.size - 1)
-        draw.text((105, 186), name, font=fnt, fill=INK_SOFT, anchor="ma")
-        tiles.append(tile)
-    return tiles
 
 
 @lru_cache(maxsize=2)
@@ -384,29 +355,15 @@ def render(t, locale):
         paste(canvas, scaled, 1420 - scaled.width / 2, H / 2 - scaled.height / 2 + (1 - slide) * 50, opacity)
 
     # 2. Reveal: Hoje at 12:40
-    opacity, slide = enter_exit(t, REVEAL, FORMS)
+    opacity, slide = enter_exit(t, REVEAL, REMIND)
     if opacity > 0:
-        text_left(canvas, title_block(*copy["reveal"]), t, REVEAL, FORMS)
+        text_left(canvas, title_block(*copy["reveal"]), t, REVEAL, REMIND)
         draw_phone(canvas, "01_today", locale, 0.4, 1390, 95 + (1 - slide) * 90, opacity)
 
-    # 3. Every form, one per eighth note
-    opacity, slide = enter_exit(t, FORMS, REMIND)
+    # 3. Reminder: notification, tap on "Tomei", MANHÃ taken
+    opacity, slide = enter_exit(t, REMIND, WIDGETS)
     if opacity > 0:
-        text_left(canvas, title_block(*copy["forms"]), t, FORMS, REMIND)
-        for i, tile in enumerate(form_tiles(locale)):
-            appear = FORMS + BEAT / 2 + i * BEAT / 2
-            if t < appear:
-                continue
-            pop = ease_out_back((t - appear) / 0.32)
-            scaled = tile.resize((max(1, round(tile.width * (0.6 + 0.4 * pop))), max(1, round(tile.height * (0.6 + 0.4 * pop)))), Image.BILINEAR)
-            cx = 1080 + (i % 3) * 230 + 105
-            cy = 170 + (i // 3) * 262 + 125
-            paste(canvas, scaled, cx - scaled.width / 2, cy - scaled.height / 2, opacity * clamp((t - appear) / 0.15))
-
-    # 4. Reminder: notification, tap on "Tomei", MANHÃ taken
-    opacity, slide = enter_exit(t, REMIND, MISSED)
-    if opacity > 0:
-        text_left(canvas, title_block(*copy["remind"]), t, REMIND, MISSED)
+        text_left(canvas, title_block(*copy["remind"]), t, REMIND, WIDGETS)
         top = 95 + (1 - slide) * 90
         draw_phone(canvas, "video_0759", locale, 0.4, 1390, top, opacity)
         if t > TAKEN_AT:
@@ -425,6 +382,22 @@ def render(t, locale):
                 r = 18 + 60 * ease_out(p)
                 ImageDraw.Draw(ripple).ellipse((100 - r, 100 - r, 100 + r, 100 + r), fill=ACCENT + (int(90 * (1 - p)),))
                 paste(canvas, ripple, x + tx - 100, y + ty - 100)
+
+    # 4. Widgets: HOJE on the lock screen, then HOJE and REPOR EM BREVE on the home screen
+    opacity, slide = enter_exit(t, WIDGETS, MISSED)
+    if opacity > 0:
+        text_left(canvas, title_block(*copy["lock"], max_width=760), t, WIDGETS, HOME_AT)
+        text_left(canvas, title_block(*copy["home"], max_width=760), t, HOME_AT, MISSED)
+        # A close-up, so the widgets read: centred on y = 900 of the capture, cropped by the frame.
+        scale = 0.6
+        top = H / 2 - 900 * scale + (1 - slide) * 80
+        # The phone unlocks: the lock screen slides up and out, then the home screen rises in.
+        leave = ease_in_out((t - (HOME_AT - 0.25)) / 0.3)
+        if leave < 1:
+            draw_phone(canvas, "09_lock_screen", locale, scale, 1400, top - leave * 120, opacity * (1 - leave))
+        if t > HOME_AT:
+            k = ease_out((t - HOME_AT) / 0.4)
+            draw_phone(canvas, "video_home", locale, scale, 1400, top + (1 - k) * 60, opacity * k)
 
     # 5. Missed (red) and running low (the jar pulses); a close-up that pans from HOJE to the jars
     opacity, slide = enter_exit(t, MISSED, OUTRO)
@@ -506,7 +479,7 @@ def soundtrack(path):
 
     # Kick, with the pad ducked under it, from the reveal; it rests in the outro's last bar.
     duck = np.ones(n)
-    beats = np.arange(REVEAL, 20.0, BEAT)
+    beats = np.arange(REVEAL, MUSIC_END, BEAT)
     for bt in beats:
         x = np.arange(int(0.32 * SR)) / SR
         freq = 45 + 75 * np.exp(-x / 0.035)
@@ -526,7 +499,7 @@ def soundtrack(path):
         add(tone(midi(root), 0.45, 0.22, ((1, 1.0), (2, 0.25))), bt, 0.24)
 
     # Claps on 2 and 4, hats on the off-beats.
-    for bt in np.arange(REVEAL, 20.0, BEAT / 2):
+    for bt in np.arange(REVEAL, MUSIC_END, BEAT / 2):
         beat_index = round(bt / BEAT * 2)
         noise = rng.standard_normal(int(0.2 * SR))
         if beat_index % 2 == 1:
@@ -542,16 +515,17 @@ def soundtrack(path):
     for b in range(bars):
         for k, idx in enumerate(pattern):
             start = b * 4 * BEAT + k * BEAT / 2
-            if start >= 20.0:
+            if start >= MUSIC_END:
                 break
             note = CHORDS[b % 4][idx] + 24
             add(tone(midi(note), 0.5, 0.16, ((1, 1.0), (4, 0.12), (10, 0.03))), start, 0.16 if start < REVEAL else 0.10, -0.25)
 
     # Effects, in key and on the grid.
-    pentatonic = [74, 76, 78, 81, 83, 86, 88, 90, 93]
-    for i, note in enumerate(pentatonic):
-        add(tone(midi(note), 0.25, 0.06, ((1, 1.0), (2, 0.2))), FORMS + BEAT / 2 + i * BEAT / 2, 0.12, -0.3 + 0.075 * i)
     bell = ((1, 1.0), (2.76, 0.35), (5.4, 0.12))
+    # Widgets: a rising glassy pair as the lock screen lands, and again as the home screen rises.
+    for at, notes in ((WIDGETS + BEAT / 2, (78, 83)), (HOME_AT, (81, 86))):
+        for i, note in enumerate(notes):
+            add(tone(midi(note), 0.5, 0.12, ((1, 1.0), (2, 0.2))), at + i * BEAT / 2, 0.11, 0.25)
     add(tone(midi(81), 1.2, 0.35, bell), NOTIFY_AT, 0.16, 0.2)
     add(tone(midi(86), 1.4, 0.45, bell), NOTIFY_AT + BEAT / 2, 0.16, 0.2)
     click = rng.standard_normal(int(0.02 * SR)) * np.exp(-np.arange(int(0.02 * SR)) / SR / 0.002)
@@ -559,7 +533,7 @@ def soundtrack(path):
     add(tone(midi(86), 0.6, 0.2, ((1, 1.0), (2, 0.2))), TAKEN_AT, 0.10, 0.2)
     for at in (MISSED, STOCK_AT):
         add(tone(midi(50), 0.9, 0.3, ((1, 1.0), (4, 0.15), (9.8, 0.04))), at, 0.18)
-    for at in (REVEAL, FORMS, REMIND, MISSED, OUTRO):
+    for at in (REVEAL, REMIND, WIDGETS, MISSED, OUTRO):
         x = np.arange(int(0.4 * SR)) / SR
         swell = lowpass(lowpass(rng.standard_normal(len(x)), 1500), 1500) * np.sin(np.pi * x / 0.4) ** 2
         add(swell, at - 0.3, 0.06)
@@ -567,13 +541,13 @@ def soundtrack(path):
         add(tone(midi(note), 1.6, 0.5, bell), OUTRO + i * BEAT / 2, 0.09, -0.2 + 0.13 * i)
     # Final chord.
     for note in (62, 66, 69, 74):
-        add(tone(midi(note), 3.0, 1.1, ((1, 1.0), (2, 0.2), (3, 0.05)), attack=0.02), 20.0, 0.09)
+        add(tone(midi(note), 3.0, 1.1, ((1, 1.0), (2, 0.2), (3, 0.05)), attack=0.02), MUSIC_END, 0.09)
 
     mix = np.stack([left, right], axis=1)
     mix = np.tanh(mix * 1.3) / np.tanh(1.3)
     fade = np.ones(n)
     fade[: int(0.02 * SR)] = np.linspace(0, 1, int(0.02 * SR))
-    tail = int((DURATION - 20.6) * SR)
+    tail = int((DURATION - (MUSIC_END + 0.6)) * SR)
     fade[-tail:] = np.linspace(1, 0, tail) ** 1.5
     mix *= fade[:, None]
     mix *= 0.89 / np.abs(mix).max()

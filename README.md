@@ -16,10 +16,10 @@
 ![No account, no server](https://img.shields.io/badge/sem%20conta-sem%20servidor-14B8A6)
 
 <a href="https://github.com/neteinstein/Tempus-Remedium/raw/main/docs/tempus-remedium.mp4">
-  <img src="docs/demo.webp" width="860" alt="Demonstração do Tempus Remedium: todas as formas de medicamentos (comprimidos, inaladores, pensos, gotas…), o lembrete com Tomei e Adiar 10 min, o horário em atraso que fica a vermelho e o frasco que pisca quando está a acabar">
+  <img src="docs/demo.webp" width="860" alt="Demonstração do Tempus Remedium: as tomas do dia, o lembrete com Tomei e Adiar 10 min, os widgets no ecrã de bloqueio e no ecrã principal, o horário em atraso que fica a vermelho e o frasco que pisca quando está a acabar">
 </a>
 
-<sub>▶ <a href="https://github.com/neteinstein/Tempus-Remedium/raw/main/docs/tempus-remedium.mp4">Ver com som</a> · 22 segundos</sub>
+<sub>▶ <a href="https://github.com/neteinstein/Tempus-Remedium/raw/main/docs/tempus-remedium.mp4">Ver com som</a> · 24 segundos</sub>
 
 </div>
 

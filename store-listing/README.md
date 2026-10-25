@@ -16,7 +16,9 @@ store-listing/
 │   └── graphics/
 │       ├── icon/1.png            512 × 512, 32-bit PNG
 │       ├── feature-graphic/1.png 1024 × 500, PNG without alpha
-│       └── phone-screenshots/    8 × 1080 × 1920 (9:16), PNG without alpha
+│       ├── phone-screenshots/    8 × 1080 × 1920 (9:16), PNG without alpha
+│       ├── tablet-screenshots/   7" tablets: 4 × 1920 × 1080 (16:9), PNG without alpha
+│       └── large-tablet-screenshots/  10" tablets: 4 × 2560 × 1440 (16:9), PNG without alpha
 ├── release-notes/<locale>/default.txt   "What's new" for the first release (≤ 500)
 ├── privacy-policy/
 │   ├── index.html                Bilingual, self-contained page to host
@@ -58,44 +60,58 @@ These need the owner and cannot be filled in from the repository:
 | … → App icon | `listings/<locale>/graphics/icon/1.png` (same image for both) |
 | … → Feature graphic | `listings/<locale>/graphics/feature-graphic/1.png` |
 | … → Phone screenshots | `listings/<locale>/graphics/phone-screenshots/1.png` … `8.png`, in order |
+| … → 7-inch tablet screenshots | `listings/<locale>/graphics/tablet-screenshots/1.png` … `4.png`, in order |
+| … → 10-inch tablet screenshots | `listings/<locale>/graphics/large-tablet-screenshots/1.png` … `4.png`, in order |
 | … → Video | YouTube URL of `docs/tempus-remedium.mp4` (pt-PT) or `video/tempus-remedium-en-US.mp4` |
 | Main store listing → Manage translations → add **English (United States) – en-US** | the `en-US` files above |
 | Release → Release notes | `release-notes/<locale>/default.txt` (between `<pt-PT>` / `<en-US>` tags) |
 | Policy → App content, Store settings | `play-console/app-content.md` |
 
-Not provided, all optional: tablet screenshots (the app has no tablet layout yet, so they would
-show a stretched phone UI), and Chromebook, Wear OS, TV or XR assets.
+Not provided, all optional: Chromebook, Wear OS, TV or XR assets.
 
 ## The screenshots
 
 Each screenshot is the real app rendered by Robolectric with sample data (the design reference's
 medications, translated for en-US, with a month of history), framed on the brand gradient with a
-caption in Fraunces. Captions are in `scripts/captions.json`.
+caption in Fraunces. Captions are in `scripts/captions.json`; their order there is the order on the
+listing (Play takes at most 8 phone screenshots).
 
 | # | Screen | pt-PT caption | en-US caption |
 | --- | --- | --- | --- |
 | 1 | Hoje, midday | O que tomar hoje, *e a que horas.* | What to take today, *and when.* |
-| 2 | Hoje at 13:40: MEIO-DIA in red, Ómega 3's jar pulsing | Esqueceu-se de uma toma? *Fica a vermelho.* | Missed a dose? *It turns red.* |
-| 3 | Manhã sheet: one dose taken, one to take | Marque cada dose *com um toque.* | Log each dose *with one tap.* |
-| 4 | Medicamentos: tablets, inhaler, patch, spray, drops, injection | Comprimidos, inaladores, *pensos, gotas e mais.* | Pills, inhalers, patches, *drops and more.* |
-| 5 | Hoje with an antibiotic course every 8 hours | Antibióticos de 8 em 8 horas, *até à última toma.* | Antibiotics every 8 hours, *to the last dose.* |
-| 6 | Histórico, 95 % | Os últimos 30 dias, *num relance.* | The last 30 days, *at a glance.* |
-| 7 | Hoje, dark theme, blister packs | Frascos ou blisters, *de dia ou de noite.* | Jars or blister packs, *day or night.* |
-| 8 | Definições: permissions, reminders, about and disclaimer | Lembretes à hora certa, *com discrição.* | On-time reminders, *kept discreet.* |
+| 2 | Lock screen at midday: the HOJE widget under the clock | As doses de hoje, *no ecrã de bloqueio.* | Today's doses, *on your lock screen.* |
+| 3 | Hoje at 13:40: MEIO-DIA in red, Ómega 3's jar pulsing | Esqueceu-se de uma toma? *Fica a vermelho.* | Missed a dose? *It turns red.* |
+| 4 | Manhã sheet: one dose taken, one to take | Marque cada dose *com um toque.* | Log each dose *with one tap.* |
+| 5 | Medicamentos: tablets, inhaler, patch, spray, drops, injection | Comprimidos, inaladores, *pensos, gotas e mais.* | Pills, inhalers, patches, *drops and more.* |
+| 6 | Hoje with an antibiotic course every 8 hours | Antibióticos de 8 em 8 horas, *até à última toma.* | Antibiotics every 8 hours, *to the last dose.* |
+| 7 | Histórico, 95 % | Os últimos 30 dias, *num relance.* | The last 30 days, *at a glance.* |
+| 8 | Home screen at night: the same widgets, dark, with blister packs | Frascos ou blisters, *de dia ou de noite.* | Jars or blister packs, *day or night.* |
 
-Screens are rendered at 412 × 824 dp, a common phone width. Two details of the captures:
+The captures also include Hoje in the dark theme (`07_today_dark`) and Definições
+(`08_settings`); they are left out of the listing to make room for the widgets, and can be swapped
+back in through `captions.json`.
+
+The tablet screenshots (7" and 10", landscape) are 1, 4, 5 and 7 above, rendered at 960 × 600 dp
+and 1280 × 800 dp, with the caption on one line. The app has no tablet layout yet, so they show the
+phone layout at full width; recapture them if one is added.
+
+Screens are rendered at 412 × 824 dp, a common phone width. Three details of the captures:
 
 - The app works out the device language once per process, so each capture class sets its language
   in the sample settings; that is why Definições → Idioma shows the language selected.
 - Tests never run infinite animations, so the running-out pulse is captured at its start (alpha
   0.15) next to the same screen with the alert seen. The glow is alpha-blended, so
-  `scripts/captures.py` rebuilds any phase exactly from the pair; screenshot 2 uses the brightest.
+  `scripts/captures.py` rebuilds any phase exactly from the pair; screenshot 3 uses the brightest.
+- Robolectric cannot run a launcher or a lock screen, so they are drawn in the capture
+  (wallpaper, clock, date, padlock, gesture bar) around the real Glance widgets, rendered the way
+  the widget preview images are.
 
 ## The demo video
 
 Built with the brag workflow (brag-slim): `video/brag-plan.md` has the angle and the storyboard.
-22 s, 1920 × 1080, 30 fps, focused on the medication forms, the reminder with **Tomei** /
-**Adiar 10 min**, and the red highlight of a missed time and of a medication running out. Every
+24 s, 1920 × 1080, 30 fps, focused on day-to-day medication: today's doses, the reminder with
+**Tomei** / **Adiar 10 min**, the HOJE widget on the lock screen and the widgets on the home
+screen, and the red highlight of a missed time and of a medication running out. Every
 frame is drawn from the same Robolectric captures with the app's fonts and colours; the music and
 effects are synthesised in `scripts/make_video.py` at 120 BPM, with every cut on a beat. The
 notification card is drawn from the strings the app's reminder uses, because Robolectric cannot
@@ -112,10 +128,11 @@ python3 store-listing/scripts/make_video.py
 python3 store-listing/scripts/check_listing.py
 ```
 
-1. `StoreListingCaptures` (`androidApp/src/test/.../store/`) writes the raw screens, the feature
-   graphic, the icon and the medication forms to `store-listing/source/` (git-ignored). It only
+1. `StoreListingCaptures` (`androidApp/src/test/.../store/`) writes the raw phone and tablet
+   screens, the widget lock and home screens, the feature graphic, the icon and the medication forms to
+   `store-listing/source/` (git-ignored). It only
    runs with `STORE_LISTING=1`, so CI skips it; `--rerun` stops Gradle from reusing a cached result.
-2. `compose_graphics.py` frames the screens, flattens the feature graphic and writes everything
+2. `compose_graphics.py` frames the phone and tablet screens, flattens the feature graphic and writes everything
    under `listings/<locale>/graphics/`.
 3. `make_video.py` renders both videos, their posters and the README preview (needs ffmpeg).
    `--still 2.2 --locale pt-PT` renders single frames into `source/video-work/` for checking.

@@ -9,15 +9,9 @@ import android.graphics.RadialGradient
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
-import android.view.View
-import android.widget.FrameLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.glance.GlanceId
-import androidx.glance.appwidget.GlanceAppWidget
-import androidx.glance.appwidget.compose
-import androidx.glance.appwidget.provideContent
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.runBlocking
@@ -198,33 +192,13 @@ class WidgetPreviewImagesTest {
         size: DpSize,
         content: @Composable () -> Unit,
     ): Bitmap {
-        val views = runBlocking { ContentWidget(content).compose(context, size = size) }
-        val density = context.resources.displayMetrics.density
-        val width = (size.width.value * density).toInt()
-        val height = (size.height.value * density).toInt()
-        val view = views.apply(context, FrameLayout(context))
-        view.measure(
-            View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY),
-        )
-        view.layout(0, 0, width, height)
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        view.draw(Canvas(bitmap))
-        assertTrue("$name drew nothing", (0 until width step 8).any { x -> bitmap.getPixel(x, height / 2) != 0 })
+        val bitmap = renderWidget(context, size, content)
+        assertTrue("$name drew nothing", (0 until bitmap.width step 8).any { x -> bitmap.getPixel(x, bitmap.height / 2) != 0 })
         return bitmap
     }
 
     private companion object {
         const val PHONE_WIDTH_DP = 360
         const val PHONE_HEIGHT_DP = 760
-    }
-
-    private class ContentWidget(
-        private val content: @Composable () -> Unit,
-    ) : GlanceAppWidget() {
-        override suspend fun provideGlance(
-            context: Context,
-            id: GlanceId,
-        ) = provideContent { content() }
     }
 }
