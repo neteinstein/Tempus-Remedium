@@ -102,7 +102,6 @@
     <string name="settings_reminders">Recordatorios</string>
     <string name="settings_reminders_body">Una notificación en cada horario con dosis.</string>
     <string name="settings_hide_names">Ocultar nombres en la pantalla de bloqueo</string>
-    <string name="settings_notifications_permission">Permitir notificaciones</string>
     <string name="settings_exact_alarms">Recordatorios puntuales</string>
     <string name="settings_exact_alarms_body">Sin este permiso, los recordatorios pueden llegar unos minutos tarde.</string>
     <string name="settings_widgets_hint">Añade los widgets Hoy y Reponer pronto a la pantalla de inicio.</string>
@@ -241,12 +240,17 @@
     <string name="calc_ind_cefuroxime_otitis">Otitis media (≥ 2 años) · máx. 250 mg por toma</string>
     <string name="widget_course_title">Tratamiento</string>
     <string name="widget_no_course">Ningún tratamiento en curso.</string>
-    <string name="notifications_rationale_title">Avisos de las tomas</string>
-    <string name="notifications_rationale_body">Para avisarte a la hora de cada toma, incluso con la app cerrada, Tempus Remedium necesita permiso para enviar notificaciones. Puedes cambiarlo cuando quieras en los ajustes del teléfono.</string>
+    <string name="notifications_rationale_title">Permisos para los recordatorios</string>
+    <string name="notifications_rationale_body">Debes dar permisos a la app para que pueda recordarte que tomes los medicamentos a su hora, incluso con la app cerrada. Puedes verlos y cambiarlos en los Ajustes de la app.</string>
     <string name="action_allow">Permitir</string>
     <string name="action_not_now">Ahora no</string>
-    <string name="notifications_blocked">Las notificaciones están desactivadas: no podremos avisarte de las tomas.</string>
-    <string name="notifications_turn_on">Activar</string>
+    <string name="action_open_permissions">Ver en Ajustes</string>
+    <string name="permissions_missing">Faltan permisos: la app no puede recordarte las tomas.</string>
+    <string name="permissions_fix">Resolver</string>
+    <string name="settings_permissions">Permisos</string>
+    <string name="permission_notifications">Notificaciones</string>
+    <string name="permission_granted">Concedido</string>
+    <string name="permission_missing">Falta · toca para darlo</string>
     <string name="settings_language">Idioma</string>
     <string name="language_system">Automático (idioma del dispositivo)</string>
 </resources>

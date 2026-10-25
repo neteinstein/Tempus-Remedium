@@ -15,6 +15,7 @@ import kotlinx.datetime.LocalDate
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mariacf.tempusremedium.android.settings.AndroidSettingsExtras
 import org.mariacf.tempusremedium.core.CourseFixtures
 import org.mariacf.tempusremedium.core.ReferenceFixtures
 import org.mariacf.tempusremedium.core.ReferenceFixtures.date
@@ -29,8 +30,8 @@ import org.mariacf.tempusremedium.core.schedule.logDose
 import org.mariacf.tempusremedium.core.schedule.logSlot
 import org.mariacf.tempusremedium.core.schedule.lowStock
 import org.mariacf.tempusremedium.core.schedule.planFor
-import org.mariacf.tempusremedium.ui.components.NotificationsBlockedBanner
 import org.mariacf.tempusremedium.ui.components.NotificationsRationaleDialog
+import org.mariacf.tempusremedium.ui.components.PermissionsMissingBanner
 import org.mariacf.tempusremedium.ui.components.brandBackground
 import org.mariacf.tempusremedium.ui.screens.CourseEditor
 import org.mariacf.tempusremedium.ui.screens.HistoryScreen
@@ -127,16 +128,38 @@ class ScreensScreenshotTest {
         }
 
     @Test
-    fun notificationsBanner() = capture("notifications_banner", height = 300) { NotificationsBlockedBanner(onTurnOn = {}) }
+    fun notificationsBanner() = capture("notifications_banner", height = 300) { PermissionsMissingBanner(onFix = {}) }
 
     @Test
     fun notificationsBannerDark() =
         capture("notifications_banner_dark", dark = true, height = 300) {
-            NotificationsBlockedBanner(onTurnOn = {})
+            PermissionsMissingBanner(onFix = {})
+        }
+
+    /** Definições on a device where no permission was given yet: both rows in red. */
+    @Test
+    @Config(qualifiers = "pt-rPT-w360dp-h1150dp-xxhdpi")
+    fun settingsMissingPermissions() =
+        capture("screen_settings_permissions") {
+            SettingsScreen(
+                ReferenceFixtures.data.settings,
+                onChange = {},
+                extras = {
+                    AndroidSettingsExtras(
+                        ReferenceFixtures.data.settings,
+                        {},
+                        onRequestNotifications = {},
+                        onRequestExactAlarms = {},
+                    )
+                },
+            )
         }
 
     @Test
-    fun notificationsRationale() = capture("notifications_rationale") { NotificationsRationaleDialog(onAllow = {}, onDismiss = {}) }
+    fun notificationsRationale() =
+        capture("notifications_rationale") {
+            NotificationsRationaleDialog(onAllow = {}, onOpenSettings = {}, onDismiss = {})
+        }
 
     @Test
     fun medications() =
