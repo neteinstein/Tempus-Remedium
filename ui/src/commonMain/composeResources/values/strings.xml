@@ -112,6 +112,11 @@
     <string name="settings_web_reduced">Na versão web só há avisos com a app aberta: sem lembretes com a app fechada, widgets nem ecrã de bloqueio.</string>
     <string name="settings_web_alerts">Avisos com a app aberta</string>
     <string name="settings_web_alerts_body">Uma notificação quando chega a hora de uma toma, e o número de doses em falta no ícone da app, enquanto a app está aberta.</string>
+    <string name="settings_calendar">Lembretes no calendário</string>
+    <string name="settings_calendar_export">Adicionar ao calendário</string>
+    <string name="settings_calendar_export_body">Eventos com alerta para os próximos %1$d dias, que o calendário do telemóvel dá mesmo com a app fechada. É uma cópia: depois de mudar medicamentos ou horários, apague os eventos antigos e adicione de novo.</string>
+    <string name="calendar_export_again">Adicionar os lembretes de novo</string>
+    <string name="calendar_export_again_body">Os lembretes no calendário acabam aqui. Abra a app e, em Definições, toque em «Adicionar ao calendário».</string>
     <string name="install_home_screen">Instale a app: toque em Partilhar e depois em «Adicionar ao ecrã principal».</string>
     <string name="install_store">Instale a app para Android, com lembretes e widgets.</string>
     <string name="install_store_action">Instalar</string>

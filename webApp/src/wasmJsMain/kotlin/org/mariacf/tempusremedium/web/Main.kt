@@ -5,6 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -13,12 +14,14 @@ import androidx.compose.ui.window.ComposeViewport
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.preloadFont
 import org.jetbrains.compose.resources.stringResource
 import org.mariacf.tempusremedium.core.data.LocalStorageDocumentStorage
 import org.mariacf.tempusremedium.core.data.MedicationRepository
+import org.mariacf.tempusremedium.core.schedule.CALENDAR_EXPORT_DAYS
 import org.mariacf.tempusremedium.ui.App
 import org.mariacf.tempusremedium.ui.InstallPrompt
 import org.mariacf.tempusremedium.ui.PlatformUi
@@ -36,17 +39,22 @@ import org.mariacf.tempusremedium.ui.resources.jakarta_regular
 import org.mariacf.tempusremedium.ui.resources.jakarta_semibold
 import org.mariacf.tempusremedium.ui.resources.permission_notifications
 import org.mariacf.tempusremedium.ui.resources.settings_browser_storage
+import org.mariacf.tempusremedium.ui.resources.settings_calendar
+import org.mariacf.tempusremedium.ui.resources.settings_calendar_export
+import org.mariacf.tempusremedium.ui.resources.settings_calendar_export_body
 import org.mariacf.tempusremedium.ui.resources.settings_web_alerts
 import org.mariacf.tempusremedium.ui.resources.settings_web_alerts_body
 import org.mariacf.tempusremedium.ui.resources.settings_web_reduced
 import org.mariacf.tempusremedium.ui.screens.PermissionRow
+import org.mariacf.tempusremedium.ui.screens.SettingsRow
 import org.mariacf.tempusremedium.ui.screens.SettingsSection
 import org.mariacf.tempusremedium.ui.theme.TempusTheme
 
 /**
  * The reduced web version: the shared screens with data kept in localStorage, installable as a
  * web app (manifest and service worker in index.html). It only alerts while open: there are no
- * reminders with the page closed, widgets or lock screen on the web.
+ * reminders with the page closed, widgets or lock screen on the web. Instead, it can add the
+ * coming reminders to the phone's calendar (see exportCalendar).
  */
 private const val SPLASH_SETTLE_MS = 250L
 private const val SPLASH_FADE_MS = 320L
@@ -97,6 +105,17 @@ fun main() {
                             style = TempusTheme.type.bodySmall,
                             color = TempusTheme.colors.inkMute,
                             modifier = Modifier.padding(horizontal = 8.dp),
+                        )
+                    }
+                }
+                val scope = rememberCoroutineScope()
+                SettingsSection(stringResource(Res.string.settings_calendar)) {
+                    GroupCard {
+                        SettingsRow(
+                            title = stringResource(Res.string.settings_calendar_export),
+                            body = stringResource(Res.string.settings_calendar_export_body, CALENDAR_EXPORT_DAYS),
+                            value = "›",
+                            onClick = { scope.launch { exportCalendar(repository.data.value) } },
                         )
                     }
                 }

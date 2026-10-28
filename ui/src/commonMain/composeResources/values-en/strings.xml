@@ -109,6 +109,11 @@
     <string name="settings_web_reduced">The web version only alerts you while it is open: no reminders when it is closed, no widgets, no lock screen.</string>
     <string name="settings_web_alerts">Alerts while the app is open</string>
     <string name="settings_web_alerts_body">A notification when a dose is due, and the number of doses still to take on the app icon, while the app is open.</string>
+    <string name="settings_calendar">Calendar reminders</string>
+    <string name="settings_calendar_export">Add to calendar</string>
+    <string name="settings_calendar_export_body">Events with an alert for the next %1$d days, which your phone’s calendar gives even with the app closed. It is a copy: after changing medications or times, delete the old events and add them again.</string>
+    <string name="calendar_export_again">Add the reminders again</string>
+    <string name="calendar_export_again_body">The calendar reminders end here. Open the app and, in Settings, tap “Add to calendar”.</string>
     <string name="install_home_screen">Install the app: tap Share, then “Add to Home Screen”.</string>
     <string name="install_store">Get the Android app, with reminders and widgets.</string>
     <string name="install_store_action">Install</string>
