@@ -69,3 +69,51 @@ external fun downloadFile(
     type: String,
     text: String,
 )
+
+/** Like [downloadFile], for bytes handed over as base64 (a PDF). */
+@JsFun(
+    """(name, type, base64) => {
+        const binary = atob(base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        const url = URL.createObjectURL(new Blob([bytes], { type: type }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = name;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+    }""",
+)
+external fun downloadBase64File(
+    name: String,
+    type: String,
+    base64: String,
+)
+
+/** Opens the browser's file picker and hands back the picked file's text, or null when cancelled. */
+@JsFun(
+    """(done) => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json,application/json,text/plain';
+        input.style.display = 'none';
+        let settled = false;
+        const finish = (text) => {
+            if (settled) return;
+            settled = true;
+            input.remove();
+            done(text);
+        };
+        input.addEventListener('change', () => {
+            const file = input.files && input.files[0];
+            if (!file) { finish(null); return; }
+            file.text().then(finish).catch(() => finish(null));
+        });
+        input.addEventListener('cancel', () => finish(null));
+        document.body.appendChild(input);
+        input.click();
+    }""",
+)
+external fun pickTextFile(done: (String?) -> Unit)

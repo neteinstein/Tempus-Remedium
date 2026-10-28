@@ -335,4 +335,38 @@
         <item quantity="other">%1$d Mal</item>
     </plurals>
     <string name="schedule_until">bis %1$s</string>
+    <!-- Exportar e importar, and the medications sheet (PDF) -->
+    <string name="settings_transfer">Exportieren und importieren</string>
+    <string name="settings_export">Medikamente exportieren</string>
+    <string name="settings_export_body">Als PDF zum Lesen und Drucken oder als Datei für ein anderes Handy.</string>
+    <string name="settings_import">Medikamente importieren</string>
+    <string name="settings_import_body">Aus einer Datei, die diese App exportiert hat. Bereits vorhandene Medikamente werden aktualisiert.</string>
+    <string name="export_format">Format</string>
+    <string name="export_pdf">PDF zum Lesen und Drucken</string>
+    <string name="export_pdf_body">Ein übersichtliches Blatt: was, wann und wie viel.</string>
+    <string name="export_file">Datei zum Importieren</string>
+    <string name="export_file_body">Um die Medikamente auf ein anderes Handy zu übertragen oder eine Kopie aufzubewahren.</string>
+    <string name="transfer_which">Medikamente</string>
+    <string name="transfer_all">Alle</string>
+    <string name="action_export">Exportieren</string>
+    <string name="action_import">Importieren</string>
+    <string name="action_ok">OK</string>
+    <string name="import_invalid">Diese Datei ist kein Medikamenten-Export dieser App.</string>
+    <string name="pdf_title">Meine Medikamente</string>
+    <string name="pdf_updated">Stand: %1$s</string>
+    <string name="pdf_day">Ihr Tag</string>
+    <string name="pdf_day_body">Was Sie zu welcher Tageszeit einnehmen.</string>
+    <string name="pdf_each">Jedes Medikament</string>
+    <string name="pdf_courses">Behandlungen</string>
+    <string name="pdf_when">Einnahme</string>
+    <string name="pdf_how_often">Wie oft</string>
+    <string name="pdf_since">Seit</string>
+    <string name="pdf_first_dose">Erste Einnahme</string>
+    <string name="pdf_last_dose">Letzte Einnahme</string>
+    <string name="pdf_page">Seite %1$d von %2$d</string>
+    <string name="pdf_date_time">%1$s um %2$s</string>
+    <plurals name="import_done">
+        <item quantity="one">%1$d Medikament importiert.</item>
+        <item quantity="other">%1$d Medikamente importiert.</item>
+    </plurals>
 </resources>

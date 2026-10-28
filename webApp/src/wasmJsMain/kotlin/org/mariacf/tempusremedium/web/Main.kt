@@ -129,6 +129,7 @@ fun main() {
                 }
             },
             installPrompt = installPrompt(),
+            files = WebFileTransfer,
         )
     // A container of its own: the viewport takes over its element, and the splash must stay visible.
     ComposeViewport(document.getElementById("app")!!) {

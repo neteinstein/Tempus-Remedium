@@ -104,6 +104,8 @@ fun SettingsScreen(
     /** Scroll to the platform extras (reminders and permissions), e.g. from the red bar. */
     focusExtras: Boolean = false,
     onExtrasFocus: () -> Unit = {},
+    /** Exportar e importar (see [MedicationTransferSection]), just before Sobre. */
+    transfer: @Composable () -> Unit = {},
 ) {
     var editing by remember { mutableStateOf<TimeSlot?>(null) }
     val extrasRequester = remember { BringIntoViewRequester() }
@@ -168,6 +170,8 @@ fun SettingsScreen(
         }
 
         Column(Modifier.bringIntoViewRequester(extrasRequester), verticalArrangement = Arrangement.spacedBy(12.dp)) { extras() }
+
+        transfer()
 
         SettingsSection(stringResource(Res.string.settings_about)) { AboutCard() }
     }

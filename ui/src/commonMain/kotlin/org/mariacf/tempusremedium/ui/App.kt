@@ -68,6 +68,7 @@ import org.mariacf.tempusremedium.ui.screens.CourseEditor
 import org.mariacf.tempusremedium.ui.screens.HistoryScreen
 import org.mariacf.tempusremedium.ui.screens.LaunchRequest
 import org.mariacf.tempusremedium.ui.screens.MedicationEditor
+import org.mariacf.tempusremedium.ui.screens.MedicationTransferSection
 import org.mariacf.tempusremedium.ui.screens.MedicationsScreen
 import org.mariacf.tempusremedium.ui.screens.SettingsScreen
 import org.mariacf.tempusremedium.ui.screens.TodayScreen
@@ -122,6 +123,8 @@ class PlatformUi(
     val widgets: WidgetSupport? = null,
     /** Shown at the top until the user closes it (web in a phone's browser). */
     val installPrompt: InstallPrompt? = null,
+    /** Saving and opening files, for Exportar e importar in Definições; null hides the section. */
+    val files: FileTransfer? = null,
 )
 
 /** Whether [ThemeMode] resolves to dark right now. */
@@ -356,6 +359,17 @@ fun App(
                                     extras = { platform.settingsExtras(this, data.settings, viewModel::updateSettings) },
                                     focusExtras = focusPermissions,
                                     onExtrasFocus = { focusPermissions = false },
+                                    transfer = {
+                                        platform.files?.let { files ->
+                                            MedicationTransferSection(
+                                                medications = data.activeMedications,
+                                                settings = data.settings,
+                                                today = now.date,
+                                                files = files,
+                                                onImport = viewModel::importMedications,
+                                            )
+                                        }
+                                    },
                                 )
                             }
                         }

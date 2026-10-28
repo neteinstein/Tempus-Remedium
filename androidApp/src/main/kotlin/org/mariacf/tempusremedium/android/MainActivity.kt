@@ -41,6 +41,8 @@ class MainActivity : ComponentActivity() {
             refreshPermissions()
         }
 
+    private val files = AndroidFileTransfer(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -69,6 +71,7 @@ class MainActivity : ComponentActivity() {
                 permissionsMissing = { permissionsMissing },
                 requestPermissions = ::requestMissingPermission,
                 widgets = AndroidWidgetSupport(applicationContext),
+                files = files,
             )
         setContent {
             App(

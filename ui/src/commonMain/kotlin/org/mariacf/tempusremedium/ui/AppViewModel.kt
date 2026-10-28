@@ -13,6 +13,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.mariacf.tempusremedium.core.data.MedicationRepository
+import org.mariacf.tempusremedium.core.data.importMedications
 import org.mariacf.tempusremedium.core.model.AppData
 import org.mariacf.tempusremedium.core.model.DoseStatus
 import org.mariacf.tempusremedium.core.model.Medication
@@ -91,6 +92,8 @@ class AppViewModel(
     fun saveMedication(medication: Medication) = update { it.upsertMedication(medication) }
 
     fun deleteMedication(id: String) = update { it.deleteMedication(id) }
+
+    fun importMedications(medications: List<Medication>) = update { it.importMedications(medications) }
 
     fun updateSettings(settings: Settings) = update { it.copy(settings = settings) }
 
