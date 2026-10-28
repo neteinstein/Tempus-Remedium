@@ -98,6 +98,11 @@
     <string name="settings_web_reduced">Die Webversion meldet sich nur, solange sie geöffnet ist: keine Erinnerungen bei geschlossener App, keine Widgets, kein Sperrbildschirm.</string>
     <string name="settings_web_alerts">Hinweise bei geöffneter App</string>
     <string name="settings_web_alerts_body">Eine Benachrichtigung, wenn eine Dosis fällig ist, und die Zahl der offenen Dosen am App-Symbol, solange die App geöffnet ist.</string>
+    <string name="settings_calendar">Erinnerungen im Kalender</string>
+    <string name="settings_calendar_export">Zum Kalender hinzufügen</string>
+    <string name="settings_calendar_export_body">Termine mit Hinweis für die nächsten %1$d Tage, die der Kalender des Telefons auch bei geschlossener App meldet. Es ist eine Kopie: Nach Änderungen an Medikamenten oder Zeiten die alten Termine löschen und neu hinzufügen.</string>
+    <string name="calendar_export_again">Erinnerungen neu hinzufügen</string>
+    <string name="calendar_export_again_body">Die Kalender-Erinnerungen enden hier. Öffnen Sie die App und tippen Sie in den Einstellungen auf „Zum Kalender hinzufügen“.</string>
     <string name="install_home_screen">App installieren: Tippen Sie auf „Teilen“ und dann auf „Zum Home-Bildschirm“.</string>
     <string name="install_store">Installieren Sie die Android-App mit Erinnerungen und Widgets.</string>
     <string name="install_store_action">Installieren</string>

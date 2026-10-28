@@ -50,3 +50,22 @@ external fun showNotification(
     }""",
 )
 external fun setAppBadge(count: Int)
+
+/** Hands [text] to the browser as a file to save or open (on iPhone, a calendar file opens in Calendar). */
+@JsFun(
+    """(name, type, text) => {
+        const url = URL.createObjectURL(new Blob([text], { type: type }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = name;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+    }""",
+)
+external fun downloadFile(
+    name: String,
+    type: String,
+    text: String,
+)
