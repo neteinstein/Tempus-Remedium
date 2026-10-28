@@ -167,11 +167,15 @@ fun dayLabel(date: LocalDate): String = stringResource(Res.string.day_label, str
 /** "08:00": 24-hour time, as in the reference. */
 fun LocalTime.hhmm(): String = "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
 
-/** "A cada 3 dias", "Seg Qui · A cada 2 semanas", "Todos os meses, no dia 15", "21 dias + 7 de pausa". */
+/**
+ * "A cada 3 dias", "Seg Qui · A cada 2 semanas", "Todos os meses, no dia 15", "21 dias + 7 de pausa".
+ * With [fullDays], weekdays are written out ("segunda-feira, quinta-feira"), as on the printed sheet.
+ */
 @Composable
 fun frequencyLabel(
     frequency: Frequency,
     startDate: LocalDate,
+    fullDays: Boolean = false,
 ): String =
     when (frequency) {
         Frequency.Daily -> {
@@ -182,8 +186,8 @@ fun frequencyLabel(
             val days =
                 frequency.days
                     .sorted()
-                    .map { stringResource(it.shortLabel) }
-                    .joinToString(" ")
+                    .map { stringResource(if (fullDays) it.fullLabel else it.shortLabel) }
+                    .joinToString(if (fullDays) ", " else " ")
             if (frequency.everyWeeks > 1) {
                 days + " · " + pluralStringResource(Res.plurals.every_weeks, frequency.everyWeeks, frequency.everyWeeks)
             } else {
@@ -214,8 +218,11 @@ fun frequencyLabel(
 
 /** [frequencyLabel] plus when it ends: "A cada 3 dias · 10 vezes", "Todos os dias · até sábado, 31 de outubro". */
 @Composable
-fun scheduleLabel(schedule: Schedule): String {
-    val frequency = frequencyLabel(schedule.frequency, schedule.startDate)
+fun scheduleLabel(
+    schedule: Schedule,
+    fullDays: Boolean = false,
+): String {
+    val frequency = frequencyLabel(schedule.frequency, schedule.startDate, fullDays)
     val occurrences = schedule.occurrences
     val end = schedule.lastDueDate()
     return when {

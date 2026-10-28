@@ -353,4 +353,38 @@
         <item quantity="other">%1$d times</item>
     </plurals>
     <string name="schedule_until">until %1$s</string>
+    <!-- Exportar e importar, and the medications sheet (PDF) -->
+    <string name="settings_transfer">Export and import</string>
+    <string name="settings_export">Export medications</string>
+    <string name="settings_export_body">As a PDF to read and print, or as a file to move them to another phone.</string>
+    <string name="settings_import">Import medications</string>
+    <string name="settings_import_body">From a file exported by this app. Medications already here are updated.</string>
+    <string name="export_format">Format</string>
+    <string name="export_pdf">PDF to read and print</string>
+    <string name="export_pdf_body">A clear sheet with what to take, when and how much.</string>
+    <string name="export_file">File to import</string>
+    <string name="export_file_body">To move your medications to another phone or keep a copy.</string>
+    <string name="transfer_which">Medications</string>
+    <string name="transfer_all">All</string>
+    <string name="action_export">Export</string>
+    <string name="action_import">Import</string>
+    <string name="action_ok">OK</string>
+    <string name="import_invalid">This file is not a medications export from this app.</string>
+    <string name="pdf_title">My medications</string>
+    <string name="pdf_updated">Updated %1$s</string>
+    <string name="pdf_day">Your day</string>
+    <string name="pdf_day_body">What to take at each time of day.</string>
+    <string name="pdf_each">Each medication</string>
+    <string name="pdf_courses">Courses</string>
+    <string name="pdf_when">When to take</string>
+    <string name="pdf_how_often">How often</string>
+    <string name="pdf_since">Since</string>
+    <string name="pdf_first_dose">First dose</string>
+    <string name="pdf_last_dose">Last dose</string>
+    <string name="pdf_page">Page %1$d of %2$d</string>
+    <string name="pdf_date_time">%1$s at %2$s</string>
+    <plurals name="import_done">
+        <item quantity="one">%1$d medication imported.</item>
+        <item quantity="other">%1$d medications imported.</item>
+    </plurals>
 </resources>

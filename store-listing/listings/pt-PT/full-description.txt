@@ -37,6 +37,10 @@ HISTÓRICO
 • Horários configuráveis e aspeto automático, claro ou escuro.
 • Em português, inglês, francês, alemão e espanhol: o idioma do dispositivo ou o que escolher nas Definições.
 
+PARTILHAR E IMPRIMIR
+• Exporte todos os medicamentos, ou só os que escolher, num PDF claro e fácil de ler, com o comprimido desenhado, as horas e as doses: para imprimir, levar à consulta ou deixar a quem o ajuda.
+• Ou num ficheiro, para os passar para outro telemóvel e importá-los lá, todos ou só alguns.
+
 PRIVACIDADE
 • Sem conta, sem registo e sem publicidade.
 • A aplicação não acede à Internet: os seus dados ficam apenas no seu dispositivo.
