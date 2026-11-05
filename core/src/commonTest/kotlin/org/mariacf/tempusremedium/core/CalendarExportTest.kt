@@ -6,22 +6,27 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.minus
 import org.mariacf.tempusremedium.core.ReferenceFixtures.date
+import org.mariacf.tempusremedium.core.model.AppData
 import org.mariacf.tempusremedium.core.model.DoseStatus
 import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.core.schedule.CALENDAR_EXPORT_DAYS
 import org.mariacf.tempusremedium.core.schedule.CALENDAR_STALE_DAYS_BEFORE_END
+import org.mariacf.tempusremedium.core.schedule.CalendarOffer
 import org.mariacf.tempusremedium.core.schedule.CalendarReminder
 import org.mariacf.tempusremedium.core.schedule.IcsEvent
 import org.mariacf.tempusremedium.core.schedule.calendarExportKey
 import org.mariacf.tempusremedium.core.schedule.calendarExportLastDay
 import org.mariacf.tempusremedium.core.schedule.calendarExportStale
+import org.mariacf.tempusremedium.core.schedule.calendarOffer
 import org.mariacf.tempusremedium.core.schedule.calendarReminders
+import org.mariacf.tempusremedium.core.schedule.dismissCalendarOffer
 import org.mariacf.tempusremedium.core.schedule.icsCalendar
 import org.mariacf.tempusremedium.core.schedule.logSlot
 import org.mariacf.tempusremedium.core.schedule.markCalendarExported
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 
@@ -136,6 +141,54 @@ class CalendarExportTest {
         val runsOut = calendarExportLastDay(date).minus(DatePeriod(days = CALENDAR_STALE_DAYS_BEFORE_END))
         assertFalse(exported.calendarExportStale(LocalDateTime(runsOut.minus(DatePeriod(days = 1)), LocalTime(9, 0))))
         assertTrue(exported.calendarExportStale(LocalDateTime(runsOut, LocalTime(9, 0))))
+    }
+
+    @Test
+    fun remindersNeverAddedAreOffered() {
+        assertEquals(CalendarOffer.FIRST, ReferenceFixtures.data.calendarOffer(ReferenceFixtures.now))
+    }
+
+    @Test
+    fun nothingIsOfferedWithoutReminders() {
+        val data = ReferenceFixtures.data
+        val off = data.copy(settings = data.settings.copy(remindersEnabled = false))
+        assertNull(off.calendarOffer(ReferenceFixtures.now))
+        assertNull(data.copy(medications = emptyList()).calendarOffer(ReferenceFixtures.now))
+    }
+
+    @Test
+    fun closingTheFirstOfferLasts() {
+        assertNull(ReferenceFixtures.data.dismissCalendarOffer().calendarOffer(ReferenceFixtures.now))
+    }
+
+    @Test
+    fun aCurrentExportIsNotOffered() {
+        assertNull(ReferenceFixtures.data.markCalendarExported(ReferenceFixtures.now).calendarOffer(ReferenceFixtures.now))
+    }
+
+    private fun AppData.withBedtimeAt(hour: Int) =
+        copy(settings = settings.copy(slotTimes = settings.slotTimes + (TimeSlot.BEDTIME to LocalTime(hour, 0))))
+
+    @Test
+    fun aStaleExportIsOfferedEvenAfterClosingTheFirstOffer() {
+        val exported = ReferenceFixtures.data.dismissCalendarOffer().markCalendarExported(ReferenceFixtures.now)
+        assertEquals(CalendarOffer.STALE, exported.withBedtimeAt(23).calendarOffer(ReferenceFixtures.now))
+    }
+
+    @Test
+    fun aStaleExportStaysOfferedWithoutRemindersLeft() {
+        // The calendar still rings for what was added.
+        val exported = ReferenceFixtures.data.markCalendarExported(ReferenceFixtures.now)
+        val off = exported.copy(settings = exported.settings.copy(remindersEnabled = false))
+        assertEquals(CalendarOffer.STALE, off.calendarOffer(ReferenceFixtures.now))
+    }
+
+    @Test
+    fun closingAStaleOfferLastsUntilTheNextChange() {
+        val stale = ReferenceFixtures.data.markCalendarExported(ReferenceFixtures.now).withBedtimeAt(23)
+        val closed = stale.dismissCalendarOffer()
+        assertNull(closed.calendarOffer(ReferenceFixtures.now))
+        assertEquals(CalendarOffer.STALE, closed.withBedtimeAt(21).calendarOffer(ReferenceFixtures.now))
     }
 
     @Test

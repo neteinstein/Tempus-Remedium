@@ -124,6 +124,12 @@
     <string name="install_store">Instale a app para Android, com lembretes e widgets.</string>
     <string name="install_store_action">Instalar</string>
     <string name="install_banner_close">Fechar aviso de instalação</string>
+    <string name="calendar_offer">Com a app fechada não há avisos. Adicione os lembretes ao calendário do telemóvel.</string>
+    <string name="calendar_offer_action">Adicionar</string>
+    <string name="calendar_offer_close">Fechar sugestão do calendário</string>
+    <string name="calendar_confirm">Os lembretes ficaram no calendário?</string>
+    <string name="calendar_confirm_action">Sim</string>
+    <string name="calendar_confirm_close">Os lembretes não foram adicionados</string>
 
     <!-- Android only: reminders and settings -->
     <string name="channel_reminders">Lembretes de doses</string>

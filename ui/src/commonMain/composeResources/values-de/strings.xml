@@ -110,6 +110,12 @@
     <string name="install_store">Installieren Sie die Android-App mit Erinnerungen und Widgets.</string>
     <string name="install_store_action">Installieren</string>
     <string name="install_banner_close">Installationshinweis schließen</string>
+    <string name="calendar_offer">Bei geschlossener App gibt es keine Hinweise. Fügen Sie die Erinnerungen zum Kalender des Telefons hinzu.</string>
+    <string name="calendar_offer_action">Hinzufügen</string>
+    <string name="calendar_offer_close">Kalenderhinweis schließen</string>
+    <string name="calendar_confirm">Sind die Erinnerungen im Kalender?</string>
+    <string name="calendar_confirm_action">Ja</string>
+    <string name="calendar_confirm_close">Die Erinnerungen wurden nicht hinzugefügt</string>
     <string name="channel_reminders">Dosis-Erinnerungen</string>
     <string name="channel_reminders_alarm">Erinnerungen (Wecker)</string>
     <string name="channel_low_stock">Niedriger Bestand</string>

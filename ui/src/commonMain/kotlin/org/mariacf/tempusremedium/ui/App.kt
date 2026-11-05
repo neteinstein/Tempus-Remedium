@@ -52,9 +52,12 @@ import org.mariacf.tempusremedium.core.model.Settings
 import org.mariacf.tempusremedium.core.model.ThemeMode
 import org.mariacf.tempusremedium.core.schedule.activeCourses
 import org.mariacf.tempusremedium.core.schedule.adherence
+import org.mariacf.tempusremedium.core.schedule.calendarOffer
 import org.mariacf.tempusremedium.core.schedule.lowStock
 import org.mariacf.tempusremedium.core.schedule.planFor
 import org.mariacf.tempusremedium.core.schedule.stockAlerts
+import org.mariacf.tempusremedium.ui.components.CalendarConfirmBanner
+import org.mariacf.tempusremedium.ui.components.CalendarOfferBanner
 import org.mariacf.tempusremedium.ui.components.InstallBanner
 import org.mariacf.tempusremedium.ui.components.NotificationsRationaleDialog
 import org.mariacf.tempusremedium.ui.components.PermissionsMissingBanner
@@ -97,6 +100,25 @@ interface WidgetSupport {
     fun pin()
 }
 
+/**
+ * Handing the reminders to the device's calendar. The app cannot see what the user does with the
+ * file (the system may ask for leave, and its sheet closes without adding anything), so they only
+ * count as added once the user says so.
+ */
+interface CalendarSupport {
+    /** Whether the app suggests this in a bar (web on iPhone and iPad). */
+    val offers: Boolean
+
+    /** True from handing over the file until the user answers. Read in composition. */
+    val awaitingConfirmation: Boolean
+
+    fun add()
+
+    fun confirm()
+
+    fun cancel()
+}
+
 /** What the web suggests installing, by the phone it runs on. */
 sealed interface InstallPrompt {
     /** iPhone or iPad browser: add the web app to the home screen through Share. */
@@ -123,6 +145,8 @@ class PlatformUi(
     val widgets: WidgetSupport? = null,
     /** Shown at the top until the user closes it (web in a phone's browser). */
     val installPrompt: InstallPrompt? = null,
+    /** The calendar standing in for reminders with the app closed (web). */
+    val calendar: CalendarSupport? = null,
     /** Saving and opening files, for Exportar e importar in Definições; null hides the section. */
     val files: FileTransfer? = null,
 )
@@ -155,6 +179,8 @@ fun App(
     // Set by the red bar or the explanation: Definições opens at the permissions.
     var focusPermissions by rememberSaveable { mutableStateOf(false) }
     val permissionsMissing = platform.permissionsMissing()
+    val calendar = platform.calendar
+    val calendarOffer = remember(data, now.date, calendar) { calendar?.takeIf { it.offers }?.let { data.calendarOffer(now) } }
 
     fun openPermissions() {
         editingId = null
@@ -238,11 +264,23 @@ fun App(
                     topBar = {
                         // The web's install tip, then missing permissions; the widget tip sits below, without a
                         // second status-bar gap. The install tip never shows with the other two (web vs Android).
+                        // The calendar offer waits for the install tip and the calendar question goes before
+                        // both, so the web has one bar at a time.
                         Column {
-                            if (installPrompt != null) {
+                            val confirmCalendar = calendar?.awaitingConfirmation == true
+                            if (installPrompt != null && !confirmCalendar) {
                                 InstallBanner(
                                     prompt = installPrompt,
                                     onClose = { viewModel.updateSettings(data.settings.copy(installPromptDismissed = true)) },
+                                )
+                            }
+                            if (calendar != null && confirmCalendar) {
+                                CalendarConfirmBanner(onConfirm = calendar::confirm, onCancel = calendar::cancel)
+                            } else if (calendar != null && calendarOffer != null && installPrompt == null) {
+                                CalendarOfferBanner(
+                                    offer = calendarOffer,
+                                    onAdd = calendar::add,
+                                    onClose = viewModel::dismissCalendarOffer,
                                 )
                             }
                             if (showPermissionsBanner) {

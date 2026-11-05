@@ -21,6 +21,7 @@ import org.mariacf.tempusremedium.core.model.Settings
 import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.core.schedule.acknowledgeStockAlert
 import org.mariacf.tempusremedium.core.schedule.deleteMedication
+import org.mariacf.tempusremedium.core.schedule.dismissCalendarOffer
 import org.mariacf.tempusremedium.core.schedule.logCourseDose
 import org.mariacf.tempusremedium.core.schedule.logDose
 import org.mariacf.tempusremedium.core.schedule.logSlot
@@ -96,6 +97,8 @@ class AppViewModel(
     fun importMedications(medications: List<Medication>) = update { it.importMedications(medications) }
 
     fun updateSettings(settings: Settings) = update { it.copy(settings = settings) }
+
+    fun dismissCalendarOffer() = update { it.dismissCalendarOffer() }
 
     private fun update(transform: (AppData) -> AppData) {
         viewModelScope.launch { repository.update(transform) }

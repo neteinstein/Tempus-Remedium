@@ -110,6 +110,12 @@
     <string name="install_store">Instala la app para Android, con recordatorios y widgets.</string>
     <string name="install_store_action">Instalar</string>
     <string name="install_banner_close">Cerrar aviso de instalación</string>
+    <string name="calendar_offer">Con la app cerrada no hay avisos. Añada los recordatorios al calendario del teléfono.</string>
+    <string name="calendar_offer_action">Añadir</string>
+    <string name="calendar_offer_close">Cerrar aviso del calendario</string>
+    <string name="calendar_confirm">¿Están los recordatorios en el calendario?</string>
+    <string name="calendar_confirm_action">Sí</string>
+    <string name="calendar_confirm_close">Los recordatorios no se añadieron</string>
     <string name="channel_reminders">Recordatorios de dosis</string>
     <string name="channel_reminders_alarm">Recordatorios (alarma)</string>
     <string name="channel_low_stock">Pocas existencias</string>

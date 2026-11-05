@@ -71,6 +71,8 @@ data class Settings(
     val installPromptDismissed: Boolean = false,
     /** The web's last export of the reminders to the phone's calendar, if any. */
     val calendarExport: CalendarExportStamp? = null,
+    /** What the user last closed the web's calendar offer on (see dismissCalendarOffer). */
+    val calendarOfferDismissed: String? = null,
 ) {
     fun timeOf(slot: TimeSlot): LocalTime = slotTimes[slot] ?: slot.defaultTime
 }

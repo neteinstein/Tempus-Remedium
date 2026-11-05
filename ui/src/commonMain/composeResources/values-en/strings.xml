@@ -121,6 +121,12 @@
     <string name="install_store">Get the Android app, with reminders and widgets.</string>
     <string name="install_store_action">Install</string>
     <string name="install_banner_close">Close install tip</string>
+    <string name="calendar_offer">There are no alerts with the app closed. Add the reminders to your phone’s calendar.</string>
+    <string name="calendar_offer_action">Add</string>
+    <string name="calendar_offer_close">Close calendar tip</string>
+    <string name="calendar_confirm">Did the reminders reach your calendar?</string>
+    <string name="calendar_confirm_action">Yes</string>
+    <string name="calendar_confirm_close">The reminders were not added</string>
 
     <string name="channel_reminders">Dose reminders</string>
     <string name="channel_reminders_alarm">Reminders (alarm)</string>
