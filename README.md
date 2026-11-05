@@ -27,8 +27,8 @@
 
 Medication and dose manager, in European Portuguese. It shows what to take today and when
 (**HOJE**), which medications are running out (**REPOR EM BREVE**, as jars or blister packs),
-and keeps a history of the doses taken. Android first, plus a reduced web version (not deployed
-for now, see [CI_CD.md](CI_CD.md#deploy-web)). The look
+and keeps a history of the doses taken. Android first, plus a reduced web version at
+https://neteinstein.github.io/Tempus-Remedium/ (see [CI_CD.md](CI_CD.md#deploy-web)). The look
 follows the author's site, [mariacf.pt](https://mariacf.pt): Fraunces and Plus Jakarta Sans,
 calm blues, frosted cards, and a light and a dark theme.
 
@@ -82,17 +82,34 @@ calm blues, frosted cards, and a light and a dark theme.
 | Courses (e.g. antibiotics): a dose every N hours, ending after N days, N doses, on a date or when the pack runs out; dose, interval and length suggested by the author's [dose calculator](https://mariacf.pt/calculadora-doses/) | ✅ | ✅ |
 | History: 30-day adherence | ✅ | ✅ |
 | Configurable slot times; automatic, light or dark theme | ✅ | ✅ |
-| Reminder notifications with **Tomei** / **Adiar 10 min**, shown on the lock screen (names can be hidden) | ✅ | Only while the app is open, without names or buttons (Definições → Avisos com a app aberta) |
-| Reminders in the phone's calendar: the next 90 days as events with an alert, without names, that ring with the app closed (Definições → Adicionar ao calendário; a snapshot to add again after changes) | — | ✅ |
+| Reminder notifications with **Tomei** / **Adiar 10 min**, shown on the lock screen (names can be hidden) | ✅ | Only while the app is open, without names or buttons; tapping one opens its slot, and a slot that fell due while the phone slept is announced on return (Definições → Avisos com a app aberta) |
+| Reminders on/off switch | ✅ | ✅ Also leaves the calendar export empty |
+| Reminders in the phone's calendar: the next 90 days as events with an alert, without names, that ring with the app closed (Definições → Adicionar ao calendário; a snapshot to add again after changes, and Definições says in red when it is out of date) | — | ✅ |
 | Export all or chosen medications as a printable PDF sheet (the day hour by hour, then each medication with its pill, doses, frequency and stock) or as a file; import a file, all or chosen medications (Definições → Exportar e importar) | ✅ | ✅ PDF pages drawn as images |
 | Number of doses due on the app icon | — | ✅ Installed web app, where the system supports it |
-| Low-stock notifications | ✅ | — |
+| Low-stock notifications | ✅ | Only while the app is open, without the name; tapping opens the refill |
 | Home-screen widgets: Hoje, Repor em breve and Tratamento (also offered for the lock screen where the system supports it), with previews in the widget picker | ✅ | — |
 | "Add the widget" bar and a step-by-step guide (home and lock screen), with one-tap pinning where the launcher allows it | ✅ | — |
 | Permissões section in Definições: a missing reminder permission (notifications, on-time alarms) shows in red, with a red bar on top that leads there | ✅ | — |
 | Installable on the home screen, works offline (manifest and service worker) | — | ✅ |
 | Install bar in a phone's browser: on iPhone/iPad, how to add the app to the home screen; on Android, a link to the native app on Google Play | — | ✅ |
-| Data storage | On the device | In the browser (localStorage) |
+| Data storage | On the device | In the browser (localStorage, marked persistent where the browser allows) |
+
+### The web version on iPhone
+
+The web version is meant mostly for iPhone, added to the home screen from Safari (Share → Add to
+Home Screen). What it cannot do there, and what stands in:
+
+- **No reminders with the app closed.** iOS only wakes a closed web app through a push server, and
+  the app has no server. The calendar export puts alerts in the phone's Calendar instead.
+- **No Tomei / Adiar buttons, insistent alarm sound or sound picker** on notifications. Tapping a
+  notification opens its slot, where one tap logs it.
+- **No widgets** on the home or lock screen; the icon badge shows the doses due.
+- **Notifications and the badge need the home screen app** (iOS 16.4+); in a Safari tab,
+  Definições says so.
+- **Safari may clear a tab's data after a week without use**; the home screen app keeps it.
+  Export the medications now and then as a backup.
+- The edge swipe and the browser's back close an open editor instead of leaving the app.
 
 Português (pt-PT), English, Français, Deutsch and Español: the device or browser language by default, or the one chosen in Definições → Idioma. No account and no
 server: data never leaves the device or browser. The app supports care and does not replace

@@ -112,6 +112,9 @@
     <string name="settings_calendar">Calendar reminders</string>
     <string name="settings_calendar_export">Add to calendar</string>
     <string name="settings_calendar_export_body">Events with an alert for the next %1$d days, which your phone’s calendar gives even with the app closed. It is a copy: after changing medications or times, delete the old events and add them again.</string>
+    <string name="settings_calendar_stale">The calendar reminders are out of date: delete the old events and add them again.</string>
+    <string name="notification_low_stock_hidden">A medication is running low. Open the app to see which.</string>
+    <string name="settings_web_install_first">To get alerts, add the app to your home screen and open it from there.</string>
     <string name="calendar_export_again">Add the reminders again</string>
     <string name="calendar_export_again_body">The calendar reminders end here. Open the app and, in Settings, tap “Add to calendar”.</string>
     <string name="install_home_screen">Install the app: tap Share, then “Add to Home Screen”.</string>

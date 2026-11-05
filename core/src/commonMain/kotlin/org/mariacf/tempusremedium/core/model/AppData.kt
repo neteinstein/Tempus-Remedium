@@ -1,6 +1,7 @@
 package org.mariacf.tempusremedium.core.model
 
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.serialization.Serializable
 
@@ -68,9 +69,18 @@ data class Settings(
     val widgetPromptDismissed: Boolean = false,
     /** The user closed the web's "install the app" banner. */
     val installPromptDismissed: Boolean = false,
+    /** The web's last export of the reminders to the phone's calendar, if any. */
+    val calendarExport: CalendarExportStamp? = null,
 ) {
     fun timeOf(slot: TimeSlot): LocalTime = slotTimes[slot] ?: slot.defaultTime
 }
+
+/** When the reminders were added to the calendar, and what they were (see calendarExportKey). */
+@Serializable
+data class CalendarExportStamp(
+    val at: LocalDateTime,
+    val key: String,
+)
 
 /** Everything the app persists, stored as one JSON document. */
 @Serializable

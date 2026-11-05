@@ -115,6 +115,9 @@
     <string name="settings_calendar">Lembretes no calendário</string>
     <string name="settings_calendar_export">Adicionar ao calendário</string>
     <string name="settings_calendar_export_body">Eventos com alerta para os próximos %1$d dias, que o calendário do telemóvel dá mesmo com a app fechada. É uma cópia: depois de mudar medicamentos ou horários, apague os eventos antigos e adicione de novo.</string>
+    <string name="settings_calendar_stale">Os lembretes no calendário estão desatualizados: apague os eventos antigos e adicione de novo.</string>
+    <string name="notification_low_stock_hidden">Um medicamento está a acabar. Abra a app para ver qual.</string>
+    <string name="settings_web_install_first">Para receber avisos, adicione a app ao ecrã principal e abra-a a partir daí.</string>
     <string name="calendar_export_again">Adicionar os lembretes de novo</string>
     <string name="calendar_export_again_body">Os lembretes no calendário acabam aqui. Abra a app e, em Definições, toque em «Adicionar ao calendário».</string>
     <string name="install_home_screen">Instale a app: toque em Partilhar e depois em «Adicionar ao ecrã principal».</string>

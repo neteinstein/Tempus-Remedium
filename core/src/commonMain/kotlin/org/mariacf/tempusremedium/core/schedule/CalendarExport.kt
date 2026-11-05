@@ -4,10 +4,12 @@ import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
 import kotlinx.datetime.number
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import org.mariacf.tempusremedium.core.model.AppData
+import org.mariacf.tempusremedium.core.model.CalendarExportStamp
 import org.mariacf.tempusremedium.core.model.TimeSlot
 import kotlin.time.Instant
 
@@ -29,10 +31,21 @@ data class CalendarReminder(
 /**
  * Every time strictly after [from] and within [days] days with doses not yet logged: HOJE slots
  * and course doses, merged when they fall at the same minute, as [nextReminder] would ring them.
+ * Empty when reminders are off.
  */
 fun AppData.calendarReminders(
     from: LocalDateTime,
     days: Int = CALENDAR_EXPORT_DAYS,
+): List<CalendarReminder> =
+    if (!settings.remindersEnabled) {
+        emptyList()
+    } else {
+        upcomingReminders(from, days)
+    }
+
+private fun AppData.upcomingReminders(
+    from: LocalDateTime,
+    days: Int,
 ): List<CalendarReminder> =
     (0 until days).flatMap { offset ->
         val date = from.date.plus(DatePeriod(days = offset))
@@ -144,3 +157,34 @@ fun calendarExportLastDay(
     from: LocalDate,
     days: Int = CALENDAR_EXPORT_DAYS,
 ): LocalDate = from.plus(DatePeriod(days = days - 1))
+
+/**
+ * What an export made at [from] put in the calendar, ignoring the doses logged since (taking a
+ * dose does not make the calendar wrong): a change to the schedule, the slot times or the
+ * reminders switch gives a different key.
+ */
+fun AppData.calendarExportKey(from: LocalDateTime): String {
+    val schedule = copy(logs = emptyList(), courseLogs = emptyList()).calendarReminders(from)
+    val text = schedule.joinToString(";") { "${it.at}|${it.slot?.name}|${it.doseCount}" }
+    // FNV-1a: the same on every platform and every run, unlike hashCode.
+    var hash = 0x811c9dc5.toInt()
+    text.forEach { hash = (hash xor it.code) * 0x01000193 }
+    return "${schedule.size}-${hash.toUInt().toString(16)}"
+}
+
+/** Marks that the reminders were added to the calendar at [at], to spot later changes. */
+fun AppData.markCalendarExported(at: LocalDateTime): AppData =
+    copy(settings = settings.copy(calendarExport = CalendarExportStamp(at, calendarExportKey(at))))
+
+/**
+ * The calendar no longer matches the app: the schedule changed since the last export, or that
+ * export runs out within a week. False when nothing was ever exported.
+ */
+fun AppData.calendarExportStale(now: LocalDateTime): Boolean {
+    val stamp = settings.calendarExport ?: return false
+    val runsOut = calendarExportLastDay(stamp.at.date).minus(DatePeriod(days = CALENDAR_STALE_DAYS_BEFORE_END))
+    return now.date >= runsOut || calendarExportKey(stamp.at) != stamp.key
+}
+
+/** How many days before an export's last day to ask for a new one. */
+const val CALENDAR_STALE_DAYS_BEFORE_END = 7

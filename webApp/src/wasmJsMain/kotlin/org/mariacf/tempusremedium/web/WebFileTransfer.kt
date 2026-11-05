@@ -27,14 +27,14 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 private const val PAGE_SCALE = 2.5f
 private const val JPEG_QUALITY = 90
 
-/** Files on the web: downloads to save, the browser's file picker to open. */
+/** Files on the web: downloads (the share sheet on iPhone) to save, the browser's file picker to open. */
 object WebFileTransfer : FileTransfer {
     @OptIn(ExperimentalEncodingApi::class)
     override suspend fun save(
         name: String,
         type: String,
         bytes: ByteArray,
-    ) = downloadBase64File(name, type, Base64.encode(bytes))
+    ) = if (isIos()) shareBase64File(name, type, Base64.encode(bytes)) else downloadBase64File(name, type, Base64.encode(bytes))
 
     override suspend fun open(): String? = suspendCancellableCoroutine { continuation -> pickTextFile { continuation.resume(it) } }
 

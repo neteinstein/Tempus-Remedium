@@ -101,6 +101,9 @@
     <string name="settings_calendar">Recordatorios en el calendario</string>
     <string name="settings_calendar_export">Añadir al calendario</string>
     <string name="settings_calendar_export_body">Eventos con aviso para los próximos %1$d días, que el calendario del teléfono da incluso con la app cerrada. Es una copia: después de cambiar medicamentos u horarios, borre los eventos antiguos y añádalos de nuevo.</string>
+    <string name="settings_calendar_stale">Los recordatorios del calendario están desactualizados: borre los eventos antiguos y añádalos de nuevo.</string>
+    <string name="notification_low_stock_hidden">Un medicamento se está acabando. Abra la app para ver cuál.</string>
+    <string name="settings_web_install_first">Para recibir avisos, añada la app a la pantalla de inicio y ábrala desde allí.</string>
     <string name="calendar_export_again">Añadir los recordatorios de nuevo</string>
     <string name="calendar_export_again_body">Los recordatorios del calendario terminan aquí. Abra la app y, en Ajustes, toque «Añadir al calendario».</string>
     <string name="install_home_screen">Instala la app: toca Compartir y luego «Añadir a pantalla de inicio».</string>
