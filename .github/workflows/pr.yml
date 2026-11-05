@@ -211,7 +211,15 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build wasmJs production distribution
-        run: ./gradlew :webApp:wasmJsBrowserDistribution --no-daemon --stacktrace
+        # Retried: the build downloads Node.js and Binaryen (a GitHub release), and GitHub's
+        # release downloads sometimes time out (504).
+        run: |
+          for attempt in 1 2 3; do
+            ./gradlew :webApp:wasmJsBrowserDistribution --no-daemon --stacktrace && exit 0
+            echo "::warning::Web build failed (attempt $attempt), retrying in 30 s"
+            sleep 30
+          done
+          exit 1
 
   # ─── iOS Compile ────────────────────────────────────────────────────────────
   # Needs a macOS runner for the Kotlin/Native iOS toolchain (Xcode). There is no iOS app yet:
