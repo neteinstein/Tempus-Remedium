@@ -100,7 +100,7 @@
     <string name="settings_web_alerts_body">Une notification à l’heure d’une prise, et le nombre de doses à prendre sur l’icône de l’app, tant que l’app est ouverte.</string>
     <string name="settings_calendar">Rappels dans le calendrier</string>
     <string name="settings_calendar_export">Ajouter au calendrier</string>
-    <string name="settings_calendar_export_body">Des événements avec alerte pour les %1$d prochains jours, que le calendrier du téléphone donne même app fermée. C’est une copie : après avoir changé des médicaments ou des horaires, supprimez les anciens événements et ajoutez-les à nouveau.</string>
+    <string name="settings_calendar_export_body">Des événements avec alerte pour les %1$d prochains jours, que votre calendrier donne même app fermée. Si le fichier ne s’ouvre pas tout seul, ouvrez-le depuis vos téléchargements. C’est une copie : après avoir changé des médicaments ou des horaires, supprimez les anciens événements et ajoutez-les à nouveau.</string>
     <string name="settings_calendar_stale">Les rappels du calendrier ne sont plus à jour : supprimez les anciens événements et ajoutez-les à nouveau.</string>
     <string name="notification_low_stock_hidden">Un médicament arrive bientôt à épuisement. Ouvrez l’app pour voir lequel.</string>
     <string name="settings_web_install_first">Pour recevoir des alertes, ajoutez l’app à l’écran d’accueil et ouvrez-la depuis celui-ci.</string>

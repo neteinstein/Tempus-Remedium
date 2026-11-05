@@ -64,7 +64,7 @@ import org.mariacf.tempusremedium.ui.theme.TempusTheme
  * The reduced web version: the shared screens with data kept in localStorage, installable as a
  * web app (manifest and service worker in index.html). It only alerts while open: there are no
  * reminders with the page closed, widgets or lock screen on the web. Instead, it can add the
- * coming reminders to the phone's calendar (see WebCalendarSupport), offers that on iPhone and
+ * coming reminders to the device's calendar (see WebCalendarSupport), offers that on iPhone and
  * iPad, and tells when that copy is out of date. A tapped notification opens its slot through the address (launchRequestFromAddress).
  */
 private const val SPLASH_SETTLE_MS = 250L

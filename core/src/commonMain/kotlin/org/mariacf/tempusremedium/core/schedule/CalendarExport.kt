@@ -15,7 +15,7 @@ import kotlin.time.Instant
 
 /**
  * The web's way to remind with the app closed: the reminders of the coming days as calendar
- * events with an alert, which the phone's calendar fires itself. It is a snapshot, so the export
+ * events with an alert, which the device's calendar fires itself. It is a snapshot, so the export
  * covers a limited stretch and ends with an event that asks to export again.
  */
 const val CALENDAR_EXPORT_DAYS = 90

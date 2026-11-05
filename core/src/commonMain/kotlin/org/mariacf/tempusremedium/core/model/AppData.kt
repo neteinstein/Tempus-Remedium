@@ -69,7 +69,7 @@ data class Settings(
     val widgetPromptDismissed: Boolean = false,
     /** The user closed the web's "install the app" banner. */
     val installPromptDismissed: Boolean = false,
-    /** The web's last export of the reminders to the phone's calendar, if any. */
+    /** The web's last export of the reminders to the device's calendar, if any. */
     val calendarExport: CalendarExportStamp? = null,
     /** What the user last closed the web's calendar offer on (see dismissCalendarOffer). */
     val calendarOfferDismissed: String? = null,
