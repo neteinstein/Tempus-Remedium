@@ -58,9 +58,9 @@ On every push to `main`:
 
 ### Deploy Web
 
-Builds the Wasm distribution once and deploys it to two targets in parallel jobs. **Both are paused
-for now** (GitHub Pages is disabled on the repository): a target's job only runs when its variable is
-`true`, and the build is skipped while neither is, so pushes to `main` show a skipped run.
+Builds the Wasm distribution once and deploys it to two targets in parallel jobs. A target's job
+only runs when its variable is `true`, and the build is skipped while neither is. **GitHub Pages is
+on** (`DEPLOY_GITHUB_PAGES` = `true`, Pages source = GitHub Actions); Cloudflare Pages is paused.
 
 | Target | Switch (variable) | One-time setup |
 | --- | --- | --- |
