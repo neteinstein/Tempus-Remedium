@@ -101,6 +101,9 @@
     <string name="settings_calendar">Rappels dans le calendrier</string>
     <string name="settings_calendar_export">Ajouter au calendrier</string>
     <string name="settings_calendar_export_body">Des événements avec alerte pour les %1$d prochains jours, que le calendrier du téléphone donne même app fermée. C’est une copie : après avoir changé des médicaments ou des horaires, supprimez les anciens événements et ajoutez-les à nouveau.</string>
+    <string name="settings_calendar_stale">Les rappels du calendrier ne sont plus à jour : supprimez les anciens événements et ajoutez-les à nouveau.</string>
+    <string name="notification_low_stock_hidden">Un médicament arrive bientôt à épuisement. Ouvrez l’app pour voir lequel.</string>
+    <string name="settings_web_install_first">Pour recevoir des alertes, ajoutez l’app à l’écran d’accueil et ouvrez-la depuis celui-ci.</string>
     <string name="calendar_export_again">Ajouter les rappels à nouveau</string>
     <string name="calendar_export_again_body">Les rappels du calendrier s’arrêtent ici. Ouvrez l’app et, dans Réglages, touchez « Ajouter au calendrier ».</string>
     <string name="install_home_screen">Installez l’app : touchez Partager, puis « Sur l’écran d’accueil ».</string>

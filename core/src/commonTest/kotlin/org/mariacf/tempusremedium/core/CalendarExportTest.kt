@@ -1,20 +1,27 @@
 package org.mariacf.tempusremedium.core
 
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.minus
 import org.mariacf.tempusremedium.core.ReferenceFixtures.date
 import org.mariacf.tempusremedium.core.model.DoseStatus
 import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.core.schedule.CALENDAR_EXPORT_DAYS
+import org.mariacf.tempusremedium.core.schedule.CALENDAR_STALE_DAYS_BEFORE_END
 import org.mariacf.tempusremedium.core.schedule.CalendarReminder
 import org.mariacf.tempusremedium.core.schedule.IcsEvent
+import org.mariacf.tempusremedium.core.schedule.calendarExportKey
 import org.mariacf.tempusremedium.core.schedule.calendarExportLastDay
+import org.mariacf.tempusremedium.core.schedule.calendarExportStale
 import org.mariacf.tempusremedium.core.schedule.calendarReminders
 import org.mariacf.tempusremedium.core.schedule.icsCalendar
 import org.mariacf.tempusremedium.core.schedule.logSlot
+import org.mariacf.tempusremedium.core.schedule.markCalendarExported
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 
@@ -95,5 +102,47 @@ class CalendarExportTest {
         assertTrue(lines.all { it.encodeToByteArray().size <= 75 })
         val unfolded = ics.replace("\r\n ", "")
         assertTrue("SUMMARY:$summary\r\n" in unfolded)
+    }
+
+    @Test
+    fun remindersOffExportsNothing() {
+        val off = ReferenceFixtures.data.copy(settings = ReferenceFixtures.data.settings.copy(remindersEnabled = false))
+        assertTrue(off.calendarReminders(ReferenceFixtures.now).isEmpty())
+    }
+
+    @Test
+    fun nothingExportedIsNeverStale() {
+        assertFalse(ReferenceFixtures.data.calendarExportStale(ReferenceFixtures.now))
+    }
+
+    @Test
+    fun takingADoseKeepsTheExportCurrent() {
+        val exported = ReferenceFixtures.data.markCalendarExported(ReferenceFixtures.now)
+        val taken = exported.logSlot(date, TimeSlot.EVENING, DoseStatus.TAKEN, 1L)
+        assertFalse(taken.calendarExportStale(ReferenceFixtures.now))
+    }
+
+    @Test
+    fun changingASlotTimeMakesTheExportStale() {
+        val exported = ReferenceFixtures.data.markCalendarExported(ReferenceFixtures.now)
+        val settings = exported.settings
+        val moved = exported.copy(settings = settings.copy(slotTimes = settings.slotTimes + (TimeSlot.BEDTIME to LocalTime(23, 0))))
+        assertTrue(moved.calendarExportStale(ReferenceFixtures.now))
+    }
+
+    @Test
+    fun anExportNearItsEndIsStale() {
+        val exported = ReferenceFixtures.data.markCalendarExported(ReferenceFixtures.now)
+        val runsOut = calendarExportLastDay(date).minus(DatePeriod(days = CALENDAR_STALE_DAYS_BEFORE_END))
+        assertFalse(exported.calendarExportStale(LocalDateTime(runsOut.minus(DatePeriod(days = 1)), LocalTime(9, 0))))
+        assertTrue(exported.calendarExportStale(LocalDateTime(runsOut, LocalTime(9, 0))))
+    }
+
+    @Test
+    fun theKeyIsStableAcrossCalls() {
+        assertEquals(
+            ReferenceFixtures.data.calendarExportKey(ReferenceFixtures.now),
+            ReferenceFixtures.data.calendarExportKey(ReferenceFixtures.now),
+        )
     }
 }

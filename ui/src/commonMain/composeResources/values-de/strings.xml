@@ -101,6 +101,9 @@
     <string name="settings_calendar">Erinnerungen im Kalender</string>
     <string name="settings_calendar_export">Zum Kalender hinzufügen</string>
     <string name="settings_calendar_export_body">Termine mit Hinweis für die nächsten %1$d Tage, die der Kalender des Telefons auch bei geschlossener App meldet. Es ist eine Kopie: Nach Änderungen an Medikamenten oder Zeiten die alten Termine löschen und neu hinzufügen.</string>
+    <string name="settings_calendar_stale">Die Kalendererinnerungen sind nicht mehr aktuell: Löschen Sie die alten Termine und fügen Sie sie erneut hinzu.</string>
+    <string name="notification_low_stock_hidden">Ein Medikament geht zur Neige. Öffnen Sie die App, um zu sehen, welches.</string>
+    <string name="settings_web_install_first">Um Hinweise zu erhalten, fügen Sie die App zum Home-Bildschirm hinzu und öffnen Sie sie von dort.</string>
     <string name="calendar_export_again">Erinnerungen neu hinzufügen</string>
     <string name="calendar_export_again_body">Die Kalender-Erinnerungen enden hier. Öffnen Sie die App und tippen Sie in den Einstellungen auf „Zum Kalender hinzufügen“.</string>
     <string name="install_home_screen">App installieren: Tippen Sie auf „Teilen“ und dann auf „Zum Home-Bildschirm“.</string>

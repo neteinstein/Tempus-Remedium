@@ -72,7 +72,10 @@ of `<project>.pages.dev`.
 
 The site is an installable web app: `manifest.webmanifest`, `sw.js` and the `precache.json` that
 `wasmJsBrowserDistribution` writes (every file of the build, so the installed app opens offline).
-The service worker needs HTTPS, which both targets serve; its scope is the folder the site is in.
+The same task stamps `sw.js` with a version made from the build's contents: each deploy gets its own
+cache, the app's files are served from it first, and the old cache is removed once the new worker
+takes over. The service worker needs HTTPS, which both targets serve; its scope is the folder the
+site is in.
 
 ### PR title
 

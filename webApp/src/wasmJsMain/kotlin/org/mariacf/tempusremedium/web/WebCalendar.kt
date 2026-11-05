@@ -25,10 +25,10 @@ private const val UID_DOMAIN = "tempusremedium.mariacf.pt"
 
 /**
  * The reminders of the coming days as a calendar file with an alert per event, for reminders
- * with the page closed. Names stay out, as in the web's notifications: calendars sync and show
+ * with the page closed. Returns the time of the export, for markCalendarExported. Names stay out, as in the web's notifications: calendars sync and show
  * on lock screens.
  */
-suspend fun exportCalendar(data: AppData) {
+suspend fun exportCalendar(data: AppData): LocalDateTime {
     val instant = Clock.System.now()
     val now = instant.toLocalDateTime(TimeZone.currentSystemDefault())
     val appName = getString(Res.string.app_name)
@@ -50,5 +50,7 @@ suspend fun exportCalendar(data: AppData) {
             summary = getString(Res.string.calendar_export_again),
             description = getString(Res.string.calendar_export_again_body),
         )
+    // A download, not the share sheet: Safari opens a calendar file with "Add All" to Calendar.
     downloadFile("tempus-remedium.ics", "text/calendar", icsCalendar(appName, events + again, instant))
+    return now
 }
