@@ -45,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -146,8 +147,10 @@ fun MedicationEditor(
     onDelete: (Medication) -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
+    hiddenSlots: Set<TimeSlot> = emptySet(),
 ) {
     PlatformBackHandler(enabled = true, onBack = onClose)
+    val focusManager = LocalFocusManager.current
 
     var name by remember { mutableStateOf(medication?.name.orEmpty()) }
     var strength by remember { mutableStateOf(medication?.strength.orEmpty()) }
@@ -156,7 +159,10 @@ fun MedicationEditor(
     var portion by remember { mutableStateOf(medication?.portion ?: PillPortion.WHOLE) }
     val effectivePortion = if (PillPortion.canSplit(shape)) portion else PillPortion.WHOLE
     val initialParts = medication?.portion?.parts ?: 1
-    var doses by remember { mutableStateOf(medication?.schedule?.doses ?: mapOf(TimeSlot.MORNING to 1)) }
+    var doses by remember {
+        val firstSlot = TimeSlot.entries.firstOrNull { it !in hiddenSlots } ?: TimeSlot.MORNING
+        mutableStateOf(medication?.schedule?.doses ?: mapOf(firstSlot to 1))
+    }
     val initialFrequency = medication?.schedule?.frequency ?: Frequency.Daily
     var frequencyKind by remember {
         mutableStateOf(
@@ -271,14 +277,22 @@ fun MedicationEditor(
                 )
             },
             navigationIcon = {
-                IconButton(onClick = onClose) {
+                IconButton(
+                    onClick = {
+                        focusManager.clearFocus()
+                        onClose()
+                    },
+                ) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.action_back))
                 }
             },
             actions = {
                 BrandButton(
                     stringResource(Res.string.action_save),
-                    onClick = { onSave(build()) },
+                    onClick = {
+                        focusManager.clearFocus()
+                        onSave(build())
+                    },
                     enabled = canSave,
                     modifier = Modifier.padding(end = 12.dp),
                 )
@@ -327,7 +341,8 @@ fun MedicationEditor(
             ColorPicker(color, onChange = { color = it })
 
             FieldTitle(stringResource(Res.string.field_when))
-            TimeSlot.entries.forEach { slot ->
+            // A hidden slot this medication uses stays, or its dose could not be changed.
+            TimeSlot.entries.filter { it !in hiddenSlots || it in doses }.forEach { slot ->
                 QuantityRow(
                     label =
                         stringResource(slot.label) +
@@ -480,7 +495,13 @@ fun MedicationEditor(
                     color = TempusTheme.colors.ink,
                     modifier = Modifier.weight(1f),
                 )
-                Switch(checked = trackStock, onCheckedChange = { trackStock = it })
+                Switch(
+                    checked = trackStock,
+                    onCheckedChange = {
+                        focusManager.clearFocus()
+                        trackStock = it
+                    },
+                )
             }
             if (trackStock) {
                 OutlinedTextField(
@@ -513,7 +534,13 @@ fun MedicationEditor(
             )
 
             if (medication != null) {
-                TextButton(onClick = { confirmDelete = true }, modifier = Modifier.fillMaxWidth()) {
+                TextButton(
+                    onClick = {
+                        focusManager.clearFocus()
+                        confirmDelete = true
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
                     Text(stringResource(Res.string.action_delete), style = TempusTheme.type.button, color = TempusTheme.colors.danger)
                 }
             }
@@ -581,6 +608,7 @@ internal fun ColorPicker(
     onChange: (PillColor) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val focusManager = LocalFocusManager.current
     FlowRow(modifier, horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         PillColor.entries.forEach { option ->
             val selected = option == color
@@ -594,8 +622,10 @@ internal fun ColorPicker(
                         if (selected) 3.dp else 1.dp,
                         if (selected) TempusTheme.colors.accent else option.edge.copy(alpha = 0.5f),
                         CircleShape,
-                    ).clickable { onChange(option) }
-                    .semantics {
+                    ).clickable {
+                        focusManager.clearFocus()
+                        onChange(option)
+                    }.semantics {
                         contentDescription = description
                         this.selected = selected
                     },
@@ -621,13 +651,16 @@ internal fun SelectableTile(
     content: @Composable () -> Unit,
 ) {
     val shape = RoundedCornerShape(16.dp)
+    val focusManager = LocalFocusManager.current
     Column(
         modifier
             .clip(shape)
             .glass(shape, TempusTheme.colors, strong = selected)
             .border(if (selected) 2.dp else 0.dp, if (selected) TempusTheme.colors.accent else Color.Transparent, shape)
-            .clickable(onClick = onClick)
-            .semantics(mergeDescendants = true) {
+            .clickable {
+                focusManager.clearFocus()
+                onClick()
+            }.semantics(mergeDescendants = true) {
                 contentDescription = description
                 this.selected = selected
             }.padding(vertical = 12.dp, horizontal = 2.dp),
@@ -664,12 +697,16 @@ internal fun StepButton(
     onClick: () -> Unit,
 ) {
     val palette = TempusTheme.colors
+    val focusManager = LocalFocusManager.current
     Box(
         Modifier
             .size(40.dp)
             .clip(CircleShape)
             .background(if (enabled) palette.accentSoft else palette.line)
-            .clickable(enabled = enabled, onClick = onClick),
+            .clickable(enabled = enabled) {
+                focusManager.clearFocus()
+                onClick()
+            },
         contentAlignment = Alignment.Center,
     ) {
         Text(text, style = TempusTheme.type.title, color = if (enabled) palette.accent else palette.inkMute)
@@ -683,6 +720,7 @@ internal fun FrequencyChip(
     onClick: () -> Unit,
 ) {
     val palette = TempusTheme.colors
+    val focusManager = LocalFocusManager.current
     Text(
         label,
         style = TempusTheme.type.button,
@@ -691,7 +729,9 @@ internal fun FrequencyChip(
             Modifier
                 .clip(CircleShape)
                 .then(if (selected) Modifier.background(palette.brandBrush) else Modifier.glass(CircleShape, palette))
-                .clickable(onClick = onClick)
-                .padding(horizontal = 16.dp, vertical = 9.dp),
+                .clickable {
+                    focusManager.clearFocus()
+                    onClick()
+                }.padding(horizontal = 16.dp, vertical = 9.dp),
     )
 }

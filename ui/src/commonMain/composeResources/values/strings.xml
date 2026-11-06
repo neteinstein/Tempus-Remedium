@@ -109,6 +109,8 @@
     <string name="history_day">%1$d de %2$d tomadas</string>
 
     <string name="settings_times">Horários</string>
+    <string name="settings_visible_slots">Horários a mostrar</string>
+    <string name="settings_visible_slots_hint">Um horário escondido volta a aparecer nos dias em que tiver doses.</string>
     <string name="settings_browser_storage">Os dados ficam guardados apenas neste navegador.</string>
     <string name="settings_web_reduced">Na versão web só há avisos com a app aberta: sem lembretes com a app fechada, widgets nem ecrã de bloqueio.</string>
     <string name="settings_web_alerts">Avisos com a app aberta</string>
@@ -244,6 +246,7 @@
     <string name="when_today">hoje</string>
     <string name="when_tomorrow">amanhã</string>
     <string name="course_next">Próxima toma %1$s às %2$s · %3$s</string>
+    <string name="course_next_label">Próxima toma</string>
     <string name="course_remaining">Faltam %1$s · %2$s</string>
     <string name="course_dose_of">%1$s · toma %2$d de %3$d</string>
 

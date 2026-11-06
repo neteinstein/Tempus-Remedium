@@ -56,6 +56,8 @@ enum class AppLanguage(
 @Serializable
 data class Settings(
     val slotTimes: Map<TimeSlot, LocalTime> = TimeSlot.entries.associateWith { it.defaultTime },
+    /** Slots the user does not use. They only leave the screens: doses in them still count and ring. */
+    val hiddenSlots: Set<TimeSlot> = emptySet(),
     val remindersEnabled: Boolean = true,
     val hideNamesInReminders: Boolean = false,
     /** Reminders ring with the alarm sound, over and over, until the dose is handled. */
@@ -75,6 +77,15 @@ data class Settings(
     val calendarOfferDismissed: String? = null,
 ) {
     fun timeOf(slot: TimeSlot): LocalTime = slotTimes[slot] ?: slot.defaultTime
+
+    /** Hides or shows [slot]; the last slot left showing cannot be hidden. */
+    fun withSlotHidden(
+        slot: TimeSlot,
+        hidden: Boolean,
+    ): Settings {
+        val updated = if (hidden) hiddenSlots + slot else hiddenSlots - slot
+        return if (updated.size < TimeSlot.entries.size) copy(hiddenSlots = updated) else this
+    }
 }
 
 /** When the reminders were added to the calendar, and what they were (see calendarExportKey). */

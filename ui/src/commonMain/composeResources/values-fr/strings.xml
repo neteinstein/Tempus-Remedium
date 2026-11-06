@@ -95,6 +95,8 @@
     <string name="history_no_data">Aucune dose enregistrée pour l’instant.</string>
     <string name="history_day">%1$d sur %2$d prises</string>
     <string name="settings_times">Horaires</string>
+    <string name="settings_visible_slots">Horaires à afficher</string>
+    <string name="settings_visible_slots_hint">Un horaire masqué réapparaît les jours où il comporte des doses.</string>
     <string name="settings_browser_storage">Les données restent uniquement dans ce navigateur.</string>
     <string name="settings_web_reduced">La version web ne prévient que lorsqu’elle est ouverte : ni rappels app fermée, ni widgets, ni écran de verrouillage.</string>
     <string name="settings_web_alerts">Alertes app ouverte</string>
@@ -225,6 +227,7 @@
     <string name="when_today">aujourd’hui</string>
     <string name="when_tomorrow">demain</string>
     <string name="course_next">Prochaine prise %1$s à %2$s · %3$s</string>
+    <string name="course_next_label">Prochaine prise</string>
     <string name="course_remaining">Encore %1$s · %2$s</string>
     <string name="course_dose_of">%1$s · prise %2$d sur %3$d</string>
     <string name="calc_title">Calculateur de doses</string>

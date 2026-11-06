@@ -49,8 +49,8 @@ private const val MAX_PILLS_PER_SLOT = 6
 
 /**
  * The HOJE panel of docs/design/reference/hoje.png. [highlight] outlines the slot that needs
- * attention next and [overdue] marks slots whose time passed with doses still pending (product
- * additions; the defaults render exactly the reference).
+ * attention next, [overdue] marks slots whose time passed with doses still pending and [hiddenSlots]
+ * leaves out slots the user does not use (product additions; the defaults render exactly the reference).
  */
 @Composable
 fun HojePanel(
@@ -59,6 +59,7 @@ fun HojePanel(
     highlight: TimeSlot? = null,
     overdue: Set<TimeSlot> = emptySet(),
     onSlotClick: ((TimeSlot) -> Unit)? = null,
+    hiddenSlots: Set<TimeSlot> = emptySet(),
 ) {
     val palette = TempusTheme.colors
     Column(modifier) {
@@ -79,7 +80,7 @@ fun HojePanel(
                 .padding(horizontal = 9.dp, vertical = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(7.dp),
         ) {
-            plan.slots.forEach { slot ->
+            plan.visibleSlots(hiddenSlots).forEach { slot ->
                 SlotCard(
                     slot = slot,
                     highlighted = slot.slot == highlight,

@@ -106,6 +106,8 @@
     <string name="history_day">%1$d of %2$d taken</string>
 
     <string name="settings_times">Times</string>
+    <string name="settings_visible_slots">Times to show</string>
+    <string name="settings_visible_slots_hint">A hidden time comes back on days it has doses.</string>
     <string name="settings_browser_storage">Your data is stored only in this browser.</string>
     <string name="settings_web_reduced">The web version only alerts you while it is open: no reminders when it is closed, no widgets, no lock screen.</string>
     <string name="settings_web_alerts">Alerts while the app is open</string>
@@ -239,6 +241,7 @@
     <string name="when_today">today</string>
     <string name="when_tomorrow">tomorrow</string>
     <string name="course_next">Next dose %1$s at %2$s · %3$s</string>
+    <string name="course_next_label">Next dose</string>
     <string name="course_remaining">%1$s · %2$s to go</string>
     <string name="course_dose_of">%1$s · dose %2$d of %3$d</string>
 

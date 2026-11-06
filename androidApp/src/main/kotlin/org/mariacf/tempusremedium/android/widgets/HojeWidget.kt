@@ -97,7 +97,7 @@ data class HojeWidgetUi(
                 title = WidgetStyle.spaced(getString(Res.string.today)),
                 meta = getString(Res.string.today_meta, dayLabel, doses),
                 slots =
-                    plan.slots.map { slot ->
+                    plan.visibleSlots(data.settings.hiddenSlots).map { slot ->
                         val label = getString(slot.slot.label)
                         Slot(
                             slot = slot.slot,

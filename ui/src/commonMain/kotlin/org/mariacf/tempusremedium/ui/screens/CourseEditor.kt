@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -167,6 +168,7 @@ fun CourseEditor(
     initialWeight: String = "",
 ) {
     PlatformBackHandler(enabled = true, onBack = onClose)
+    val focusManager = LocalFocusManager.current
     val existing = medication?.course
     val today = now.date
 
@@ -275,14 +277,22 @@ fun CourseEditor(
                 )
             },
             navigationIcon = {
-                IconButton(onClick = onClose) {
+                IconButton(
+                    onClick = {
+                        focusManager.clearFocus()
+                        onClose()
+                    },
+                ) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.action_back))
                 }
             },
             actions = {
                 BrandButton(
                     stringResource(Res.string.action_save),
-                    onClick = { draft?.let { onSave(build(it)) } },
+                    onClick = {
+                        focusManager.clearFocus()
+                        draft?.let { onSave(build(it)) }
+                    },
                     enabled = canSave,
                     modifier = Modifier.padding(end = 12.dp),
                 )
@@ -336,6 +346,7 @@ fun CourseEditor(
                     interval = calculatorInterval,
                     onIntervalChange = { calculatorInterval = it },
                     onUse = { suggestion ->
+                        focusManager.clearFocus()
                         amount = formatInput(suggestion.ml)
                         unit = DoseUnit.ML
                         interval = suggestion.intervalHours
@@ -466,7 +477,13 @@ fun CourseEditor(
                         color = TempusTheme.colors.ink,
                         modifier = Modifier.weight(1f),
                     )
-                    Switch(checked = trackStock, onCheckedChange = { trackStock = it })
+                    Switch(
+                        checked = trackStock,
+                        onCheckedChange = {
+                            focusManager.clearFocus()
+                            trackStock = it
+                        },
+                    )
                 }
                 if (trackStock) {
                     OutlinedTextField(
@@ -491,7 +508,13 @@ fun CourseEditor(
             )
 
             if (medication != null) {
-                TextButton(onClick = { confirmDelete = true }, modifier = Modifier.fillMaxWidth()) {
+                TextButton(
+                    onClick = {
+                        focusManager.clearFocus()
+                        confirmDelete = true
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
                     Text(stringResource(Res.string.action_delete), style = TempusTheme.type.button, color = TempusTheme.colors.danger)
                 }
             }
@@ -659,14 +682,17 @@ private fun PresetRow(
 ) {
     val palette = TempusTheme.colors
     val shape = RoundedCornerShape(14.dp)
+    val focusManager = LocalFocusManager.current
     Column(
         Modifier
             .fillMaxWidth()
             .clip(shape)
             .glass(shape, palette, strong = selected)
             .then(if (selected) Modifier.background(palette.accentSoft) else Modifier)
-            .clickable(role = Role.RadioButton, onClick = onClick)
-            .padding(horizontal = 14.dp, vertical = 10.dp),
+            .clickable(role = Role.RadioButton) {
+                focusManager.clearFocus()
+                onClick()
+            }.padding(horizontal = 14.dp, vertical = 10.dp),
     ) {
         Text(title, style = TempusTheme.type.rowTitle, color = if (selected) palette.accent else palette.ink)
         Text(detail, style = TempusTheme.type.bodySmall, color = palette.inkMute)

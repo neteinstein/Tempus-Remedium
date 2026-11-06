@@ -246,6 +246,7 @@ fun App(
                     MedicationEditor(
                         medication = data.medication(editing),
                         today = now.date,
+                        hiddenSlots = data.settings.hiddenSlots,
                         onSave = ::save,
                         onDelete = { medication ->
                             viewModel.deleteMedication(medication.id)
@@ -355,6 +356,7 @@ fun App(
                                     lowStock = data.lowStock(),
                                     medications = data.activeMedications,
                                     stockDisplay = data.settings.stockDisplay,
+                                    hiddenSlots = data.settings.hiddenSlots,
                                     stockAlerts = data.stockAlerts(now.date),
                                     onAcknowledgeStockAlert = { medication -> viewModel.acknowledgeStockAlert(medication.id, now.date) },
                                     onLogDose = { medication, slot, status -> viewModel.logDose(medication.id, now.date, slot, status) },

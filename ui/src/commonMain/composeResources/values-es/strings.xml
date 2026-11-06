@@ -95,6 +95,8 @@
     <string name="history_no_data">Aún no hay dosis registradas.</string>
     <string name="history_day">%1$d de %2$d tomadas</string>
     <string name="settings_times">Horarios</string>
+    <string name="settings_visible_slots">Horarios que mostrar</string>
+    <string name="settings_visible_slots_hint">Un horario oculto vuelve a aparecer los días en que tenga dosis.</string>
     <string name="settings_browser_storage">Los datos se guardan solo en este navegador.</string>
     <string name="settings_web_reduced">La versión web solo avisa mientras está abierta: sin recordatorios con la app cerrada, widgets ni pantalla de bloqueo.</string>
     <string name="settings_web_alerts">Avisos con la app abierta</string>
@@ -225,6 +227,7 @@
     <string name="when_today">hoy</string>
     <string name="when_tomorrow">mañana</string>
     <string name="course_next">Próxima toma %1$s a las %2$s · %3$s</string>
+    <string name="course_next_label">Próxima toma</string>
     <string name="course_remaining">Faltan %1$s · %2$s</string>
     <string name="course_dose_of">%1$s · toma %2$d de %3$d</string>
     <string name="calc_title">Calculadora de dosis</string>
