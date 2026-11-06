@@ -84,7 +84,7 @@ calm blues, frosted cards, and a light and a dark theme.
 | Configurable slot times; automatic, light or dark theme | ✅ | ✅ |
 | Reminder notifications with **Tomei** / **Adiar 10 min**, shown on the lock screen (names can be hidden) | ✅ | Only while the app is open, without names or buttons; tapping one opens its slot, and a slot that fell due while the phone slept is announced on return (Definições → Avisos com a app aberta) |
 | Reminders on/off switch | ✅ | ✅ Also leaves the calendar export empty |
-| Reminders in the phone's calendar: the next 90 days as events with an alert, without names, that ring with the app closed (Definições → Adicionar ao calendário; a snapshot to add again after changes, and Definições says in red when it is out of date) | — | ✅ |
+| Reminders in the device's calendar: the next 90 days as events with an alert, without names, that ring with the app closed (Definições → Adicionar ao calendário, and offered in a bar on iPhone and iPad; a snapshot to add again after changes, counted as added once the user confirms it reached the calendar, and Definições says in red when it is out of date) | — | ✅ |
 | Export all or chosen medications as a printable PDF sheet (the day hour by hour, then each medication with its pill, doses, frequency and stock) or as a file; import a file, all or chosen medications (Definições → Exportar e importar) | ✅ | ✅ PDF pages drawn as images |
 | Number of doses due on the app icon | — | ✅ Installed web app, where the system supports it |
 | Low-stock notifications | ✅ | Only while the app is open, without the name; tapping opens the refill |
@@ -101,7 +101,8 @@ The web version is meant mostly for iPhone, added to the home screen from Safari
 Home Screen). What it cannot do there, and what stands in:
 
 - **No reminders with the app closed.** iOS only wakes a closed web app through a push server, and
-  the app has no server. The calendar export puts alerts in the phone's Calendar instead.
+  the app has no server. The calendar export puts alerts in the phone's Calendar instead; the app
+  offers it in a bar at the top, and again when the copy in the calendar goes out of date.
 - **No Tomei / Adiar buttons, insistent alarm sound or sound picker** on notifications. Tapping a
   notification opens its slot, where one tap logs it.
 - **No widgets** on the home or lock screen; the icon badge shows the doses due.

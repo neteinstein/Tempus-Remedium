@@ -100,7 +100,7 @@
     <string name="settings_web_alerts_body">Una notificación cuando toca una dosis, y el número de dosis pendientes en el icono de la app, mientras la app está abierta.</string>
     <string name="settings_calendar">Recordatorios en el calendario</string>
     <string name="settings_calendar_export">Añadir al calendario</string>
-    <string name="settings_calendar_export_body">Eventos con aviso para los próximos %1$d días, que el calendario del teléfono da incluso con la app cerrada. Es una copia: después de cambiar medicamentos u horarios, borre los eventos antiguos y añádalos de nuevo.</string>
+    <string name="settings_calendar_export_body">Eventos con aviso para los próximos %1$d días, que su calendario da incluso con la app cerrada. Si el archivo no se abre solo, ábralo desde sus descargas. Es una copia: después de cambiar medicamentos u horarios, borre los eventos antiguos y añádalos de nuevo.</string>
     <string name="settings_calendar_stale">Los recordatorios del calendario están desactualizados: borre los eventos antiguos y añádalos de nuevo.</string>
     <string name="notification_low_stock_hidden">Un medicamento se está acabando. Abra la app para ver cuál.</string>
     <string name="settings_web_install_first">Para recibir avisos, añada la app a la pantalla de inicio y ábrala desde allí.</string>
@@ -110,6 +110,12 @@
     <string name="install_store">Instala la app para Android, con recordatorios y widgets.</string>
     <string name="install_store_action">Instalar</string>
     <string name="install_banner_close">Cerrar aviso de instalación</string>
+    <string name="calendar_offer">Con la app cerrada no hay avisos. Añada los recordatorios al calendario del teléfono.</string>
+    <string name="calendar_offer_action">Añadir</string>
+    <string name="calendar_offer_close">Cerrar aviso del calendario</string>
+    <string name="calendar_confirm">¿Están los recordatorios en el calendario?</string>
+    <string name="calendar_confirm_action">Sí</string>
+    <string name="calendar_confirm_close">Los recordatorios no se añadieron</string>
     <string name="channel_reminders">Recordatorios de dosis</string>
     <string name="channel_reminders_alarm">Recordatorios (alarma)</string>
     <string name="channel_low_stock">Pocas existencias</string>

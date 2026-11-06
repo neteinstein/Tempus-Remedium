@@ -114,7 +114,7 @@
     <string name="settings_web_alerts_body">Uma notificação quando chega a hora de uma toma, e o número de doses em falta no ícone da app, enquanto a app está aberta.</string>
     <string name="settings_calendar">Lembretes no calendário</string>
     <string name="settings_calendar_export">Adicionar ao calendário</string>
-    <string name="settings_calendar_export_body">Eventos com alerta para os próximos %1$d dias, que o calendário do telemóvel dá mesmo com a app fechada. É uma cópia: depois de mudar medicamentos ou horários, apague os eventos antigos e adicione de novo.</string>
+    <string name="settings_calendar_export_body">Eventos com alerta para os próximos %1$d dias, que o calendário dá mesmo com a app fechada. Se o ficheiro não abrir sozinho, abra-o nas transferências. É uma cópia: depois de mudar medicamentos ou horários, apague os eventos antigos e adicione de novo.</string>
     <string name="settings_calendar_stale">Os lembretes no calendário estão desatualizados: apague os eventos antigos e adicione de novo.</string>
     <string name="notification_low_stock_hidden">Um medicamento está a acabar. Abra a app para ver qual.</string>
     <string name="settings_web_install_first">Para receber avisos, adicione a app ao ecrã principal e abra-a a partir daí.</string>
@@ -124,6 +124,12 @@
     <string name="install_store">Instale a app para Android, com lembretes e widgets.</string>
     <string name="install_store_action">Instalar</string>
     <string name="install_banner_close">Fechar aviso de instalação</string>
+    <string name="calendar_offer">Com a app fechada não há avisos. Adicione os lembretes ao calendário do telemóvel.</string>
+    <string name="calendar_offer_action">Adicionar</string>
+    <string name="calendar_offer_close">Fechar sugestão do calendário</string>
+    <string name="calendar_confirm">Os lembretes ficaram no calendário?</string>
+    <string name="calendar_confirm_action">Sim</string>
+    <string name="calendar_confirm_close">Os lembretes não foram adicionados</string>
 
     <!-- Android only: reminders and settings -->
     <string name="channel_reminders">Lembretes de doses</string>

@@ -100,7 +100,7 @@
     <string name="settings_web_alerts_body">Eine Benachrichtigung, wenn eine Dosis fällig ist, und die Zahl der offenen Dosen am App-Symbol, solange die App geöffnet ist.</string>
     <string name="settings_calendar">Erinnerungen im Kalender</string>
     <string name="settings_calendar_export">Zum Kalender hinzufügen</string>
-    <string name="settings_calendar_export_body">Termine mit Hinweis für die nächsten %1$d Tage, die der Kalender des Telefons auch bei geschlossener App meldet. Es ist eine Kopie: Nach Änderungen an Medikamenten oder Zeiten die alten Termine löschen und neu hinzufügen.</string>
+    <string name="settings_calendar_export_body">Termine mit Hinweis für die nächsten %1$d Tage, die Ihr Kalender auch bei geschlossener App meldet. Öffnet sich die Datei nicht von selbst, öffnen Sie sie in Ihren Downloads. Es ist eine Kopie: Nach Änderungen an Medikamenten oder Zeiten die alten Termine löschen und neu hinzufügen.</string>
     <string name="settings_calendar_stale">Die Kalendererinnerungen sind nicht mehr aktuell: Löschen Sie die alten Termine und fügen Sie sie erneut hinzu.</string>
     <string name="notification_low_stock_hidden">Ein Medikament geht zur Neige. Öffnen Sie die App, um zu sehen, welches.</string>
     <string name="settings_web_install_first">Um Hinweise zu erhalten, fügen Sie die App zum Home-Bildschirm hinzu und öffnen Sie sie von dort.</string>
@@ -110,6 +110,12 @@
     <string name="install_store">Installieren Sie die Android-App mit Erinnerungen und Widgets.</string>
     <string name="install_store_action">Installieren</string>
     <string name="install_banner_close">Installationshinweis schließen</string>
+    <string name="calendar_offer">Bei geschlossener App gibt es keine Hinweise. Fügen Sie die Erinnerungen zum Kalender des Telefons hinzu.</string>
+    <string name="calendar_offer_action">Hinzufügen</string>
+    <string name="calendar_offer_close">Kalenderhinweis schließen</string>
+    <string name="calendar_confirm">Sind die Erinnerungen im Kalender?</string>
+    <string name="calendar_confirm_action">Ja</string>
+    <string name="calendar_confirm_close">Die Erinnerungen wurden nicht hinzugefügt</string>
     <string name="channel_reminders">Dosis-Erinnerungen</string>
     <string name="channel_reminders_alarm">Erinnerungen (Wecker)</string>
     <string name="channel_low_stock">Niedriger Bestand</string>

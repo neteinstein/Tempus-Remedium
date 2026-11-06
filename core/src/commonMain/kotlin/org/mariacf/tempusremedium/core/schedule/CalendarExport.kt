@@ -15,7 +15,7 @@ import kotlin.time.Instant
 
 /**
  * The web's way to remind with the app closed: the reminders of the coming days as calendar
- * events with an alert, which the phone's calendar fires itself. It is a snapshot, so the export
+ * events with an alert, which the device's calendar fires itself. It is a snapshot, so the export
  * covers a limited stretch and ends with an event that asks to export again.
  */
 const val CALENDAR_EXPORT_DAYS = 90
@@ -188,3 +188,33 @@ fun AppData.calendarExportStale(now: LocalDateTime): Boolean {
 
 /** How many days before an export's last day to ask for a new one. */
 const val CALENDAR_STALE_DAYS_BEFORE_END = 7
+
+/** Why the web suggests adding the reminders to the calendar. */
+enum class CalendarOffer {
+    /** There are reminders and none were added yet. */
+    FIRST,
+
+    /** What was added no longer matches the app (see calendarExportStale). */
+    STALE,
+}
+
+private const val NEVER_EXPORTED = "never"
+
+/** What the calendar offer is about right now: a later export, or a further change, is a new offer. */
+private fun AppData.calendarOfferSubject(): String = settings.calendarExport?.let { calendarExportKey(it.at) } ?: NEVER_EXPORTED
+
+/**
+ * What to suggest about the calendar, if anything. Closing the offer lasts until the schedule
+ * changes again, so a stale calendar, which may ring for a dose that no longer exists, is not
+ * silenced for good by closing the first suggestion.
+ */
+fun AppData.calendarOffer(now: LocalDateTime): CalendarOffer? =
+    when {
+        settings.calendarOfferDismissed == calendarOfferSubject() -> null
+        calendarExportStale(now) -> CalendarOffer.STALE
+        settings.calendarExport == null && calendarReminders(now).isNotEmpty() -> CalendarOffer.FIRST
+        else -> null
+    }
+
+/** The user closed the calendar offer. */
+fun AppData.dismissCalendarOffer(): AppData = copy(settings = settings.copy(calendarOfferDismissed = calendarOfferSubject()))

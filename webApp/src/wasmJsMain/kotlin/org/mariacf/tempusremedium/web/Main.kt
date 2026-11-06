@@ -8,7 +8,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -18,7 +17,6 @@ import androidx.compose.ui.window.ComposeViewport
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.preloadFont
@@ -28,7 +26,6 @@ import org.mariacf.tempusremedium.core.data.MedicationRepository
 import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.core.schedule.CALENDAR_EXPORT_DAYS
 import org.mariacf.tempusremedium.core.schedule.calendarExportStale
-import org.mariacf.tempusremedium.core.schedule.markCalendarExported
 import org.mariacf.tempusremedium.ui.App
 import org.mariacf.tempusremedium.ui.InstallPrompt
 import org.mariacf.tempusremedium.ui.PlatformUi
@@ -67,8 +64,8 @@ import org.mariacf.tempusremedium.ui.theme.TempusTheme
  * The reduced web version: the shared screens with data kept in localStorage, installable as a
  * web app (manifest and service worker in index.html). It only alerts while open: there are no
  * reminders with the page closed, widgets or lock screen on the web. Instead, it can add the
- * coming reminders to the phone's calendar (see exportCalendar) and tells when that copy is out
- * of date. A tapped notification opens its slot through the address (launchRequestFromAddress).
+ * coming reminders to the device's calendar (see WebCalendarSupport), offers that on iPhone and
+ * iPad, and tells when that copy is out of date. A tapped notification opens its slot through the address (launchRequestFromAddress).
  */
 private const val SPLASH_SETTLE_MS = 250L
 private const val SPLASH_FADE_MS = 320L
@@ -122,6 +119,8 @@ private val webFonts =
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalResourceApi::class)
 fun main() {
     val repository = MedicationRepository(LocalStorageDocumentStorage())
+    // iOS has no way to remind with the app closed but the calendar, so the app offers it.
+    val calendar = WebCalendarSupport(repository, offers = isIos())
     val platform =
         PlatformUi(
             settingsExtras = { settings, onChange ->
@@ -151,7 +150,6 @@ fun main() {
                         ),
                     )
                 }
-                val scope = rememberCoroutineScope()
                 val data by repository.data.collectAsState()
                 SettingsSection(stringResource(Res.string.settings_calendar)) {
                     GroupCard {
@@ -159,12 +157,7 @@ fun main() {
                             title = stringResource(Res.string.settings_calendar_export),
                             body = stringResource(Res.string.settings_calendar_export_body, CALENDAR_EXPORT_DAYS),
                             value = "›",
-                            onClick = {
-                                scope.launch {
-                                    val at = exportCalendar(repository.data.value)
-                                    repository.update { it.markCalendarExported(at) }
-                                }
-                            },
+                            onClick = calendar::add,
                         )
                     }
                     if (data.calendarExportStale(currentTime())) {
@@ -180,6 +173,7 @@ fun main() {
             },
             onDarkThemeChange = { dark -> setThemeColor(if (dark) THEME_COLOR_DARK else THEME_COLOR_LIGHT) },
             installPrompt = installPrompt(),
+            calendar = calendar,
             files = WebFileTransfer,
         )
     // A container of its own: the viewport takes over its element, and the splash must stay visible.
