@@ -93,6 +93,7 @@
     <string name="shape_square">Quadrado</string>
     <string name="shape_capsule">Cápsula</string>
     <string name="shape_softgel">Cápsula mole</string>
+    <string name="shape_sachet">Saqueta</string>
     <string name="color_teal">Turquesa</string>
     <string name="color_pink">Rosa</string>
     <string name="color_peach">Pêssego</string>

@@ -682,15 +682,15 @@ class PortugueseStoreListingCaptures :
     }
 
     /**
-     * Every form, large, in a 3 × 3 grid of 120 dp cells, on white and on black: the video script
+     * Every form, large, in a grid of 120 dp cells, three to a row, on white and on black: the video script
      * recovers the transparency from the pair.
      */
     @Test
-    @Config(qualifiers = "+w360dp-h360dp-xxhdpi")
+    @Config(qualifiers = "+w360dp-h480dp-xxhdpi")
     fun formsOnWhite() = formsGrid(Color.White, "forms_white")
 
     @Test
-    @Config(qualifiers = "+w360dp-h360dp-xxhdpi")
+    @Config(qualifiers = "+w360dp-h480dp-xxhdpi")
     fun formsOnBlack() = formsGrid(Color.Black, "forms_black")
 
     private fun formsGrid(
@@ -703,6 +703,7 @@ class PortugueseStoreListingCaptures :
                 PillColor.PINK,
                 PillColor.PEACH,
                 PillColor.BLUE,
+                PillColor.YELLOW,
                 PillColor.BLUE,
                 PillColor.PEACH,
                 PillColor.GREEN,

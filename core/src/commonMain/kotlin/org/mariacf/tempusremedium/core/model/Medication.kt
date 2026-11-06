@@ -5,8 +5,9 @@ import kotlinx.serialization.Serializable
 
 /**
  * Visual form of a medication. The first four shapes are the ones in docs/design/reference;
- * the rest are product additions for medications that are not swallowed. The name stays
- * `PillShape` because it is stored in the JSON document.
+ * the rest are product additions: oral sachets, and medications that are not swallowed. The
+ * name stays `PillShape` because it is stored in the JSON document (by name, so the order of
+ * the entries only sets the order in the editor).
  */
 @Serializable
 enum class PillShape {
@@ -14,6 +15,7 @@ enum class PillShape {
     SQUARE,
     CAPSULE,
     SOFTGEL,
+    SACHET,
     INHALER,
     PATCH,
     NASAL_SPRAY,

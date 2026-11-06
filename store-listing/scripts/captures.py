@@ -17,8 +17,8 @@ FONTS = REPO / "ui/src/commonMain/composeResources/font"
 # animations, so 02_overdue holds the glow at 0.15 and 02_overdue_base has no glow at all.
 PULSE_START = 0.15
 
-# PillShape.entries order, as laid out by formsOnWhite / formsOnBlack (3 x 3 cells of 360 px).
-FORMS = ["round", "square", "capsule", "softgel", "inhaler", "patch", "nasal_spray", "drops", "injection"]
+# PillShape.entries order, as laid out by formsOnWhite / formsOnBlack (three 360 px cells to a row).
+FORMS = ["round", "square", "capsule", "softgel", "sachet", "inhaler", "patch", "nasal_spray", "drops", "injection"]
 FORM_CELL = 360
 
 

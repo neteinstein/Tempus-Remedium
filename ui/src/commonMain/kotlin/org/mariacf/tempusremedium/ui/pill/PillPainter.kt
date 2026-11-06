@@ -121,6 +121,57 @@ fun DrawScope.drawPill(
                 )
             }
 
+            PillShape.SACHET -> {
+                // Sealed packet standing upright: crimped top and bottom seals, a tear line under
+                // the top seal and a label band.
+                val width = u * 0.66f
+                val height = u * 0.86f
+                val left = center.x - width / 2
+                val top = center.y - height / 2
+                val teeth = 6
+                val tooth = width / teeth
+                val crimp = u * 0.04f
+                val packet =
+                    Path().apply {
+                        moveTo(left, top + crimp)
+                        repeat(teeth) { i ->
+                            lineTo(left + tooth * (i + 0.5f), top)
+                            lineTo(left + tooth * (i + 1), top + crimp)
+                        }
+                        lineTo(left + width, top + height - crimp)
+                        repeat(teeth) { i ->
+                            lineTo(left + width - tooth * (i + 0.5f), top + height)
+                            lineTo(left + width - tooth * (i + 1), top + height - crimp)
+                        }
+                        close()
+                    }
+                drawPath(Path().apply { addPath(packet, shadowOffset) }, shadow)
+                drawPath(packet, fill)
+                drawPath(packet, edgeColor, style = edge)
+                // Seal lines.
+                val sealInset = u * 0.12f
+                listOf(top + sealInset, top + height - sealInset).forEach { y ->
+                    drawLine(edgeColor, Offset(left, y), Offset(left + width, y), strokeWidth = u * 0.03f)
+                }
+                // Tear line.
+                drawLine(
+                    ink,
+                    start = Offset(left + width * 0.14f, top + sealInset + u * 0.07f),
+                    end = Offset(left + width * 0.86f, top + sealInset + u * 0.07f),
+                    strokeWidth = u * 0.04f,
+                    cap = StrokeCap.Butt,
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(u * 0.05f, u * 0.04f)),
+                )
+                // Label band.
+                drawRoundRect(
+                    ink,
+                    Offset(left + width * 0.2f, center.y + u * 0.02f),
+                    Size(width * 0.6f, u * 0.16f),
+                    CornerRadius(u * 0.04f),
+                    style = Stroke(width = u * 0.06f),
+                )
+            }
+
             PillShape.INHALER -> {
                 // Pressurised inhaler: white canister in a coloured actuator with the mouthpiece to the left.
                 val canisterTopLeft = center + Offset(-u * 0.04f, -u * 0.45f)

@@ -81,6 +81,7 @@
     <string name="shape_square">Carré</string>
     <string name="shape_capsule">Gélule</string>
     <string name="shape_softgel">Capsule molle</string>
+    <string name="shape_sachet">Sachet</string>
     <string name="color_teal">Turquoise</string>
     <string name="color_pink">Rose</string>
     <string name="color_peach">Pêche</string>

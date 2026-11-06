@@ -12,7 +12,7 @@ LEMBRETES
 • Pode ocultar os nomes dos medicamentos no ecrã de bloqueio.
 
 TODAS AS FORMAS, CADA UMA AO SEU RITMO
-• Comprimidos, cápsulas, cápsulas moles, inaladores, pensos transdérmicos, sprays nasais, gotas e injetáveis, em várias cores.
+• Comprimidos, cápsulas, cápsulas moles, saquetas, inaladores, pensos transdérmicos, sprays nasais, gotas e injetáveis, em várias cores.
 • Todos os dias, em dias da semana à escolha (também de 2 em 2 semanas), a cada N dias, mensalmente ou em ciclos com pausa.
 • Com data de início, e sem fim, até uma data ou ao fim de N vezes.
 
