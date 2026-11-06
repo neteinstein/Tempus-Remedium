@@ -81,6 +81,7 @@
     <string name="shape_square">Eckig</string>
     <string name="shape_capsule">Kapsel</string>
     <string name="shape_softgel">Weichkapsel</string>
+    <string name="shape_sachet">Beutel</string>
     <string name="color_teal">Türkis</string>
     <string name="color_pink">Rosa</string>
     <string name="color_peach">Pfirsich</string>

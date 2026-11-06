@@ -12,7 +12,7 @@ REMINDERS
 • You can hide medication names on the lock screen.
 
 EVERY FORM, EACH ON ITS OWN SCHEDULE
-• Tablets, capsules, softgels, inhalers, transdermal patches, nasal sprays, drops and injections, in several colours.
+• Tablets, capsules, softgels, sachets, inhalers, transdermal patches, nasal sprays, drops and injections, in several colours.
 • Every day, on chosen days of the week (every other week too), every N days, monthly or in cycles with breaks.
 • With a start date, and no end, until a date or after N times.
 

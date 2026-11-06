@@ -55,6 +55,7 @@ import org.mariacf.tempusremedium.ui.resources.shape_injection
 import org.mariacf.tempusremedium.ui.resources.shape_nasal_spray
 import org.mariacf.tempusremedium.ui.resources.shape_patch
 import org.mariacf.tempusremedium.ui.resources.shape_round_scored
+import org.mariacf.tempusremedium.ui.resources.shape_sachet
 import org.mariacf.tempusremedium.ui.resources.shape_softgel
 import org.mariacf.tempusremedium.ui.resources.shape_square
 import org.mariacf.tempusremedium.ui.resources.slot_bedtime
@@ -106,6 +107,7 @@ val PillShape.label: StringResource
             PillShape.SQUARE -> Res.string.shape_square
             PillShape.CAPSULE -> Res.string.shape_capsule
             PillShape.SOFTGEL -> Res.string.shape_softgel
+            PillShape.SACHET -> Res.string.shape_sachet
             PillShape.INHALER -> Res.string.shape_inhaler
             PillShape.PATCH -> Res.string.shape_patch
             PillShape.NASAL_SPRAY -> Res.string.shape_nasal_spray

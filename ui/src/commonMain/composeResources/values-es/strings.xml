@@ -81,6 +81,7 @@
     <string name="shape_square">Cuadrado</string>
     <string name="shape_capsule">Cápsula</string>
     <string name="shape_softgel">Cápsula blanda</string>
+    <string name="shape_sachet">Sobre</string>
     <string name="color_teal">Turquesa</string>
     <string name="color_pink">Rosa</string>
     <string name="color_peach">Melocotón</string>
