@@ -92,4 +92,37 @@ class DayPlanTest {
 
     private fun org.mariacf.tempusremedium.core.model.Medication.withFrequency(frequency: Frequency) =
         copy(schedule = schedule.copy(frequency = frequency))
+
+    @Test
+    fun aHiddenSlotLeavesThePanelOnlyWhenItHasNoDoses() {
+        val onlyMorning =
+            ReferenceFixtures.data.copy(
+                medications =
+                    listOf(
+                        metformina.copy(
+                            schedule =
+                                metformina.schedule.copy(
+                                    doses =
+                                        mapOf(TimeSlot.MORNING to 1),
+                                ),
+                        ),
+                    ),
+            )
+        val day = onlyMorning.planFor(ReferenceFixtures.date)
+        val shown = day.visibleSlots(setOf(TimeSlot.MORNING, TimeSlot.BEDTIME)).map { it.slot }
+        assertEquals(listOf(TimeSlot.MORNING, TimeSlot.MIDDAY, TimeSlot.EVENING), shown)
+    }
+
+    @Test
+    fun hidingASlotKeepsItsDosesInThePlan() {
+        val hidden = ReferenceFixtures.data.copy(settings = Settings(hiddenSlots = setOf(TimeSlot.BEDTIME)))
+        assertEquals(plan.doseCount, hidden.planFor(ReferenceFixtures.date).doseCount)
+    }
+
+    @Test
+    fun theLastSlotShowingCannotBeHidden() {
+        val threeHidden = Settings(hiddenSlots = setOf(TimeSlot.MORNING, TimeSlot.MIDDAY, TimeSlot.EVENING))
+        assertEquals(threeHidden, threeHidden.withSlotHidden(TimeSlot.BEDTIME, hidden = true))
+        assertEquals(setOf(TimeSlot.MIDDAY, TimeSlot.EVENING), threeHidden.withSlotHidden(TimeSlot.MORNING, hidden = false).hiddenSlots)
+    }
 }

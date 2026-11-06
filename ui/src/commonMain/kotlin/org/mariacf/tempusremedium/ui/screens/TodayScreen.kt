@@ -1,6 +1,7 @@
 package org.mariacf.tempusremedium.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
@@ -63,6 +66,7 @@ import org.mariacf.tempusremedium.ui.components.HojePanel
 import org.mariacf.tempusremedium.ui.components.ReporEmBrevePanel
 import org.mariacf.tempusremedium.ui.components.SoftButton
 import org.mariacf.tempusremedium.ui.components.doseLabel
+import org.mariacf.tempusremedium.ui.components.glass
 import org.mariacf.tempusremedium.ui.components.hhmm
 import org.mariacf.tempusremedium.ui.components.label
 import org.mariacf.tempusremedium.ui.components.longDateLabel
@@ -78,7 +82,7 @@ import org.mariacf.tempusremedium.ui.resources.action_skip
 import org.mariacf.tempusremedium.ui.resources.action_take_all
 import org.mariacf.tempusremedium.ui.resources.action_taken
 import org.mariacf.tempusremedium.ui.resources.action_undo
-import org.mariacf.tempusremedium.ui.resources.course_next
+import org.mariacf.tempusremedium.ui.resources.course_next_label
 import org.mariacf.tempusremedium.ui.resources.course_remaining
 import org.mariacf.tempusremedium.ui.resources.courses_title
 import org.mariacf.tempusremedium.ui.resources.days_count
@@ -124,6 +128,7 @@ fun TodayScreen(
     onAddMedication: () -> Unit,
     modifier: Modifier = Modifier,
     stockDisplay: StockDisplay = StockDisplay.JARS,
+    hiddenSlots: Set<TimeSlot> = emptySet(),
     stockAlerts: Set<String> = emptySet(),
     onAcknowledgeStockAlert: (Medication) -> Unit = {},
     launchRequest: LaunchRequest? = null,
@@ -163,6 +168,7 @@ fun TodayScreen(
             highlight = plan.slots.firstOrNull { it.hasPending }?.slot,
             overdue = plan.overdueSlots(now),
             onSlotClick = { openSlot = it },
+            hiddenSlots = hiddenSlots,
         )
         if (courses.isNotEmpty()) {
             Spacer(Modifier.height(36.dp))
@@ -267,7 +273,7 @@ private fun EmptyState(
             Text(stringResource(Res.string.empty_body), style = TempusTheme.type.bodyText, color = TempusTheme.colors.inkSoft)
             Spacer(Modifier.height(4.dp))
             BrandButton(stringResource(Res.string.action_add_medication), onClick = onAddMedication)
-            SoftButton(stringResource(Res.string.action_add_course), onClick = onAddCourse)
+            BrandButton(stringResource(Res.string.action_add_course), onClick = onAddCourse)
         }
     }
 }
@@ -392,11 +398,6 @@ private fun CourseRow(
             Column(Modifier.weight(1f)) {
                 Text(medication.displayName, style = TempusTheme.type.rowTitle, color = palette.ink)
                 Text(
-                    stringResource(Res.string.course_next, relativeDay(next.at.date, now.date), next.at.time.hhmm(), course.doseLabel()),
-                    style = TempusTheme.type.bodySmall,
-                    color = if (due) palette.accent else palette.inkMute,
-                )
-                Text(
                     stringResource(
                         Res.string.course_remaining,
                         pluralStringResource(Res.plurals.takes_count, progress.remaining, progress.remaining),
@@ -407,6 +408,16 @@ private fun CourseRow(
                 )
             }
         }
+        NextCourseDose(
+            time = next.at.time.hhmm(),
+            detail = relativeDay(next.at.date, now.date) + " · " + course.doseLabel(),
+            tint =
+                when {
+                    next.at <= now -> palette.danger
+                    due -> palette.accent
+                    else -> null
+                },
+        )
         if (due || lastLogged != null) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
                 if (due) {
@@ -421,6 +432,33 @@ private fun CourseRow(
                     SoftButton(stringResource(Res.string.action_undo), onClick = { onUndoCourseDose(medication, lastLogged.index) })
                 }
             }
+        }
+    }
+}
+
+/** The next dose of a course, set out like a slot of the HOJE panel; [tint] marks it as due or overdue. */
+@Composable
+private fun NextCourseDose(
+    time: String,
+    detail: String,
+    tint: Color?,
+) {
+    val palette = TempusTheme.colors
+    val shape = RoundedCornerShape(18.dp)
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .glass(shape, palette, strong = true)
+            .then(if (tint != null) Modifier.border(1.5.dp, tint, shape) else Modifier)
+            .semantics(mergeDescendants = true) {}
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+    ) {
+        Text(stringResource(Res.string.course_next_label).uppercase(), style = TempusTheme.type.slotLabel, color = tint ?: palette.inkSoft)
+        Row(Modifier.padding(top = 2.dp)) {
+            Text(time, style = TempusTheme.type.title, color = tint ?: palette.ink, modifier = Modifier.alignByBaseline())
+            Spacer(Modifier.width(10.dp))
+            Text(detail, style = TempusTheme.type.bodyText, color = palette.inkSoft, modifier = Modifier.alignByBaseline())
         }
     }
 }

@@ -95,6 +95,8 @@
     <string name="history_no_data">Noch keine Dosen erfasst.</string>
     <string name="history_day">%1$d von %2$d genommen</string>
     <string name="settings_times">Uhrzeiten</string>
+    <string name="settings_visible_slots">Angezeigte Uhrzeiten</string>
+    <string name="settings_visible_slots_hint">Eine ausgeblendete Uhrzeit erscheint an Tagen mit Dosen wieder.</string>
     <string name="settings_browser_storage">Die Daten bleiben nur in diesem Browser.</string>
     <string name="settings_web_reduced">Die Webversion meldet sich nur, solange sie geöffnet ist: keine Erinnerungen bei geschlossener App, keine Widgets, kein Sperrbildschirm.</string>
     <string name="settings_web_alerts">Hinweise bei geöffneter App</string>
@@ -225,6 +227,7 @@
     <string name="when_today">heute</string>
     <string name="when_tomorrow">morgen</string>
     <string name="course_next">Nächste Einnahme %1$s um %2$s · %3$s</string>
+    <string name="course_next_label">Nächste Einnahme</string>
     <string name="course_remaining">Noch %1$s · %2$s</string>
     <string name="course_dose_of">%1$s · Einnahme %2$d von %3$d</string>
     <string name="calc_title">Dosisrechner</string>

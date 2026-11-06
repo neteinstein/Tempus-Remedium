@@ -84,6 +84,8 @@ import org.mariacf.tempusremedium.ui.resources.settings_language
 import org.mariacf.tempusremedium.ui.resources.settings_stock_display
 import org.mariacf.tempusremedium.ui.resources.settings_theme
 import org.mariacf.tempusremedium.ui.resources.settings_times
+import org.mariacf.tempusremedium.ui.resources.settings_visible_slots
+import org.mariacf.tempusremedium.ui.resources.settings_visible_slots_hint
 import org.mariacf.tempusremedium.ui.resources.stock_display_blisters
 import org.mariacf.tempusremedium.ui.resources.stock_display_jars
 import org.mariacf.tempusremedium.ui.resources.theme_dark
@@ -129,6 +131,28 @@ fun SettingsScreen(
                     SettingsRow(title = stringResource(slot.label), value = settings.timeOf(slot).hhmm(), onClick = { editing = slot })
                 }
             }
+        }
+
+        SettingsSection(stringResource(Res.string.settings_visible_slots)) {
+            GroupCard {
+                TimeSlot.entries.forEachIndexed { index, slot ->
+                    if (index > 0) GroupDivider()
+                    val visible = slot !in settings.hiddenSlots
+                    SettingsSwitchRow(
+                        title = stringResource(slot.label),
+                        checked = visible,
+                        onCheckedChange = { onChange(settings.withSlotHidden(slot, hidden = !it)) },
+                        // The last slot showing has to stay.
+                        enabled = !visible || settings.hiddenSlots.size < TimeSlot.entries.size - 1,
+                    )
+                }
+            }
+            Text(
+                stringResource(Res.string.settings_visible_slots_hint),
+                style = TempusTheme.type.bodySmall,
+                color = TempusTheme.colors.inkMute,
+                modifier = Modifier.padding(horizontal = 8.dp),
+            )
         }
 
         SettingsSection(stringResource(Res.string.settings_stock_display)) {
@@ -240,6 +264,7 @@ fun SettingsSwitchRow(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     body: String? = null,
+    enabled: Boolean = true,
 ) {
     Row(
         modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp),
@@ -250,7 +275,7 @@ fun SettingsSwitchRow(
             body?.let { Text(it, style = TempusTheme.type.bodySmall, color = TempusTheme.colors.inkMute) }
         }
         Spacer(Modifier.width(12.dp))
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        Switch(checked = checked, onCheckedChange = onCheckedChange, enabled = enabled)
     }
 }
 

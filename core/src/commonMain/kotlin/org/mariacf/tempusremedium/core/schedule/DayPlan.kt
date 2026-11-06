@@ -48,6 +48,9 @@ data class DayPlan(
 
     fun slot(slot: TimeSlot): SlotPlan = slots.first { it.slot == slot }
 
+    /** The slots to draw: a [hidden] slot still shows on a day it has doses, so that no dose disappears. */
+    fun visibleSlots(hidden: Set<TimeSlot>): List<SlotPlan> = slots.filter { it.slot !in hidden || it.doses.isNotEmpty() }
+
     /** Slots whose time has passed at [now] with doses neither taken nor skipped. */
     fun overdueSlots(now: LocalDateTime): Set<TimeSlot> =
         slots

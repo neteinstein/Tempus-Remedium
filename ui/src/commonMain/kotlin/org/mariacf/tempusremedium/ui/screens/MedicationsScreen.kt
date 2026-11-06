@@ -28,7 +28,6 @@ import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.core.schedule.Inventory
 import org.mariacf.tempusremedium.ui.components.BrandButton
 import org.mariacf.tempusremedium.ui.components.ScreenHeader
-import org.mariacf.tempusremedium.ui.components.SoftButton
 import org.mariacf.tempusremedium.ui.components.doseLabel
 import org.mariacf.tempusremedium.ui.components.glass
 import org.mariacf.tempusremedium.ui.components.intervalLabel
@@ -85,7 +84,7 @@ fun MedicationsScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            SoftButton(text = "+  " + stringResource(Res.string.action_add_course), onClick = onAddCourse)
+            BrandButton(text = "+  " + stringResource(Res.string.action_add_course), onClick = onAddCourse)
             BrandButton(text = "+  " + stringResource(Res.string.action_add_medication), onClick = onAdd)
         }
     }
