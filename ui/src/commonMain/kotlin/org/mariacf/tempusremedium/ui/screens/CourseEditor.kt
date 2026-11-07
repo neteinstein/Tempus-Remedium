@@ -41,7 +41,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,6 +62,7 @@ import org.mariacf.tempusremedium.core.dosing.CalculatorMedication
 import org.mariacf.tempusremedium.core.dosing.DoseCalculation
 import org.mariacf.tempusremedium.core.dosing.DoseCalculator
 import org.mariacf.tempusremedium.core.dosing.DoseSuggestion
+import org.mariacf.tempusremedium.core.input.FieldInput
 import org.mariacf.tempusremedium.core.model.Course
 import org.mariacf.tempusremedium.core.model.CourseEnd
 import org.mariacf.tempusremedium.core.model.DoseUnit
@@ -182,7 +189,9 @@ fun CourseEditor(
     var startOffset by remember {
         mutableStateOf(existing?.let { today.daysUntil(it.firstDose.date) } ?: 0)
     }
-    var time by remember { mutableStateOf((existing?.firstDose?.time ?: LocalTime(now.hour, now.minute / 5 * 5)).hhmm()) }
+    var time by remember {
+        mutableStateOf(FieldInput.timeToDigits(existing?.firstDose?.time ?: LocalTime(now.hour, now.minute / 5 * 5)))
+    }
     val end = existing?.end
     var endKind by remember {
         mutableStateOf(
@@ -219,7 +228,7 @@ fun CourseEditor(
         calculatorInterval = option.defaultInterval(option.formulations.first())
     }
 
-    val firstDose = parseTime(time)?.let { LocalDateTime(today.plus(DatePeriod(days = startOffset)), it) }
+    val firstDose = FieldInput.parseTimeDigits(time)?.let { LocalDateTime(today.plus(DatePeriod(days = startOffset)), it) }
     val amountValue = parseDecimal(amount)?.takeIf { it > 0 }
     val packValue = parseDecimal(pack)?.takeIf { it > 0 }
     val draft =
@@ -372,7 +381,7 @@ fun CourseEditor(
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedTextField(
                     value = amount,
-                    onValueChange = { amount = it.filter { c -> c.isDigit() || c == ',' || c == '.' }.take(6) },
+                    onValueChange = { amount = FieldInput.decimal(it) },
                     label = { Text(stringResource(Res.string.field_amount)) },
                     singleLine = true,
                     shape = FieldShape,
@@ -402,14 +411,10 @@ fun CourseEditor(
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FrequencyChip(stringResource(Res.string.day_today), startOffset == 0) { startOffset = 0 }
                 FrequencyChip(stringResource(Res.string.day_tomorrow), startOffset == 1) { startOffset = 1 }
-                OutlinedTextField(
-                    value = time,
-                    onValueChange = { time = it.filter { c -> c.isDigit() || c == ':' }.take(5) },
-                    label = { Text(stringResource(Res.string.field_time)) },
-                    singleLine = true,
-                    isError = parseTime(time) == null,
-                    shape = FieldShape,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                TimeField(
+                    digits = time,
+                    onDigitsChange = { time = it },
+                    label = stringResource(Res.string.field_time),
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -446,7 +451,7 @@ fun CourseEditor(
                 EndKind.PACK -> {
                     OutlinedTextField(
                         value = pack,
-                        onValueChange = { pack = it.filter { c -> c.isDigit() || c == ',' || c == '.' }.take(6) },
+                        onValueChange = { pack = FieldInput.decimal(it) },
                         label = {
                             Text(
                                 stringResource(
@@ -488,7 +493,7 @@ fun CourseEditor(
                 if (trackStock) {
                     OutlinedTextField(
                         value = remaining,
-                        onValueChange = { remaining = it.filter(Char::isDigit).take(4) },
+                        onValueChange = { remaining = FieldInput.integer(it) },
                         label = { Text(stringResource(Res.string.field_units_left)) },
                         singleLine = true,
                         shape = FieldShape,
@@ -588,7 +593,7 @@ private fun CalculatorCard(
         Text(stringResource(Res.string.calc_title), style = TempusTheme.type.title, color = palette.ink)
         OutlinedTextField(
             value = weight,
-            onValueChange = { onWeightChange(it.filter { c -> c.isDigit() || c == ',' || c == '.' }.take(5)) },
+            onValueChange = { onWeightChange(FieldInput.decimal(it, maxLength = 5)) },
             label = { Text(stringResource(Res.string.calc_weight)) },
             singleLine = true,
             shape = FieldShape,
@@ -759,11 +764,49 @@ private fun parseDecimal(text: String): Double? = text.replace(',', '.').toDoubl
 /** Shows a stored amount in an input field without trailing zeros. */
 private fun formatInput(value: Double): String = if (value % 1.0 == 0.0) value.toLong().toString() else value.toString()
 
-/** "8:05" or "08:05" -> 08:05; null when it is not a valid time. */
-private fun parseTime(text: String): LocalTime? {
-    val parts = text.split(':')
-    if (parts.size != 2 || parts[1].length != 2) return null
-    val hour = parts[0].toIntOrNull() ?: return null
-    val minute = parts[1].toIntOrNull() ?: return null
-    return if (hour in 0..23 && minute in 0..59) LocalTime(hour, minute) else null
+/**
+ * Time typed on the number keypad: the state holds only the digits ("2000") and the field shows
+ * them as "20:00", so the colon is added on its own and cannot be deleted by mistake.
+ */
+@Composable
+private fun TimeField(
+    digits: String,
+    onDigitsChange: (String) -> Unit,
+    label: String,
+    modifier: Modifier = Modifier,
+) {
+    var field by remember { mutableStateOf(TextFieldValue(digits, TextRange(digits.length))) }
+    if (field.text != digits) field = TextFieldValue(digits, TextRange(digits.length))
+    OutlinedTextField(
+        value = field,
+        onValueChange = { value ->
+            val typed = value.text.filter(Char::isDigit)
+            val next = FieldInput.timeDigits(value.text)
+            // A leading zero was added or digits were dropped: keep the cursor at the end.
+            val selection = if (next == typed) value.selection else TextRange(next.length)
+            field = TextFieldValue(next, selection)
+            if (next != digits) onDigitsChange(next)
+        },
+        label = { Text(label) },
+        singleLine = true,
+        isError = FieldInput.parseTimeDigits(digits) == null,
+        shape = FieldShape,
+        visualTransformation = TimeVisualTransformation,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        modifier = modifier,
+    )
 }
+
+/** Shows "2000" as "20:00". */
+private val TimeVisualTransformation =
+    VisualTransformation { text ->
+        val raw = text.text
+        val mapping =
+            object : OffsetMapping {
+                override fun originalToTransformed(offset: Int): Int = if (raw.length > 2 && offset > 2) offset + 1 else offset
+
+                override fun transformedToOriginal(offset: Int): Int =
+                    (if (raw.length > 2 && offset > 2) offset - 1 else offset).coerceIn(0, raw.length)
+            }
+        TransformedText(AnnotatedString(FieldInput.formatTimeDigits(raw)), mapping)
+    }

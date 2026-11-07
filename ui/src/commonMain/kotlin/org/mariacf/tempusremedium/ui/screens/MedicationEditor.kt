@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -61,6 +61,7 @@ import kotlinx.datetime.daysUntil
 import kotlinx.datetime.plus
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import org.mariacf.tempusremedium.core.input.FieldInput
 import org.mariacf.tempusremedium.core.model.Frequency
 import org.mariacf.tempusremedium.core.model.Medication
 import org.mariacf.tempusremedium.core.model.PillColor
@@ -506,7 +507,7 @@ fun MedicationEditor(
             if (trackStock) {
                 OutlinedTextField(
                     value = remaining,
-                    onValueChange = { remaining = it.filter(Char::isDigit).take(4) },
+                    onValueChange = { remaining = FieldInput.integer(it) },
                     label = { Text(stringResource(Res.string.field_units_left)) },
                     singleLine = true,
                     shape = FieldShape,
@@ -515,7 +516,7 @@ fun MedicationEditor(
                 )
                 OutlinedTextField(
                     value = threshold,
-                    onValueChange = { threshold = it.filter(Char::isDigit).take(4) },
+                    onValueChange = { threshold = FieldInput.integer(it) },
                     label = { Text(stringResource(Res.string.field_low_threshold)) },
                     singleLine = true,
                     shape = FieldShape,
@@ -683,7 +684,9 @@ internal fun QuantityRow(
             if (showValue) quantity.toString() else "",
             style = TempusTheme.type.title,
             color = TempusTheme.colors.ink,
-            modifier = Modifier.width(if (showValue) 44.dp else 12.dp).padding(horizontal = 8.dp),
+            maxLines = 1,
+            softWrap = false,
+            modifier = Modifier.widthIn(min = if (showValue) 56.dp else 12.dp).padding(horizontal = 8.dp),
             textAlign = TextAlign.Center,
         )
         StepButton("+", enabled = quantity < range.last) { onChange((quantity + 1).coerceIn(range)) }
