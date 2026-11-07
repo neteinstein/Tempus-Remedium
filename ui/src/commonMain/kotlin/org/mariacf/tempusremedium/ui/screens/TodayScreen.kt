@@ -48,6 +48,7 @@ import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import org.mariacf.tempusremedium.core.input.FieldInput
 import org.mariacf.tempusremedium.core.model.DoseStatus
 import org.mariacf.tempusremedium.core.model.Medication
 import org.mariacf.tempusremedium.core.model.PillColor
@@ -510,7 +511,7 @@ private fun RefillDialog(
         text = {
             OutlinedTextField(
                 value = text,
-                onValueChange = { value -> text = value.filter(Char::isDigit).take(4) },
+                onValueChange = { value -> text = FieldInput.integer(value) },
                 label = { Text(stringResource(Res.string.refill_dialog_units)) },
                 singleLine = true,
                 shape = RoundedCornerShape(14.dp),
