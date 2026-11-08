@@ -121,6 +121,7 @@
     <string name="calendar_confirm_close">Die Erinnerungen wurden nicht hinzugefügt</string>
     <string name="channel_reminders">Dosis-Erinnerungen</string>
     <string name="channel_reminders_alarm">Erinnerungen (Wecker)</string>
+    <string name="channel_reminders_alarm_fallback">Erinnerungen (Wecker, ohne pünktliche Erinnerungen)</string>
     <string name="channel_low_stock">Niedriger Bestand</string>
     <string name="notification_slot_title">%1$s · %2$s</string>
     <plurals name="notification_hidden_body">

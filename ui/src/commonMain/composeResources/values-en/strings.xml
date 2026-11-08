@@ -133,6 +133,7 @@
 
     <string name="channel_reminders">Dose reminders</string>
     <string name="channel_reminders_alarm">Reminders (alarm)</string>
+    <string name="channel_reminders_alarm_fallback">Reminders (alarm, without on-time reminders)</string>
     <string name="channel_low_stock">Low stock</string>
     <string name="notification_slot_title">%1$s · %2$s</string>
     <plurals name="notification_hidden_body">

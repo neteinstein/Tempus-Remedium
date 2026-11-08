@@ -137,6 +137,7 @@
     <!-- Android only: reminders and settings -->
     <string name="channel_reminders">Lembretes de doses</string>
     <string name="channel_reminders_alarm">Lembretes (alarme)</string>
+    <string name="channel_reminders_alarm_fallback">Lembretes (alarme, sem lembretes à hora certa)</string>
     <string name="channel_low_stock">Stock baixo</string>
     <string name="notification_slot_title">%1$s · %2$s</string>
     <plurals name="notification_hidden_body">

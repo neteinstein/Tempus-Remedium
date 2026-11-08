@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
@@ -37,6 +36,7 @@ import org.mariacf.tempusremedium.ui.resources.action_taken
 import org.mariacf.tempusremedium.ui.resources.channel_low_stock
 import org.mariacf.tempusremedium.ui.resources.channel_reminders
 import org.mariacf.tempusremedium.ui.resources.channel_reminders_alarm
+import org.mariacf.tempusremedium.ui.resources.channel_reminders_alarm_fallback
 import org.mariacf.tempusremedium.ui.resources.course_dose_of
 import org.mariacf.tempusremedium.ui.resources.decimal_separator
 import org.mariacf.tempusremedium.ui.resources.dose_ml
@@ -55,8 +55,8 @@ class ReminderNotifications(
     private val manager = NotificationManagerCompat.from(context)
 
     /**
-     * Creates the channels. With [settings], also the alarm channel for the chosen sound, and
-     * deletes the ones left from earlier sounds.
+     * Creates the channels. With [settings], also the fallback alarm channel for the chosen sound,
+     * and deletes the ones left from earlier sounds.
      */
     suspend fun ensureChannels(settings: Settings? = null) {
         manager.createNotificationChannel(
@@ -71,14 +71,25 @@ class ReminderNotifications(
                 .setName(getString(Res.string.channel_low_stock))
                 .build(),
         )
+        // Alarm reminders: AlarmRingService plays the sound on the alarm stream, so the channel is
+        // silent (its sound would follow the ringer mode and Do Not Disturb).
+        manager.createNotificationChannel(
+            NotificationChannelCompat
+                .Builder(CHANNEL_REMINDERS_RINGING, NotificationManagerCompat.IMPORTANCE_HIGH)
+                .setName(getString(Res.string.channel_reminders_alarm))
+                .setSound(null, null)
+                .setVibrationEnabled(false)
+                .build(),
+        )
         if (settings == null) return
+        // Used only when the ringing service cannot start (no exact alarm behind the reminder).
         // A channel's sound cannot change once created, so each alarm sound has its own channel.
         val alarmChannel = alarmChannelId(settings.alarmSound)
         manager.createNotificationChannel(
             NotificationChannelCompat
                 .Builder(alarmChannel, NotificationManagerCompat.IMPORTANCE_HIGH)
-                .setName(getString(Res.string.channel_reminders_alarm))
-                .setSound(alarmSound(settings.alarmSound), ALARM_AUDIO)
+                .setName(getString(Res.string.channel_reminders_alarm_fallback))
+                .setSound(alarmSound(settings.alarmSound), AlarmRingService.ALARM_AUDIO)
                 .setVibrationEnabled(true)
                 .setVibrationPattern(ALARM_VIBRATION)
                 .build(),
@@ -118,7 +129,8 @@ class ReminderNotifications(
                 .setContentTitle(title)
                 .setContentText(names)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(names))
-                .setCategory(NotificationCompat.CATEGORY_REMINDER)
+                .setCategory(category(data))
+                .setDeleteIntent(ReminderReceiver.silenceIntent(context))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
                 .setContentIntent(openApp(MainActivity.EXTRA_SLOT, slot.name, slot.ordinal))
@@ -138,10 +150,10 @@ class ReminderNotifications(
         } else {
             builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
         }
-        post(slotNotificationId(slot), builder, insistent = data.settings.alarmReminders)
+        post(slotNotificationId(slot), builder, data.settings)
     }
 
-    fun cancelSlot(slot: TimeSlot) = manager.cancel(slotNotificationId(slot))
+    fun cancelSlot(slot: TimeSlot) = cancelReminder(slotNotificationId(slot))
 
     /** "Amoxicilina · 16:00 — 6 mL · toma 2 de 21" with Tomei / Adiar 10 min. */
     suspend fun showCourseDoses(
@@ -183,7 +195,8 @@ class ReminderNotifications(
                 .setContentTitle(title)
                 .setContentText(body)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(body))
-                .setCategory(NotificationCompat.CATEGORY_REMINDER)
+                .setCategory(category(data))
+                .setDeleteIntent(ReminderReceiver.silenceIntent(context))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
                 .setContentIntent(openApp(EXTRA_NONE, "", COURSE_REQUEST))
@@ -203,10 +216,16 @@ class ReminderNotifications(
         } else {
             builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
         }
-        post(COURSE_NOTIFICATION_ID, builder, insistent = data.settings.alarmReminders)
+        post(COURSE_NOTIFICATION_ID, builder, data.settings)
     }
 
-    fun cancelCourseDoses() = manager.cancel(COURSE_NOTIFICATION_ID)
+    fun cancelCourseDoses() = cancelReminder(COURSE_NOTIFICATION_ID)
+
+    /** A ringing reminder is the ringing service's notification: the service cancels it. */
+    private fun cancelReminder(id: Int) {
+        AlarmRingService.silence(context, id)
+        manager.cancel(id)
+    }
 
     /** "Repor em breve — Ómega 3 · Restam 3" */
     suspend fun showLowStock(item: LowStockItem) {
@@ -224,8 +243,7 @@ class ReminderNotifications(
         post(LOW_STOCK_ID_BASE + item.medication.id.hashCode(), builder)
     }
 
-    private fun reminderChannel(data: AppData) =
-        if (data.settings.alarmReminders) alarmChannelId(data.settings.alarmSound) else CHANNEL_REMINDERS
+    private fun reminderChannel(data: AppData) = if (data.settings.alarmReminders) CHANNEL_REMINDERS_RINGING else CHANNEL_REMINDERS
 
     private fun alarmSound(chosen: String?): Uri? =
         chosen?.toUri()
@@ -233,20 +251,33 @@ class ReminderNotifications(
             ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
             ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
-    /** [insistent] repeats the sound until the reminder is acted on, dismissed or the shade is opened. */
+    /** Alarm reminders: the tone repeats on the alarm stream until the dose is handled. */
+    private fun category(data: AppData) =
+        if (data.settings.alarmReminders) NotificationCompat.CATEGORY_ALARM else NotificationCompat.CATEGORY_REMINDER
+
+    /**
+     * With alarm reminders on in [settings], [AlarmRingService] shows and rings the reminder. When
+     * Android does not let it start, the reminder goes to the alarm channel with its own sound,
+     * repeated (insistent) until it is acted on, dismissed or the shade is opened.
+     */
     private fun post(
         id: Int,
         builder: NotificationCompat.Builder,
-        insistent: Boolean = false,
+        settings: Settings? = null,
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
             return
         }
-        val notification = builder.build()
-        if (insistent) notification.flags = notification.flags or Notification.FLAG_INSISTENT
-        manager.notify(id, notification)
+        if (settings?.alarmReminders == true) {
+            if (AlarmRingService.ring(context, id, builder.build(), settings.alarmSound)) return
+            val notification = builder.setChannelId(alarmChannelId(settings.alarmSound)).build()
+            notification.flags = notification.flags or Notification.FLAG_INSISTENT
+            manager.notify(id, notification)
+            return
+        }
+        manager.notify(id, builder.build())
     }
 
     private fun openApp(
@@ -266,13 +297,8 @@ class ReminderNotifications(
     companion object {
         const val CHANNEL_REMINDERS = "reminders"
         const val CHANNEL_REMINDERS_ALARM = "reminders_alarm"
+        const val CHANNEL_REMINDERS_RINGING = "reminders_ringing"
         const val CHANNEL_LOW_STOCK = "low_stock"
-        private val ALARM_AUDIO =
-            AudioAttributes
-                .Builder()
-                .setUsage(AudioAttributes.USAGE_ALARM)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .build()
         private val ALARM_VIBRATION = longArrayOf(0, 800, 600, 800, 600)
         private const val LOW_STOCK_ID_BASE = 1_000
         private const val LOW_STOCK_REQUEST = 100
@@ -282,7 +308,7 @@ class ReminderNotifications(
 
         fun slotNotificationId(slot: TimeSlot) = 100 + slot.ordinal
 
-        /** The alarm channel for a chosen sound ([CHANNEL_REMINDERS_ALARM] for the device's alarm sound). */
+        /** The fallback alarm channel for a chosen sound ([CHANNEL_REMINDERS_ALARM] for the device's alarm sound). */
         fun alarmChannelId(sound: String?): String =
             when (sound) {
                 null -> CHANNEL_REMINDERS_ALARM

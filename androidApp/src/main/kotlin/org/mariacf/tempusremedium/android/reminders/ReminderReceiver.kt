@@ -15,12 +15,16 @@ import org.mariacf.tempusremedium.core.schedule.logCourseDosesAt
 import org.mariacf.tempusremedium.core.schedule.logSlot
 import kotlin.time.Clock
 
-/** Handles reminder alarms and the "Tomei" / "Adiar 10 min" notification actions. */
+/** Handles reminder alarms, the "Tomei" / "Adiar 10 min" notification actions and dismissals. */
 class ReminderReceiver : BroadcastReceiver() {
     override fun onReceive(
         context: Context,
         intent: Intent,
     ) {
+        if (intent.action == ACTION_SILENCE) {
+            AlarmRingService.silence(context)
+            return
+        }
         val container = context.container
         val date = intent.getStringExtra(EXTRA_DATE)?.let(LocalDate::parse)
         val slot = intent.getStringExtra(EXTRA_SLOT)?.let(TimeSlot::valueOf)
@@ -94,6 +98,7 @@ class ReminderReceiver : BroadcastReceiver() {
         const val ACTION_TAKE_COURSE = "org.mariacf.tempusremedium.TAKE_COURSE"
         const val ACTION_SNOOZE_COURSE = "org.mariacf.tempusremedium.SNOOZE_COURSE"
         const val ACTION_DAY_CHANGED = "org.mariacf.tempusremedium.DAY_CHANGED"
+        const val ACTION_SILENCE = "org.mariacf.tempusremedium.SILENCE"
         const val EXTRA_DATE = "date"
         const val EXTRA_SLOT = "slot"
         const val EXTRA_AT = "at"
@@ -103,6 +108,7 @@ class ReminderReceiver : BroadcastReceiver() {
         private const val REQUEST_SNOOZE_BASE = 20
         private const val REQUEST_TAKE_COURSE = 30
         private const val REQUEST_SNOOZE_COURSE = 31
+        private const val REQUEST_SILENCE = 40
 
         fun showIntent(
             context: Context,
@@ -133,6 +139,9 @@ class ReminderReceiver : BroadcastReceiver() {
             date: LocalDate,
             slot: TimeSlot,
         ): PendingIntent = broadcast(context, REQUEST_SNOOZE_BASE + slot.ordinal, ACTION_SNOOZE, date, slot)
+
+        /** Sent when a reminder is dismissed: stops the alarm sound. */
+        fun silenceIntent(context: Context): PendingIntent = broadcast(context, REQUEST_SILENCE, ACTION_SILENCE, null, null)
 
         fun dayChangedIntent(context: Context): PendingIntent = broadcast(context, REQUEST_DAY_CHANGED, ACTION_DAY_CHANGED, null, null)
 

@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import org.mariacf.tempusremedium.android.reminders.AlarmRingService
 import org.mariacf.tempusremedium.android.settings.AndroidSettingsExtras
 import org.mariacf.tempusremedium.android.widgets.AndroidWidgetSupport
 import org.mariacf.tempusremedium.core.model.TimeSlot
@@ -86,6 +87,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        // Opening the app (e.g. from a ringing reminder) is enough to stop the alarm sound.
+        AlarmRingService.silence(this)
         refreshPermissions()
     }
 
