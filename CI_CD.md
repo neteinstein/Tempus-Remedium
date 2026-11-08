@@ -21,12 +21,12 @@ and run Gradle with `--no-daemon --stacktrace`. PR Checks cancels superseded run
 
 | Job | Runner | Command | Artifacts |
 | --- | --- | --- | --- |
-| `ktlint` | ubuntu | `./gradlew ktlintCheck`, then `./gradlew :androidApp:lintDebug` | `lint-reports` |
+| `ktlint` | ubuntu | `./gradlew ktlintCheck`, then `./gradlew :androidApp:lintDebug` (each retried up to 3 times) | `lint-reports` |
 | `Compile` | ubuntu | `./gradlew assembleDebug` | `debug-apk` |
 | `Minified Release` | ubuntu | `./gradlew assembleRelease` + `./scripts/verify-obfuscation.sh` | `r8-mapping-files` |
 | `Unit Tests` | ubuntu | `./gradlew :core:jvmTest :androidApp:testDebugUnitTest :androidApp:verifyRoborazziDebug` | `unit-test-results`; results posted on the PR as "🧪 Unit Test Results" |
 | `Compile Web` | ubuntu | `./gradlew :webApp:wasmJsBrowserDistribution` | — |
-| `Compile iOS` | **macos** | `./gradlew iosSimulatorArm64Test :ui:compileKotlinIosSimulatorArm64` | — |
+| `Compile iOS` | **macos** | **Disabled** (`if: false`). `./gradlew iosSimulatorArm64Test :ui:compileKotlinIosSimulatorArm64` | — |
 | `Code Coverage` | ubuntu | `./gradlew :core:jvmTest :androidApp:testDebugUnitTest koverXmlReport koverHtmlReport koverVerify :core:koverVerify` | `coverage-reports`; uploaded to Codecov |
 
 - **Minified Release** catches broken R8 keep rules before they reach `main` (`assembleDebug`
@@ -35,8 +35,12 @@ and run Gradle with `--no-daemon --stacktrace`. PR Checks cancels superseded run
 - **Unit Tests** compares the Roborazzi screenshots with the goldens in
   `androidApp/src/test/screenshots/`. A visual change fails until they are re-recorded with
   `./gradlew :androidApp:recordRoborazziDebug` and committed.
-- **Compile iOS**: there is no iOS app yet. `core` and `ui` target `iosArm64`/`iosSimulatorArm64`
-  so shared code keeps compiling for iOS. `core`'s `commonTest` runs on the simulator.
+- **ktlint** retries each command because the ktlint engine's Kotlin compiler can come through a
+  GitHub release redirect, and those downloads sometimes time out (504), as in `Compile Web`.
+- **Compile iOS** is disabled: there is no iOS app, and the macOS job kept failing on toolchain
+  downloads. `core` and `ui` still target `iosArm64`/`iosSimulatorArm64`, so check the iOS
+  compilation locally (see below) when changing shared code. Remove the job's `if: false` to turn
+  it back on.
 - **Code Coverage** thresholds (Kover): `core` ≥ 85 % lines, merged core + Android ≥ 70 %.
   Codecov upload never fails the job; set `CODECOV_TOKEN` once the repo is added on codecov.io.
 
@@ -112,7 +116,7 @@ falling back to debug signing and `1` / `1.0.0` locally.
 | --- | --- |
 | Android | Release builds are minified (R8 full mode), resource-shrunk and signed with the upload key from the secrets. Published on GitHub Releases (APK + AAB + mapping) and, once configured, to the Play Console's internal track. PRs build a debug APK and a debug-signed minified release. |
 | Web | No signing. Static Wasm site, deployable to GitHub Pages and Cloudflare Pages from `main`; both deploys paused for now. |
-| iOS | Compile and simulator tests only (no app, no signing). |
+| iOS | No app, no signing. The PR's iOS job is disabled; compile locally. |
 
 ## Play Console
 
@@ -148,8 +152,8 @@ decoded with the release's `mapping.txt` (`retrace mapping.txt trace.txt`).
 ## Running the checks locally
 
 The same Gradle commands work locally; see AGENTS.md → Commands. In sandboxed agent containers,
-first run `scripts/setup-android-sdk.sh --maven-mirror`. `Compile iOS` needs macOS for the simulator
-tests; on Linux `./gradlew :core:compileKotlinIosSimulatorArm64 :ui:compileKotlinIosSimulatorArm64`
+first run `scripts/setup-android-sdk.sh --maven-mirror`. `Compile iOS` (disabled in CI) needs macOS
+for the simulator tests; on Linux `./gradlew :core:compileKotlinIosSimulatorArm64 :ui:compileKotlinIosSimulatorArm64`
 still checks that the iOS code compiles.
 
 ## Deviations from the standard pipeline

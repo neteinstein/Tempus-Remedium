@@ -57,7 +57,7 @@ Each line mirrors a job of `.github/workflows/pr.yml` (see [`CI_CD.md`](CI_CD.md
 ./gradlew assembleRelease && ./scripts/verify-obfuscation.sh   # minified/obfuscated release + R8 mapping checks     [Minified Release]
 ./gradlew :core:jvmTest :androidApp:testDebugUnitTest :androidApp:verifyRoborazziDebug   # unit + screenshot tests [Unit Tests]
 ./gradlew :webApp:wasmJsBrowserDistribution                # web build → webApp/build/dist/wasmJs/productionExecutable [Compile Web]
-./gradlew iosSimulatorArm64Test :ui:compileKotlinIosSimulatorArm64   # iOS (simulator tests need macOS)             [Compile iOS]
+./gradlew iosSimulatorArm64Test :ui:compileKotlinIosSimulatorArm64   # iOS (simulator tests need macOS)    [Compile iOS, disabled in CI]
 ./gradlew :core:jvmTest :androidApp:testDebugUnitTest koverXmlReport koverVerify :core:koverVerify   # coverage    [Code Coverage]
 ```
 
