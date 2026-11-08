@@ -32,6 +32,8 @@ import org.mariacf.tempusremedium.ui.resources.Res
 import org.mariacf.tempusremedium.ui.resources.alarm_sound
 import org.mariacf.tempusremedium.ui.resources.alarm_sound_default
 import org.mariacf.tempusremedium.ui.resources.permission_notifications
+import org.mariacf.tempusremedium.ui.resources.settings_alarm_override_silence
+import org.mariacf.tempusremedium.ui.resources.settings_alarm_override_silence_body
 import org.mariacf.tempusremedium.ui.resources.settings_alarm_reminders
 import org.mariacf.tempusremedium.ui.resources.settings_alarm_reminders_body
 import org.mariacf.tempusremedium.ui.resources.settings_exact_alarms
@@ -133,6 +135,13 @@ fun AndroidSettingsExtras(
                             // No tone picker on this device: the alarm keeps the default sound.
                         }
                     },
+                )
+                GroupDivider()
+                SettingsSwitchRow(
+                    title = stringResource(Res.string.settings_alarm_override_silence),
+                    body = stringResource(Res.string.settings_alarm_override_silence_body),
+                    checked = settings.alarmOverridesSilence,
+                    onCheckedChange = { onChange(settings.copy(alarmOverridesSilence = it)) },
                 )
             }
             GroupDivider()

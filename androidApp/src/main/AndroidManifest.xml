@@ -5,6 +5,10 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!-- User-granted; without it reminders fall back to an inexact window. -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- Alarm reminders ring on the alarm stream from AlarmRingService, past silent mode. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".TempusRemediumApplication"
@@ -28,6 +32,11 @@
         <receiver
             android:name=".reminders.ReminderReceiver"
             android:exported="false" />
+
+        <service
+            android:name=".reminders.AlarmRingService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
 
         <receiver
             android:name=".reminders.RescheduleReceiver"

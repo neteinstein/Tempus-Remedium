@@ -9,10 +9,10 @@ gains a permission or a dependency starts sending data. In particular, the "no d
 answer rests on the app having **no `INTERNET` permission**.
 
 Merged release manifest permissions at the time of writing (`processReleaseMainManifest`):
-`POST_NOTIFICATIONS`, `SCHEDULE_EXACT_ALARM`, `RECEIVE_BOOT_COMPLETED` (from the app);
-`WAKE_LOCK`, `FOREGROUND_SERVICE`, `ACCESS_NETWORK_STATE` (from WorkManager, used by Glance);
-`…DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` (AndroidX, internal). No `INTERNET`, no `AD_ID`, no
-`FOREGROUND_SERVICE_*` type permissions.
+`POST_NOTIFICATIONS`, `SCHEDULE_EXACT_ALARM`, `RECEIVE_BOOT_COMPLETED`, `FOREGROUND_SERVICE`,
+`FOREGROUND_SERVICE_MEDIA_PLAYBACK`, `VIBRATE` (from the app); `WAKE_LOCK`,
+`ACCESS_NETWORK_STATE` (from WorkManager, used by Glance);
+`…DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` (AndroidX, internal). No `INTERNET`, no `AD_ID`.
 
 ## Create app
 
@@ -159,9 +159,22 @@ covers the handling of health-related data, including that the child's weight is
     sure the reminder arrives at that time, even when the device is idle. The user grants the
     permission; if they refuse it, reminders still work but may arrive a few minutes late.*
 
-- **Foreground services.** None of the app's own; WorkManager's `SystemForegroundService` is
-  declared without a type and no `FOREGROUND_SERVICE_*` permission is present, so no foreground
-  service declaration is needed.
+- **Foreground services.** `AlarmRingService`, type `mediaPlayback`: while an alarm reminder rings,
+  it plays the chosen alarm tone on the alarm stream (so it is heard in silent mode), and stops as
+  soon as the dose is taken, snoozed, the reminder dismissed or the app opened. It starts only when
+  a reminder's exact alarm fires. WorkManager's `SystemForegroundService` is declared without a
+  type. The Play Console's foreground service declaration asks for a description and a short video;
+  use:
+
+  - pt-PT: *Quando chega a hora de uma dose e o utilizador escolheu lembretes com som de alarme, o
+    serviço toca o som de alarme escolhido até a pessoa tocar em Tomei ou Adiar, dispensar o
+    lembrete ou abrir a aplicação. O som de alarme é o que a pessoa ouve mesmo com o telemóvel em
+    silêncio; sem ele, uma dose pode ser esquecida.*
+  - English: *When a dose is due and the user chose alarm reminders, the service plays the chosen
+    alarm tone until the user taps Taken or Snooze, dismisses the reminder or opens the app. The
+    alarm tone is what the user hears even with the phone on silent; without it, a dose can be
+    missed.*
+  - Video: a reminder ringing on a phone in silent mode, then Tomei stopping it.
 
 ## Release
 
