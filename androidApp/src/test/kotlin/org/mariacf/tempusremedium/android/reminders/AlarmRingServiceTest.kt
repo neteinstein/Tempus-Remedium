@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.Notification
 import android.app.NotificationManager
 import android.content.Intent
+import android.media.AudioManager
 import androidx.core.app.NotificationCompat
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -17,6 +18,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mariacf.tempusremedium.android.R
+import org.mariacf.tempusremedium.core.model.Settings
 import org.robolectric.Robolectric
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.android.controller.ServiceController
@@ -115,5 +117,40 @@ class AlarmRingServiceTest {
 
         AlarmRingService.silence(context)
         assertNull(shadowOf(context).nextStartedService)
+    }
+
+    @Test
+    fun overridingSilenceIsTheDefault() = assertTrue(Settings().alarmOverridesSilence)
+
+    @Test
+    fun followingThePhonesModeMutesOnSilentAndDoNotDisturb() {
+        assertEquals(Effects.ALL, AlarmRingService.effectsFor(AudioManager.RINGER_MODE_NORMAL, doNotDisturb = false))
+        assertEquals(
+            Effects(sound = false, vibrate = true),
+            AlarmRingService.effectsFor(AudioManager.RINGER_MODE_VIBRATE, doNotDisturb = false),
+        )
+        assertEquals(Effects.NONE, AlarmRingService.effectsFor(AudioManager.RINGER_MODE_SILENT, doNotDisturb = false))
+        assertEquals(Effects.NONE, AlarmRingService.effectsFor(AudioManager.RINGER_MODE_NORMAL, doNotDisturb = true))
+    }
+
+    @Test
+    fun onSilentAReminderThatFollowsThePhoneStaysQuietlyOnScreen() {
+        context.getSystemService(AudioManager::class.java).ringerMode = AudioManager.RINGER_MODE_SILENT
+        assertTrue(AlarmRingService.ring(context, 100, reminder("Manhã · 08:00"), null, overrideSilence = false))
+        val controller =
+            Robolectric.buildService(AlarmRingService::class.java, shadowOf(context).nextStartedService).create().startCommand(0, 1)
+
+        assertFalse(AlarmRingService.running)
+        assertTrue(shadowOf(controller.get()).isStoppedBySelf)
+        assertNotNull(shadowOf(system).getNotification(100))
+    }
+
+    @Test
+    fun onSilentAnOverridingReminderStillRings() {
+        context.getSystemService(AudioManager::class.java).ringerMode = AudioManager.RINGER_MODE_SILENT
+        val controller = ring(100, "Manhã · 08:00")
+
+        assertTrue(AlarmRingService.running)
+        assertFalse(shadowOf(controller.get()).isStoppedBySelf)
     }
 }

@@ -137,6 +137,8 @@
     <string name="settings_alarm_reminders_body">Der Weckton wiederholt sich, bis Sie Genommen oder Später tippen oder die Erinnerung schließen.</string>
     <string name="alarm_sound">Weckton</string>
     <string name="alarm_sound_default">Standard-Weckton</string>
+    <string name="settings_alarm_override_silence">Auch bei lautlos oder „Bitte nicht stören“ klingeln</string>
+    <string name="settings_alarm_override_silence_body">Wenn aus, folgt die Erinnerung dem Modus des Telefons: lautlos wird sie nur angezeigt, bei Vibration vibriert sie nur.</string>
     <string name="settings_exact_alarms">Pünktliche Erinnerungen</string>
     <string name="settings_exact_alarms_body">Ohne diese Berechtigung können Erinnerungen einige Minuten später kommen.</string>
     <string name="settings_widgets_hint">Fügen Sie die Widgets Heute und Bald nachfüllen zum Startbildschirm hinzu.</string>

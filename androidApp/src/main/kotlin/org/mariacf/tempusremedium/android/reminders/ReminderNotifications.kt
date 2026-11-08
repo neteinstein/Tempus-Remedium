@@ -251,9 +251,13 @@ class ReminderNotifications(
             ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
             ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
-    /** Alarm reminders: the tone repeats on the alarm stream until the dose is handled. */
+    /** Alarms pass Do Not Disturb (when it allows alarms); reminders that follow the phone's mode do not. */
     private fun category(data: AppData) =
-        if (data.settings.alarmReminders) NotificationCompat.CATEGORY_ALARM else NotificationCompat.CATEGORY_REMINDER
+        if (data.settings.alarmReminders && data.settings.alarmOverridesSilence) {
+            NotificationCompat.CATEGORY_ALARM
+        } else {
+            NotificationCompat.CATEGORY_REMINDER
+        }
 
     /**
      * With alarm reminders on in [settings], [AlarmRingService] shows and rings the reminder. When
@@ -271,7 +275,7 @@ class ReminderNotifications(
             return
         }
         if (settings?.alarmReminders == true) {
-            if (AlarmRingService.ring(context, id, builder.build(), settings.alarmSound)) return
+            if (AlarmRingService.ring(context, id, builder.build(), settings.alarmSound, settings.alarmOverridesSilence)) return
             val notification = builder.setChannelId(alarmChannelId(settings.alarmSound)).build()
             notification.flags = notification.flags or Notification.FLAG_INSISTENT
             manager.notify(id, notification)

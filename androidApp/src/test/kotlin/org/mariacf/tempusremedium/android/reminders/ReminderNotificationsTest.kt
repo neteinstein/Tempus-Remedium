@@ -111,6 +111,18 @@ class ReminderNotificationsTest {
         }
 
     @Test
+    fun remindersThatFollowThePhonesModeAreNotAlarms() =
+        runBlocking {
+            val data = ReferenceFixtures.data.copy(settings = Settings(alarmReminders = true, alarmOverridesSilence = false))
+            notifications.showSlot(data, ReferenceFixtures.date, TimeSlot.MORNING)
+
+            val started = shadowOf(context).nextStartedService
+            assertFalse(started.getBooleanExtra("override_silence", true))
+            val notification = IntentCompat.getParcelableExtra(started, "notification", Notification::class.java)!!
+            assertEquals(Notification.CATEGORY_REMINDER, notification.category)
+        }
+
+    @Test
     fun alarmIsTheDefault() = assertTrue(Settings().alarmReminders)
 
     @Test

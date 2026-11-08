@@ -64,6 +64,8 @@ data class Settings(
     val alarmReminders: Boolean = true,
     /** Content URI of the tone alarm reminders ring with; null is the device's alarm sound. */
     val alarmSound: String? = null,
+    /** Alarm reminders ring even in silent mode or Do Not Disturb; off, they follow the phone's mode. */
+    val alarmOverridesSilence: Boolean = true,
     val stockDisplay: StockDisplay = StockDisplay.JARS,
     val theme: ThemeMode = ThemeMode.SYSTEM,
     val language: AppLanguage = AppLanguage.SYSTEM,

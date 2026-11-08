@@ -1,11 +1,13 @@
 package org.mariacf.tempusremedium.android.reminders
 
 import android.app.Notification
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.media.AudioAttributes
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.Uri
@@ -78,8 +80,25 @@ class AlarmRingService : Service() {
         }
         ringing += id
         running = true
-        play(intent.getStringExtra(EXTRA_SOUND))
-        vibrate()
+        val effects =
+            if (intent.getBooleanExtra(EXTRA_OVERRIDE_SILENCE, true)) {
+                Effects.ALL
+            } else {
+                val dnd = getSystemService(NotificationManager::class.java)?.currentInterruptionFilter
+                effectsFor(
+                    ringerMode = getSystemService(AudioManager::class.java)?.ringerMode ?: AudioManager.RINGER_MODE_NORMAL,
+                    doNotDisturb =
+                        dnd != null && dnd != NotificationManager.INTERRUPTION_FILTER_ALL &&
+                            dnd != NotificationManager.INTERRUPTION_FILTER_UNKNOWN,
+                )
+            }
+        if (effects == Effects.NONE) {
+            // Nothing to ring: the reminder stays on screen, quietly.
+            stop(NO_ID)
+            return
+        }
+        if (effects.sound) play(intent.getStringExtra(EXTRA_SOUND))
+        if (effects.vibrate) vibrate()
     }
 
     /**
@@ -172,6 +191,7 @@ class AlarmRingService : Service() {
         private const val EXTRA_NOTIFICATION = "notification"
         private const val EXTRA_SOUND = "sound"
         private const val EXTRA_CANCEL_ID = "cancel_id"
+        private const val EXTRA_OVERRIDE_SILENCE = "override_silence"
         private const val NO_ID = Int.MIN_VALUE
         private const val PLACEHOLDER_ID = 999
 
@@ -186,6 +206,18 @@ class AlarmRingService : Service() {
                 .build()
         private val VIBRATION = longArrayOf(0, 800, 600, 800, 600)
 
+        /** What a reminder that follows the phone's mode does: Do Not Disturb and silent mode mute it. */
+        fun effectsFor(
+            ringerMode: Int,
+            doNotDisturb: Boolean,
+        ): Effects =
+            when {
+                doNotDisturb -> Effects.NONE
+                ringerMode == AudioManager.RINGER_MODE_SILENT -> Effects.NONE
+                ringerMode == AudioManager.RINGER_MODE_VIBRATE -> Effects(sound = false, vibrate = true)
+                else -> Effects.ALL
+            }
+
         /** True while a reminder is ringing in this process. */
         @Volatile
         var running = false
@@ -193,6 +225,7 @@ class AlarmRingService : Service() {
 
         /**
          * Shows [notification] as reminder [id] and rings [sound] (null: the device's alarm sound).
+         * With [overrideSilence] it rings whatever the phone's mode; without, it follows it.
          * False when Android does not let the app start it now (no exact alarm behind this call):
          * the caller then posts the reminder on a channel with its own sound.
          */
@@ -201,6 +234,7 @@ class AlarmRingService : Service() {
             id: Int,
             notification: Notification,
             sound: String?,
+            overrideSilence: Boolean = true,
         ): Boolean {
             val intent =
                 Intent(context, AlarmRingService::class.java)
@@ -208,6 +242,7 @@ class AlarmRingService : Service() {
                     .putExtra(EXTRA_ID, id)
                     .putExtra(EXTRA_NOTIFICATION, notification)
                     .putExtra(EXTRA_SOUND, sound)
+                    .putExtra(EXTRA_OVERRIDE_SILENCE, overrideSilence)
             val started = runCatching { ContextCompat.startForegroundService(context, intent) }.isSuccess
             if (started) running = true
             return started
@@ -225,5 +260,16 @@ class AlarmRingService : Service() {
                     .putExtra(EXTRA_CANCEL_ID, cancelId ?: NO_ID)
             runCatching { context.startService(intent) }
         }
+    }
+}
+
+/** Whether a ringing reminder plays its sound and vibrates. */
+data class Effects(
+    val sound: Boolean,
+    val vibrate: Boolean,
+) {
+    companion object {
+        val ALL = Effects(sound = true, vibrate = true)
+        val NONE = Effects(sound = false, vibrate = false)
     }
 }

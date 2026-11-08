@@ -137,6 +137,8 @@
     <string name="settings_alarm_reminders_body">El sonido de alarma se repite hasta que toque Tomado o Posponer, o descarte el recordatorio.</string>
     <string name="alarm_sound">Sonido de la alarma</string>
     <string name="alarm_sound_default">Sonido de alarma predeterminado</string>
+    <string name="settings_alarm_override_silence">Sonar incluso en silencio o No molestar</string>
+    <string name="settings_alarm_override_silence_body">Desactivado, el recordatorio sigue el modo del teléfono: en silencio solo aparece, en vibración solo vibra.</string>
     <string name="settings_exact_alarms">Recordatorios puntuales</string>
     <string name="settings_exact_alarms_body">Sin este permiso, los recordatorios pueden llegar unos minutos tarde.</string>
     <string name="settings_widgets_hint">Añade los widgets Hoy y Reponer pronto a la pantalla de inicio.</string>
