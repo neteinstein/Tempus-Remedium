@@ -411,4 +411,32 @@
     <string name="symptom_drowsiness">Schläfrigkeit</string>
     <string name="symptom_fever">Fieber</string>
     <string name="symptom_itching">Juckreiz</string>
+    <string name="symptom_constipation">Verstopfung</string>
+    <string name="symptom_tiredness">Müdigkeit</string>
+    <string name="symptom_insomnia">Schlaflosigkeit</string>
+    <string name="symptom_dry_mouth">Mundtrockenheit</string>
+    <string name="symptom_appetite_loss">Appetitlosigkeit</string>
+    <string name="symptom_skin_rash">Hautausschlag</string>
+    <string name="symptom_cough">Husten</string>
+    <string name="symptom_breathlessness">Atemnot</string>
+    <string name="symptom_palpitations">Herzklopfen</string>
+    <string name="symptom_muscle_pain">Muskelschmerzen</string>
+    <string name="symptom_photo">Foto</string>
+    <string name="action_take_photo">Foto aufnehmen</string>
+    <string name="action_choose_photo">Foto auswählen</string>
+    <string name="action_remove_photo">Foto entfernen</string>
+    <string name="symptom_photo_failed">Das Foto konnte nicht gespeichert werden.</string>
+    <string name="symptom_photo_description">Foto: %1$s</string>
+    <string name="symptoms_select">Symptome löschen</string>
+    <string name="symptoms_select_all">Alle auswählen</string>
+    <plurals name="symptoms_selected">
+        <item quantity="one">%1$d ausgewählt</item>
+        <item quantity="other">%1$d ausgewählt</item>
+    </plurals>
+    <plurals name="symptoms_delete_confirm">
+        <item quantity="one">%1$d Symptom löschen?</item>
+        <item quantity="other">%1$d Symptome löschen?</item>
+    </plurals>
+    <string name="symptoms_delete_photos">Angehängte Fotos werden ebenfalls gelöscht.</string>
+    <string name="action_delete_selected">Löschen (%1$d)</string>
 </resources>

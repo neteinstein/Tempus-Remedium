@@ -429,4 +429,32 @@
     <string name="symptom_drowsiness">Drowsiness</string>
     <string name="symptom_fever">Fever</string>
     <string name="symptom_itching">Itching</string>
+    <string name="symptom_constipation">Constipation</string>
+    <string name="symptom_tiredness">Tiredness</string>
+    <string name="symptom_insomnia">Insomnia</string>
+    <string name="symptom_dry_mouth">Dry mouth</string>
+    <string name="symptom_appetite_loss">Loss of appetite</string>
+    <string name="symptom_skin_rash">Skin rash</string>
+    <string name="symptom_cough">Cough</string>
+    <string name="symptom_breathlessness">Shortness of breath</string>
+    <string name="symptom_palpitations">Palpitations</string>
+    <string name="symptom_muscle_pain">Muscle pain</string>
+    <string name="symptom_photo">Photo</string>
+    <string name="action_take_photo">Take photo</string>
+    <string name="action_choose_photo">Choose photo</string>
+    <string name="action_remove_photo">Remove photo</string>
+    <string name="symptom_photo_failed">The photo could not be saved.</string>
+    <string name="symptom_photo_description">Photo: %1$s</string>
+    <string name="symptoms_select">Delete symptoms</string>
+    <string name="symptoms_select_all">Select all</string>
+    <plurals name="symptoms_selected">
+        <item quantity="one">%1$d selected</item>
+        <item quantity="other">%1$d selected</item>
+    </plurals>
+    <plurals name="symptoms_delete_confirm">
+        <item quantity="one">Delete %1$d symptom?</item>
+        <item quantity="other">Delete %1$d symptoms?</item>
+    </plurals>
+    <string name="symptoms_delete_photos">Attached photos are deleted too.</string>
+    <string name="action_delete_selected">Delete (%1$d)</string>
 </resources>

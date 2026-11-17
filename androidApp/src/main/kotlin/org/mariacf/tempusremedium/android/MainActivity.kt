@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
         }
 
     private val files = AndroidFileTransfer(this)
+    private val photos = AndroidPhotoStore(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -73,6 +74,7 @@ class MainActivity : ComponentActivity() {
                 requestPermissions = ::requestMissingPermission,
                 widgets = AndroidWidgetSupport(applicationContext),
                 files = files,
+                photos = photos,
             )
         setContent {
             App(

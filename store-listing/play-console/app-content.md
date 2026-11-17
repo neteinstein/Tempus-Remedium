@@ -102,6 +102,9 @@ parties". Why this is accurate (keep for the reviewer and for future changes):
 - Android Auto Backup (`android:allowBackup="true"`) is a system backup to the user's own Google
   Account under Google's terms; the developer never receives it. The privacy policy mentions it.
 - No SDK for analytics, crash reporting, ads or sign-in is included.
+- Symptom photos are taken by the camera app or picked through the system photo picker and kept,
+  reduced, in the app's private storage (`files/symptom-photos`). No camera or media permission
+  is declared, so the "Photos" data type is neither collected nor needs a permission declaration.
 
 If a future version adds `INTERNET` (crash reporting, sync, anything), this form and the privacy
 policy must be redone before release, and the "health info" data type will almost certainly apply.

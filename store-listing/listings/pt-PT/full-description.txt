@@ -32,6 +32,8 @@ WIDGETS
 
 SINTOMAS
 • Registe o que sente, como náuseas, vómitos ou tonturas, e a hora a que aconteceu, numa lista por dia.
+• Anexe uma foto, por exemplo de manchas na pele, para mostrar na consulta.
+• Apague um, vários ou todos de uma vez.
 • Se quiser, o Histórico mostra os sintomas de cada dia junto às doses.
 
 HISTÓRICO

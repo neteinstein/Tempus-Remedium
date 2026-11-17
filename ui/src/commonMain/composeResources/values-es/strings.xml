@@ -411,4 +411,32 @@
     <string name="symptom_drowsiness">Somnolencia</string>
     <string name="symptom_fever">Fiebre</string>
     <string name="symptom_itching">Picor</string>
+    <string name="symptom_constipation">Estreñimiento</string>
+    <string name="symptom_tiredness">Cansancio</string>
+    <string name="symptom_insomnia">Insomnio</string>
+    <string name="symptom_dry_mouth">Boca seca</string>
+    <string name="symptom_appetite_loss">Falta de apetito</string>
+    <string name="symptom_skin_rash">Erupción en la piel</string>
+    <string name="symptom_cough">Tos</string>
+    <string name="symptom_breathlessness">Falta de aire</string>
+    <string name="symptom_palpitations">Palpitaciones</string>
+    <string name="symptom_muscle_pain">Dolor muscular</string>
+    <string name="symptom_photo">Foto</string>
+    <string name="action_take_photo">Hacer foto</string>
+    <string name="action_choose_photo">Elegir foto</string>
+    <string name="action_remove_photo">Quitar foto</string>
+    <string name="symptom_photo_failed">No se ha podido guardar la foto.</string>
+    <string name="symptom_photo_description">Foto: %1$s</string>
+    <string name="symptoms_select">Eliminar síntomas</string>
+    <string name="symptoms_select_all">Seleccionar todos</string>
+    <plurals name="symptoms_selected">
+        <item quantity="one">%1$d seleccionado</item>
+        <item quantity="other">%1$d seleccionados</item>
+    </plurals>
+    <plurals name="symptoms_delete_confirm">
+        <item quantity="one">¿Eliminar %1$d síntoma?</item>
+        <item quantity="other">¿Eliminar %1$d síntomas?</item>
+    </plurals>
+    <string name="symptoms_delete_photos">Las fotos adjuntas también se eliminan.</string>
+    <string name="action_delete_selected">Eliminar (%1$d)</string>
 </resources>

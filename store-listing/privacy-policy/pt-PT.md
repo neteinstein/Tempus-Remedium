@@ -17,10 +17,15 @@ explica que dados a aplicação usa e onde ficam guardados.
 
 Os dados que introduz: os medicamentos (nome, dosagem, forma, cor, horários, frequência, stock e
 notas), os tratamentos (dose, intervalo, primeira toma e fim), o registo das doses tomadas ou
-saltadas, os sintomas que registar (nome, dia e hora) e as definições (horários, aspeto, idioma e
+saltadas, os sintomas que registar (nome, dia, hora e foto, se a anexar) e as definições (horários, aspeto, idioma e
 lembretes). Estes dados podem revelar
 informação sobre a sua saúde. O peso da criança indicado na calculadora de doses serve apenas para
 o cálculo e não é guardado.
+
+Pode anexar uma foto a um sintoma, tirada com a aplicação de câmara do dispositivo ou escolhida
+da galeria. A aplicação guarda uma cópia reduzida, sem a localização nem outros metadados da foto
+original, junto aos restantes dados. Não pede a permissão de câmara nem de acesso às fotos: escolhe
+o que partilha de cada vez.
 
 Ficam guardados apenas no armazenamento privado da aplicação, no seu dispositivo. Outras
 aplicações não lhes acedem e a autora não tem acesso a eles. Como nenhum dado sai do dispositivo
@@ -50,7 +55,7 @@ não lhe tem acesso. Pode desativá-la nas definições do Android.
 
 ## Apagar os dados
 
-Pode apagar um medicamento e o respetivo histórico, ou um sintoma, na própria aplicação. Para apagar tudo, limpe
+Pode apagar um medicamento e o respetivo histórico, ou um ou vários sintomas e as suas fotos, na própria aplicação. Para apagar tudo, limpe
 o armazenamento da aplicação nas definições do Android ou desinstale-a.
 
 ## Crianças

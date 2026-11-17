@@ -175,6 +175,7 @@ fun main() {
             installPrompt = installPrompt(),
             calendar = calendar,
             files = WebFileTransfer,
+            photos = WebPhotoStore,
         )
     // A container of its own: the viewport takes over its element, and the splash must stay visible.
     persistStorage()

@@ -147,7 +147,10 @@ fun AppData.upsertSymptom(symptom: Symptom): AppData {
     }
 }
 
-fun AppData.deleteSymptom(id: String): AppData = copy(symptoms = symptoms.filterNot { it.id == id })
+fun AppData.deleteSymptom(id: String): AppData = deleteSymptoms(setOf(id))
+
+/** Removes the symptoms with these ids (the selection on Sintomas). */
+fun AppData.deleteSymptoms(ids: Set<String>): AppData = copy(symptoms = symptoms.filterNot { it.id in ids })
 
 private fun AppData.adjustStock(
     medicationId: String,

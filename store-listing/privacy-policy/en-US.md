@@ -17,10 +17,15 @@ what data the app uses and where it is kept.
 
 The data you enter: your medications (name, strength, shape, colour, times, frequency, stock and
 notes), your courses (dose, interval, first dose and end), the record of doses taken or skipped,
-the symptoms you log (name, day and time), and your settings (times, appearance, language and
+the symptoms you log (name, day, time and a photo, if you attach one), and your settings (times, appearance, language and
 reminders). This data can reveal information
 about your health. The child's weight entered in the dose calculator is only used for the
 calculation and is not stored.
+
+You can attach a photo to a symptom, taken with the device's camera app or chosen from the
+gallery. The app keeps a reduced copy, without the location or other metadata of the original
+photo, with the rest of your data. It asks for no camera or photo-library permission: you choose
+what to share each time.
 
 It is stored only in the app's private storage on your device. Other apps cannot read it and the
 author has no access to it. Because the app never sends any data off the device, the author does
@@ -49,7 +54,7 @@ settings.
 
 ## Deleting your data
 
-You can delete a medication and its history, or a symptom, in the app. To delete everything, clear the app's
+You can delete a medication and its history, or one or more symptoms and their photos, in the app. To delete everything, clear the app's
 storage in Android's settings or uninstall the app.
 
 ## Children
