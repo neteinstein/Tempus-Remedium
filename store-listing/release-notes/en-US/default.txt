@@ -4,4 +4,5 @@ First release of Tempus Remedium.
 • Tablets, inhalers, patches, sprays, drops and injections, each on its own schedule.
 • Courses every N hours, to the last dose.
 • Refill soon, as jars or blister packs, and widgets.
+• Symptoms: log what you feel, with the time and a photo.
 • In English, Portuguese, French, German and Spanish.

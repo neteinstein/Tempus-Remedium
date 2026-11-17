@@ -31,7 +31,7 @@ CORNER = 46
 
 # Captured by StoreListingCaptures under source/<locale>/<dir>/, framed into graphics/<folder>/.
 TABLETS = {"tablet-7": ("tablet-screenshots", (1920, 1080)), "tablet-10": ("large-tablet-screenshots", (2560, 1440))}
-TABLET_SCREENS = ["01_today", "03_slot", "04_medications", "06_history"]
+TABLET_SCREENS = ["01_today", "03_slot", "04_medications", "11_symptoms", "06_history"]
 # Tablet frames are laid out at 2560 x 1440 and scaled down for 7".
 TABLET_CANVAS = (2560, 1440)
 TABLET_CAPTION_TOP = 78

@@ -6,8 +6,8 @@
     "03_slot": ["Marque cada dose", "com um toque."],
     "04_medications": ["Comprimidos, inaladores,", "pensos, gotas e mais."],
     "05_course": ["Antibióticos de 8 em 8 horas,", "até à última toma."],
-    "06_history": ["Os últimos 30 dias,", "num relance."],
-    "10_widgets_dark": ["Frascos ou blisters,", "de dia ou de noite."]
+    "11_symptoms": ["Registe os sintomas,", "com hora e foto."],
+    "06_history": ["Os últimos 30 dias,", "num relance."]
   },
   "en-US": {
     "01_today": ["What to take today,", "and when."],
@@ -16,7 +16,7 @@
     "03_slot": ["Log each dose", "with one tap."],
     "04_medications": ["Pills, inhalers, patches,", "drops and more."],
     "05_course": ["Antibiotics every 8 hours,", "to the last dose."],
-    "06_history": ["The last 30 days,", "at a glance."],
-    "10_widgets_dark": ["Jars or blister packs,", "day or night."]
+    "11_symptoms": ["Log your symptoms,", "with the time and a photo."],
+    "06_history": ["The last 30 days,", "at a glance."]
   }
 }
