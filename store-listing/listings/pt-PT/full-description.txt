@@ -30,6 +30,10 @@ REPOR EM BREVE
 WIDGETS
 • «Hoje», «Repor em breve» e «Tratamento», no ecrã principal e, nos dispositivos que o permitem, no ecrã de bloqueio, com um guia passo a passo.
 
+SINTOMAS
+• Registe o que sente, como náuseas, vómitos ou tonturas, e a hora a que aconteceu, numa lista por dia.
+• Se quiser, o Histórico mostra os sintomas de cada dia junto às doses.
+
 HISTÓRICO
 • A percentagem de doses tomadas nos últimos 30 dias e o resumo de cada dia.
 

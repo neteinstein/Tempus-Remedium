@@ -769,7 +769,7 @@ private fun formatInput(value: Double): String = if (value % 1.0 == 0.0) value.t
  * them as "20:00", so the colon is added on its own and cannot be deleted by mistake.
  */
 @Composable
-private fun TimeField(
+internal fun TimeField(
     digits: String,
     onDigitsChange: (String) -> Unit,
     label: String,

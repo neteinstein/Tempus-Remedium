@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -66,6 +67,7 @@ import org.mariacf.tempusremedium.ui.resources.Res
 import org.mariacf.tempusremedium.ui.resources.nav_history
 import org.mariacf.tempusremedium.ui.resources.nav_medications
 import org.mariacf.tempusremedium.ui.resources.nav_settings
+import org.mariacf.tempusremedium.ui.resources.nav_symptoms
 import org.mariacf.tempusremedium.ui.resources.nav_today
 import org.mariacf.tempusremedium.ui.screens.CourseEditor
 import org.mariacf.tempusremedium.ui.screens.HistoryScreen
@@ -74,6 +76,7 @@ import org.mariacf.tempusremedium.ui.screens.MedicationEditor
 import org.mariacf.tempusremedium.ui.screens.MedicationTransferSection
 import org.mariacf.tempusremedium.ui.screens.MedicationsScreen
 import org.mariacf.tempusremedium.ui.screens.SettingsScreen
+import org.mariacf.tempusremedium.ui.screens.SymptomsScreen
 import org.mariacf.tempusremedium.ui.screens.TodayScreen
 import org.mariacf.tempusremedium.ui.screens.WidgetBanner
 import org.mariacf.tempusremedium.ui.screens.WidgetGuideScreen
@@ -85,6 +88,7 @@ enum class Tab(
 ) {
     TODAY(Res.string.nav_today, Icons.Filled.DateRange),
     MEDICATIONS(Res.string.nav_medications, Icons.AutoMirrored.Filled.List),
+    SYMPTOMS(Res.string.nav_symptoms, Icons.Filled.Face),
     HISTORY(Res.string.nav_history, Icons.Filled.CheckCircle),
     SETTINGS(Res.string.nav_settings, Icons.Filled.Settings),
 }
@@ -313,8 +317,9 @@ fun App(
                                         onClick = { tab = item },
                                         icon = { Icon(item.icon, contentDescription = null) },
                                         label = {
-                                            // One line in every language: "Medicamentos" is wider than a tab on a
-                                            // 360 dp phone, so a label that does not fit shrinks a little instead of wrapping.
+                                            // One line in every language: "Medicamentos" is wider than one of the five tabs
+                                            // on a 360 dp phone, so a label that does not fit shrinks instead of wrapping
+                                            // (down to 6 sp, which the larger text sizes need).
                                             val style = TempusTheme.type.eyebrow.copy(letterSpacing = 0.2.sp)
                                             Text(
                                                 stringResource(item.title),
@@ -323,7 +328,7 @@ fun App(
                                                 softWrap = false,
                                                 autoSize =
                                                     TextAutoSize.StepBased(
-                                                        minFontSize = 8.sp,
+                                                        minFontSize = 6.sp,
                                                         maxFontSize = style.fontSize,
                                                         stepSize = 0.25.sp,
                                                     ),
@@ -388,8 +393,20 @@ fun App(
                                 )
                             }
 
+                            Tab.SYMPTOMS -> {
+                                SymptomsScreen(
+                                    symptoms = data.symptoms,
+                                    now = now,
+                                    onSave = viewModel::saveSymptom,
+                                    onDelete = { viewModel.deleteSymptom(it.id) },
+                                )
+                            }
+
                             Tab.HISTORY -> {
-                                HistoryScreen(data.adherence(now))
+                                HistoryScreen(
+                                    report = data.adherence(now),
+                                    symptoms = if (data.settings.symptomsInHistory) data.symptoms else emptyList(),
+                                )
                             }
 
                             Tab.SETTINGS -> {

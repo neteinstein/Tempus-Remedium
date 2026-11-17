@@ -77,11 +77,14 @@ import org.mariacf.tempusremedium.ui.resources.language_fr
 import org.mariacf.tempusremedium.ui.resources.language_pt
 import org.mariacf.tempusremedium.ui.resources.language_system
 import org.mariacf.tempusremedium.ui.resources.nav_settings
+import org.mariacf.tempusremedium.ui.resources.nav_symptoms
 import org.mariacf.tempusremedium.ui.resources.permission_granted
 import org.mariacf.tempusremedium.ui.resources.permission_missing
 import org.mariacf.tempusremedium.ui.resources.settings_about
 import org.mariacf.tempusremedium.ui.resources.settings_language
 import org.mariacf.tempusremedium.ui.resources.settings_stock_display
+import org.mariacf.tempusremedium.ui.resources.settings_symptoms_in_history
+import org.mariacf.tempusremedium.ui.resources.settings_symptoms_in_history_body
 import org.mariacf.tempusremedium.ui.resources.settings_theme
 import org.mariacf.tempusremedium.ui.resources.settings_times
 import org.mariacf.tempusremedium.ui.resources.settings_visible_slots
@@ -153,6 +156,17 @@ fun SettingsScreen(
                 color = TempusTheme.colors.inkMute,
                 modifier = Modifier.padding(horizontal = 8.dp),
             )
+        }
+
+        SettingsSection(stringResource(Res.string.nav_symptoms)) {
+            GroupCard {
+                SettingsSwitchRow(
+                    title = stringResource(Res.string.settings_symptoms_in_history),
+                    body = stringResource(Res.string.settings_symptoms_in_history_body),
+                    checked = settings.symptomsInHistory,
+                    onCheckedChange = { onChange(settings.copy(symptomsInHistory = it)) },
+                )
+            }
         }
 
         SettingsSection(stringResource(Res.string.settings_stock_display)) {

@@ -7,6 +7,7 @@ import org.mariacf.tempusremedium.core.model.CourseDoseLog
 import org.mariacf.tempusremedium.core.model.DoseLog
 import org.mariacf.tempusremedium.core.model.DoseStatus
 import org.mariacf.tempusremedium.core.model.Medication
+import org.mariacf.tempusremedium.core.model.Symptom
 import org.mariacf.tempusremedium.core.model.TimeSlot
 
 /*
@@ -133,6 +134,20 @@ fun AppData.acknowledgeStockAlert(
                 if (medication.id != medicationId || stock == null) medication else medication.copy(stock = stock.copy(alertSeenOn = today))
             },
     )
+
+/** Adds [symptom], or replaces the one with its id; the name is trimmed and a blank one is ignored. */
+fun AppData.upsertSymptom(symptom: Symptom): AppData {
+    val name = symptom.name.trim()
+    if (name.isEmpty()) return this
+    val entry = symptom.copy(name = name)
+    return if (symptoms.any { it.id == entry.id }) {
+        copy(symptoms = symptoms.map { if (it.id == entry.id) entry else it })
+    } else {
+        copy(symptoms = symptoms + entry)
+    }
+}
+
+fun AppData.deleteSymptom(id: String): AppData = copy(symptoms = symptoms.filterNot { it.id == id })
 
 private fun AppData.adjustStock(
     medicationId: String,

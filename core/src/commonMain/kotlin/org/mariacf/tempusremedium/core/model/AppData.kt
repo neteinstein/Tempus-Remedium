@@ -77,6 +77,8 @@ data class Settings(
     val calendarExport: CalendarExportStamp? = null,
     /** What the user last closed the web's calendar offer on (see dismissCalendarOffer). */
     val calendarOfferDismissed: String? = null,
+    /** Histórico also lists the symptoms of each day. */
+    val symptomsInHistory: Boolean = false,
 ) {
     fun timeOf(slot: TimeSlot): LocalTime = slotTimes[slot] ?: slot.defaultTime
 
@@ -105,6 +107,7 @@ data class AppData(
     val logs: List<DoseLog> = emptyList(),
     val settings: Settings = Settings(),
     val courseLogs: List<CourseDoseLog> = emptyList(),
+    val symptoms: List<Symptom> = emptyList(),
 ) {
     val activeMedications: List<Medication>
         get() = medications.filterNot { it.archived }

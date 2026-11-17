@@ -1,6 +1,6 @@
 # Política de privacidade do Tempus Remedium
 
-Última atualização: 25 de outubro de 2026
+Última atualização: 17 de novembro de 2026
 
 O Tempus Remedium é uma aplicação para Android de gestão de medicação e doses, criada pela
 Dra. Maria Cortês Ferreira, médica de família ([mariacf.pt](https://mariacf.pt)). Esta política
@@ -17,7 +17,8 @@ explica que dados a aplicação usa e onde ficam guardados.
 
 Os dados que introduz: os medicamentos (nome, dosagem, forma, cor, horários, frequência, stock e
 notas), os tratamentos (dose, intervalo, primeira toma e fim), o registo das doses tomadas ou
-saltadas e as definições (horários, aspeto, idioma e lembretes). Estes dados podem revelar
+saltadas, os sintomas que registar (nome, dia e hora) e as definições (horários, aspeto, idioma e
+lembretes). Estes dados podem revelar
 informação sobre a sua saúde. O peso da criança indicado na calculadora de doses serve apenas para
 o cálculo e não é guardado.
 
@@ -49,7 +50,7 @@ não lhe tem acesso. Pode desativá-la nas definições do Android.
 
 ## Apagar os dados
 
-Pode apagar um medicamento e o respetivo histórico na própria aplicação. Para apagar tudo, limpe
+Pode apagar um medicamento e o respetivo histórico, ou um sintoma, na própria aplicação. Para apagar tudo, limpe
 o armazenamento da aplicação nas definições do Android ou desinstale-a.
 
 ## Crianças

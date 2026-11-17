@@ -1,6 +1,6 @@
 # Tempus Remedium privacy policy
 
-Last updated: 25 October 2026
+Last updated: 17 November 2026
 
 Tempus Remedium is an Android app for managing medications and doses, created by
 Dr Maria Cortês Ferreira, family doctor ([mariacf.pt](https://mariacf.pt)). This policy explains
@@ -17,7 +17,8 @@ what data the app uses and where it is kept.
 
 The data you enter: your medications (name, strength, shape, colour, times, frequency, stock and
 notes), your courses (dose, interval, first dose and end), the record of doses taken or skipped,
-and your settings (times, appearance, language and reminders). This data can reveal information
+the symptoms you log (name, day and time), and your settings (times, appearance, language and
+reminders). This data can reveal information
 about your health. The child's weight entered in the dose calculator is only used for the
 calculation and is not stored.
 
@@ -48,7 +49,7 @@ settings.
 
 ## Deleting your data
 
-You can delete a medication and its history in the app. To delete everything, clear the app's
+You can delete a medication and its history, or a symptom, in the app. To delete everything, clear the app's
 storage in Android's settings or uninstall the app.
 
 ## Children

@@ -403,4 +403,30 @@
         <item quantity="one">%1$d medication imported.</item>
         <item quantity="other">%1$d medications imported.</item>
     </plurals>
+
+    <!-- Sintomas -->
+    <string name="nav_symptoms">Symptoms</string>
+    <plurals name="symptoms_count">
+        <item quantity="one">%1$d entry</item>
+        <item quantity="other">%1$d entries</item>
+    </plurals>
+    <string name="symptoms_empty">No symptoms logged yet. Log what you feel, such as nausea or dizziness, and the time it happened.</string>
+    <string name="action_add_symptom">Log symptom</string>
+    <string name="symptom_new">New symptom</string>
+    <string name="symptom_edit">Edit symptom</string>
+    <string name="symptom_field_name">Symptom</string>
+    <string name="symptom_when">When</string>
+    <string name="day_yesterday">Yesterday</string>
+    <string name="symptom_at">%1$s · %2$s</string>
+    <string name="settings_symptoms_in_history">Show in History</string>
+    <string name="settings_symptoms_in_history_body">Lists each day’s symptoms next to the doses.</string>
+    <string name="symptom_nausea">Nausea</string>
+    <string name="symptom_vomiting">Vomiting</string>
+    <string name="symptom_dizziness">Dizziness</string>
+    <string name="symptom_headache">Headache</string>
+    <string name="symptom_stomach_ache">Stomach ache</string>
+    <string name="symptom_diarrhoea">Diarrhoea</string>
+    <string name="symptom_drowsiness">Drowsiness</string>
+    <string name="symptom_fever">Fever</string>
+    <string name="symptom_itching">Itching</string>
 </resources>
