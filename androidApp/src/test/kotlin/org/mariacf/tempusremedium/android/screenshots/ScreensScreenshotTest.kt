@@ -17,6 +17,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.takahirom.roborazzi.captureRoboImage
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,6 +37,7 @@ import org.mariacf.tempusremedium.core.model.Schedule
 import org.mariacf.tempusremedium.core.model.Settings
 import org.mariacf.tempusremedium.core.model.Stock
 import org.mariacf.tempusremedium.core.model.StockDisplay
+import org.mariacf.tempusremedium.core.model.Symptom
 import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.core.schedule.activeCourses
 import org.mariacf.tempusremedium.core.schedule.adherence
@@ -52,6 +55,7 @@ import org.mariacf.tempusremedium.ui.screens.HistoryScreen
 import org.mariacf.tempusremedium.ui.screens.MedicationEditor
 import org.mariacf.tempusremedium.ui.screens.MedicationsScreen
 import org.mariacf.tempusremedium.ui.screens.SettingsScreen
+import org.mariacf.tempusremedium.ui.screens.SymptomsScreen
 import org.mariacf.tempusremedium.ui.screens.TodayScreen
 import org.mariacf.tempusremedium.ui.screens.WidgetBanner
 import org.mariacf.tempusremedium.ui.screens.WidgetGuideScreen
@@ -349,6 +353,37 @@ class ScreensScreenshotTest {
     }
 
     @Test
+    fun symptoms() =
+        capture("screen_symptoms") {
+            SymptomsScreen(symptoms = sampleSymptoms, now = ReferenceFixtures.now, onSave = {}, onDelete = {})
+        }
+
+    @Test
+    fun symptomsDark() =
+        capture("screen_symptoms_dark", dark = true) {
+            SymptomsScreen(symptoms = sampleSymptoms, now = ReferenceFixtures.now, onSave = {}, onDelete = {})
+        }
+
+    @Test
+    fun symptomsEmpty() =
+        capture("screen_symptoms_empty") {
+            SymptomsScreen(symptoms = emptyList(), now = ReferenceFixtures.now, onSave = {}, onDelete = {})
+        }
+
+    /** Definições → Sintomas → Mostrar no Histórico on: each day lists its symptoms under the doses. */
+    @Test
+    fun historyWithSymptoms() {
+        val data =
+            morningTaken
+                .logDose(ReferenceFixtures.omega3.id, date, TimeSlot.MIDDAY, DoseStatus.TAKEN, 0L)
+                .logSlot(LocalDate(2026, 10, 21), TimeSlot.MORNING, DoseStatus.TAKEN, 0L)
+                .logSlot(LocalDate(2026, 10, 21), TimeSlot.EVENING, DoseStatus.SKIPPED, 0L)
+        capture("screen_history_symptoms") {
+            HistoryScreen(data.adherence(ReferenceFixtures.now, days = 3), symptoms = sampleSymptoms)
+        }
+    }
+
+    @Test
     fun settings() = capture("screen_settings", height = 2400) { SettingsScreen(ReferenceFixtures.data.settings, onChange = {}) }
 
     @Test
@@ -401,6 +436,13 @@ class ScreensScreenshotTest {
             courses = data.activeCourses(ReferenceFixtures.now),
         )
     }
+
+    private val sampleSymptoms =
+        listOf(
+            Symptom("vomiting", "Vómitos", LocalDateTime(date, LocalTime(9, 15))),
+            Symptom("headache", "Dor de cabeça", LocalDateTime(date, LocalTime(14, 30))),
+            Symptom("dizziness", "Tonturas", LocalDateTime(LocalDate(2026, 10, 21), LocalTime(22, 0))),
+        )
 
     private fun capture(
         name: String,

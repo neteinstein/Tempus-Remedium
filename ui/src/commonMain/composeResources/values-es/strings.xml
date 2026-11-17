@@ -385,4 +385,30 @@
         <item quantity="one">%1$d medicamento importado.</item>
         <item quantity="other">%1$d medicamentos importados.</item>
     </plurals>
+
+    <!-- Sintomas -->
+    <string name="nav_symptoms">Síntomas</string>
+    <plurals name="symptoms_count">
+        <item quantity="one">%1$d registro</item>
+        <item quantity="other">%1$d registros</item>
+    </plurals>
+    <string name="symptoms_empty">Aún no hay síntomas registrados. Registre lo que sienta, como náuseas o mareos, y la hora a la que ocurrió.</string>
+    <string name="action_add_symptom">Registrar síntoma</string>
+    <string name="symptom_new">Nuevo síntoma</string>
+    <string name="symptom_edit">Editar síntoma</string>
+    <string name="symptom_field_name">Síntoma</string>
+    <string name="symptom_when">Cuándo</string>
+    <string name="day_yesterday">Ayer</string>
+    <string name="symptom_at">%1$s · %2$s</string>
+    <string name="settings_symptoms_in_history">Mostrar en el historial</string>
+    <string name="settings_symptoms_in_history_body">Muestra los síntomas de cada día junto a las dosis.</string>
+    <string name="symptom_nausea">Náuseas</string>
+    <string name="symptom_vomiting">Vómitos</string>
+    <string name="symptom_dizziness">Mareos</string>
+    <string name="symptom_headache">Dolor de cabeza</string>
+    <string name="symptom_stomach_ache">Dolor de barriga</string>
+    <string name="symptom_diarrhoea">Diarrea</string>
+    <string name="symptom_drowsiness">Somnolencia</string>
+    <string name="symptom_fever">Fiebre</string>
+    <string name="symptom_itching">Picor</string>
 </resources>

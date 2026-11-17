@@ -18,9 +18,11 @@ import org.mariacf.tempusremedium.core.model.AppData
 import org.mariacf.tempusremedium.core.model.DoseStatus
 import org.mariacf.tempusremedium.core.model.Medication
 import org.mariacf.tempusremedium.core.model.Settings
+import org.mariacf.tempusremedium.core.model.Symptom
 import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.core.schedule.acknowledgeStockAlert
 import org.mariacf.tempusremedium.core.schedule.deleteMedication
+import org.mariacf.tempusremedium.core.schedule.deleteSymptom
 import org.mariacf.tempusremedium.core.schedule.dismissCalendarOffer
 import org.mariacf.tempusremedium.core.schedule.logCourseDose
 import org.mariacf.tempusremedium.core.schedule.logDose
@@ -29,6 +31,7 @@ import org.mariacf.tempusremedium.core.schedule.refill
 import org.mariacf.tempusremedium.core.schedule.undoCourseDose
 import org.mariacf.tempusremedium.core.schedule.undoDose
 import org.mariacf.tempusremedium.core.schedule.upsertMedication
+import org.mariacf.tempusremedium.core.schedule.upsertSymptom
 import kotlin.time.Clock
 
 class AppViewModel(
@@ -93,6 +96,10 @@ class AppViewModel(
     fun saveMedication(medication: Medication) = update { it.upsertMedication(medication) }
 
     fun deleteMedication(id: String) = update { it.deleteMedication(id) }
+
+    fun saveSymptom(symptom: Symptom) = update { it.upsertSymptom(symptom) }
+
+    fun deleteSymptom(id: String) = update { it.deleteSymptom(id) }
 
     fun importMedications(medications: List<Medication>) = update { it.importMedications(medications) }
 

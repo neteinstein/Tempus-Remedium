@@ -16,33 +16,41 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
+import org.mariacf.tempusremedium.core.model.Symptom
 import org.mariacf.tempusremedium.core.schedule.AdherenceReport
+import org.mariacf.tempusremedium.core.schedule.byDayInOrder
 import org.mariacf.tempusremedium.ui.components.GroupCard
 import org.mariacf.tempusremedium.ui.components.GroupDivider
 import org.mariacf.tempusremedium.ui.components.ScreenHeader
 import org.mariacf.tempusremedium.ui.components.dayLabel
+import org.mariacf.tempusremedium.ui.components.hhmm
 import org.mariacf.tempusremedium.ui.resources.Res
 import org.mariacf.tempusremedium.ui.resources.history_day
 import org.mariacf.tempusremedium.ui.resources.history_no_data
 import org.mariacf.tempusremedium.ui.resources.history_rate_caption
 import org.mariacf.tempusremedium.ui.resources.history_title
 import org.mariacf.tempusremedium.ui.resources.nav_history
+import org.mariacf.tempusremedium.ui.resources.symptom_at
 import org.mariacf.tempusremedium.ui.theme.TempusTheme
 import kotlin.math.roundToInt
 
+/** [symptoms] are listed under their day; pass none when Definições keeps them out of Histórico. */
 @Composable
 fun HistoryScreen(
     report: AdherenceReport,
     modifier: Modifier = Modifier,
+    symptoms: List<Symptom> = emptyList(),
 ) {
     val palette = TempusTheme.colors
     val rate = report.rate
-    val days = report.days.filter { it.due > 0 }
+    val symptomsByDay = remember(symptoms) { symptoms.byDayInOrder() }
+    val days = report.days.filter { it.due > 0 || it.date in symptomsByDay }
     LazyColumn(
         modifier.fillMaxSize(),
         contentPadding = PaddingValues(24.dp),
@@ -69,34 +77,46 @@ fun HistoryScreen(
                 GroupCard {
                     days.forEachIndexed { index, day ->
                         if (index > 0) GroupDivider()
-                        Row(
-                            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Column(Modifier.width(118.dp)) {
-                                Text(dayLabel(day.date), style = TempusTheme.type.rowTitle, color = palette.ink)
-                                Text(
-                                    stringResource(Res.string.history_day, day.taken, day.due),
-                                    style = TempusTheme.type.bodySmall,
-                                    color = palette.inkMute,
-                                )
-                            }
-                            Box(
-                                Modifier
-                                    .weight(1f)
-                                    .height(8.dp)
-                                    .clip(CircleShape)
-                                    .background(palette.line),
-                            ) {
-                                if (day.taken > 0) {
+                        Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Column(Modifier.width(118.dp)) {
+                                    Text(dayLabel(day.date), style = TempusTheme.type.rowTitle, color = palette.ink)
+                                    if (day.due > 0) {
+                                        Text(
+                                            stringResource(Res.string.history_day, day.taken, day.due),
+                                            style = TempusTheme.type.bodySmall,
+                                            color = palette.inkMute,
+                                        )
+                                    }
+                                }
+                                if (day.due > 0) {
                                     Box(
                                         Modifier
-                                            .fillMaxHeight()
-                                            .fillMaxWidth(day.taken.toFloat() / day.due)
+                                            .weight(1f)
+                                            .height(8.dp)
                                             .clip(CircleShape)
-                                            .background(palette.brandBrush),
-                                    )
+                                            .background(palette.line),
+                                    ) {
+                                        if (day.taken > 0) {
+                                            Box(
+                                                Modifier
+                                                    .fillMaxHeight()
+                                                    .fillMaxWidth(day.taken.toFloat() / day.due)
+                                                    .clip(CircleShape)
+                                                    .background(palette.brandBrush),
+                                            )
+                                        }
+                                    }
                                 }
+                            }
+                            symptomsByDay[day.date]?.forEach { symptom ->
+                                // "09:15 · Vómitos"
+                                Text(
+                                    stringResource(Res.string.symptom_at, symptom.at.time.hhmm(), symptom.name),
+                                    style = TempusTheme.type.bodySmall,
+                                    color = palette.inkSoft,
+                                    modifier = Modifier.padding(top = 4.dp),
+                                )
                             }
                         }
                     }

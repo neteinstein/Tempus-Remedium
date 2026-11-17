@@ -30,6 +30,10 @@ REFILL SOON
 WIDGETS
 • "Today", "Refill soon" and "Course", on the home screen and, on devices that support it, on the lock screen, with a step-by-step guide.
 
+SYMPTOMS
+• Log what you feel, such as nausea, vomiting or dizziness, and the time it happened, in a list by day.
+• If you like, History shows each day's symptoms next to the doses.
+
 HISTORY
 • The share of doses taken over the last 30 days and a summary of each day.
 

@@ -385,4 +385,30 @@
         <item quantity="one">%1$d Medikament importiert.</item>
         <item quantity="other">%1$d Medikamente importiert.</item>
     </plurals>
+
+    <!-- Sintomas -->
+    <string name="nav_symptoms">Symptome</string>
+    <plurals name="symptoms_count">
+        <item quantity="one">%1$d Eintrag</item>
+        <item quantity="other">%1$d Einträge</item>
+    </plurals>
+    <string name="symptoms_empty">Noch keine Symptome eingetragen. Tragen Sie ein, was Sie spüren, etwa Übelkeit oder Schwindel, und um wie viel Uhr es auftrat.</string>
+    <string name="action_add_symptom">Symptom eintragen</string>
+    <string name="symptom_new">Neues Symptom</string>
+    <string name="symptom_edit">Symptom bearbeiten</string>
+    <string name="symptom_field_name">Symptom</string>
+    <string name="symptom_when">Wann</string>
+    <string name="day_yesterday">Gestern</string>
+    <string name="symptom_at">%1$s · %2$s</string>
+    <string name="settings_symptoms_in_history">Im Verlauf anzeigen</string>
+    <string name="settings_symptoms_in_history_body">Zeigt die Symptome jedes Tages neben den Dosen.</string>
+    <string name="symptom_nausea">Übelkeit</string>
+    <string name="symptom_vomiting">Erbrechen</string>
+    <string name="symptom_dizziness">Schwindel</string>
+    <string name="symptom_headache">Kopfschmerzen</string>
+    <string name="symptom_stomach_ache">Bauchschmerzen</string>
+    <string name="symptom_diarrhoea">Durchfall</string>
+    <string name="symptom_drowsiness">Schläfrigkeit</string>
+    <string name="symptom_fever">Fieber</string>
+    <string name="symptom_itching">Juckreiz</string>
 </resources>

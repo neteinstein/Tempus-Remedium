@@ -54,33 +54,33 @@ class AppScreenshotTest {
     @Test
     fun app() {
         showApp(AppLanguage.PT)
-        assertLabelsFit("Hoje", "Medicamentos", "Histórico", "Definições")
+        assertLabelsFit("Hoje", "Medicamentos", "Sintomas", "Histórico", "Definições")
         composeRule.onRoot().captureRoboImage("src/test/screenshots/app_360dp.png", screenshotOptions)
     }
 
     @Test
     fun appInEnglish() {
         showApp(AppLanguage.EN)
-        assertLabelsFit("Today", "Medications", "History", "Settings")
+        assertLabelsFit("Today", "Medications", "Symptoms", "History", "Settings")
         composeRule.onRoot().captureRoboImage("src/test/screenshots/app_360dp_en.png", screenshotOptions)
     }
 
     @Test
     fun labelsFitInFrench() {
         showApp(AppLanguage.FR)
-        assertLabelsFit("Aujourd’hui", "Médicaments", "Historique", "Réglages")
+        assertLabelsFit("Aujourd’hui", "Médicaments", "Symptômes", "Historique", "Réglages")
     }
 
     @Test
     fun labelsFitInGerman() {
         showApp(AppLanguage.DE)
-        assertLabelsFit("Heute", "Medikamente", "Verlauf", "Einstellungen")
+        assertLabelsFit("Heute", "Medikamente", "Symptome", "Verlauf", "Einstellungen")
     }
 
     @Test
     fun labelsFitInSpanish() {
         showApp(AppLanguage.ES)
-        assertLabelsFit("Hoy", "Medicamentos", "Historial", "Ajustes")
+        assertLabelsFit("Hoy", "Medicamentos", "Síntomas", "Historial", "Ajustes")
     }
 
     /** Android's "large" text size: the labels shrink further rather than wrap. */
@@ -88,7 +88,7 @@ class AppScreenshotTest {
     fun labelsFitWithLargerText() {
         RuntimeEnvironment.setFontScale(1.3f)
         showApp(AppLanguage.PT)
-        assertLabelsFit("Hoje", "Medicamentos", "Histórico", "Definições")
+        assertLabelsFit("Hoje", "Medicamentos", "Sintomas", "Histórico", "Definições")
     }
 
     private fun showApp(language: AppLanguage) {

@@ -118,7 +118,7 @@ policy must be redone before release, and the "health info" data type will almos
 
 | Section | Answer |
 | --- | --- |
-| Health features | **Medical → Medication and Treatment Management** (medication schedules, reminders, courses and adherence) and **Medical → Clinical Decision Support** (the dose calculator, see below) |
+| Health features | **Medical → Medication and Treatment Management** (medication schedules, reminders, courses, adherence and a symptom log) and **Medical → Clinical Decision Support** (the dose calculator, see below) |
 | Medical device | **Decision for the author, see below.** The answer prepared here is "not regulated as a medical device", which is what the listing's disclaimer says. |
 | Health Connect / sensitive health permissions | None used |
 | Health subjects research | No |

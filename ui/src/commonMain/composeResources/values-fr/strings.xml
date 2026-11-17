@@ -385,4 +385,30 @@
         <item quantity="one">%1$d médicament importé.</item>
         <item quantity="other">%1$d médicaments importés.</item>
     </plurals>
+
+    <!-- Sintomas -->
+    <string name="nav_symptoms">Symptômes</string>
+    <plurals name="symptoms_count">
+        <item quantity="one">%1$d entrée</item>
+        <item quantity="other">%1$d entrées</item>
+    </plurals>
+    <string name="symptoms_empty">Aucun symptôme noté pour l’instant. Notez ce que vous ressentez, comme des nausées ou des vertiges, et l’heure à laquelle c’est arrivé.</string>
+    <string name="action_add_symptom">Noter un symptôme</string>
+    <string name="symptom_new">Nouveau symptôme</string>
+    <string name="symptom_edit">Modifier le symptôme</string>
+    <string name="symptom_field_name">Symptôme</string>
+    <string name="symptom_when">Quand</string>
+    <string name="day_yesterday">Hier</string>
+    <string name="symptom_at">%1$s · %2$s</string>
+    <string name="settings_symptoms_in_history">Afficher dans l’historique</string>
+    <string name="settings_symptoms_in_history_body">Liste les symptômes de chaque jour à côté des doses.</string>
+    <string name="symptom_nausea">Nausées</string>
+    <string name="symptom_vomiting">Vomissements</string>
+    <string name="symptom_dizziness">Vertiges</string>
+    <string name="symptom_headache">Mal de tête</string>
+    <string name="symptom_stomach_ache">Mal de ventre</string>
+    <string name="symptom_diarrhoea">Diarrhée</string>
+    <string name="symptom_drowsiness">Somnolence</string>
+    <string name="symptom_fever">Fièvre</string>
+    <string name="symptom_itching">Démangeaisons</string>
 </resources>

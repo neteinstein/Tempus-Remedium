@@ -416,4 +416,30 @@
         <item quantity="one">%1$d medicamento importado.</item>
         <item quantity="other">%1$d medicamentos importados.</item>
     </plurals>
+
+    <!-- Sintomas -->
+    <string name="nav_symptoms">Sintomas</string>
+    <plurals name="symptoms_count">
+        <item quantity="one">%1$d registo</item>
+        <item quantity="other">%1$d registos</item>
+    </plurals>
+    <string name="symptoms_empty">Ainda sem sintomas registados. Registe o que sentir, como náuseas ou tonturas, e a hora a que aconteceu.</string>
+    <string name="action_add_symptom">Registar sintoma</string>
+    <string name="symptom_new">Novo sintoma</string>
+    <string name="symptom_edit">Editar sintoma</string>
+    <string name="symptom_field_name">Sintoma</string>
+    <string name="symptom_when">Quando</string>
+    <string name="day_yesterday">Ontem</string>
+    <string name="symptom_at">%1$s · %2$s</string>
+    <string name="settings_symptoms_in_history">Mostrar no Histórico</string>
+    <string name="settings_symptoms_in_history_body">Lista os sintomas de cada dia junto às doses.</string>
+    <string name="symptom_nausea">Náuseas</string>
+    <string name="symptom_vomiting">Vómitos</string>
+    <string name="symptom_dizziness">Tonturas</string>
+    <string name="symptom_headache">Dor de cabeça</string>
+    <string name="symptom_stomach_ache">Dor de barriga</string>
+    <string name="symptom_diarrhoea">Diarreia</string>
+    <string name="symptom_drowsiness">Sonolência</string>
+    <string name="symptom_fever">Febre</string>
+    <string name="symptom_itching">Comichão</string>
 </resources>
