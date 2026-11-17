@@ -32,6 +32,8 @@ WIDGETS
 
 SYMPTOMS
 • Log what you feel, such as nausea, vomiting or dizziness, and the time it happened, in a list by day.
+• Attach a photo, of a skin rash for example, to show at your appointment.
+• Delete one, several or all at once.
 • If you like, History shows each day's symptoms next to the doses.
 
 HISTORY

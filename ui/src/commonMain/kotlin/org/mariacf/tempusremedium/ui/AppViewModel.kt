@@ -22,7 +22,7 @@ import org.mariacf.tempusremedium.core.model.Symptom
 import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.core.schedule.acknowledgeStockAlert
 import org.mariacf.tempusremedium.core.schedule.deleteMedication
-import org.mariacf.tempusremedium.core.schedule.deleteSymptom
+import org.mariacf.tempusremedium.core.schedule.deleteSymptoms
 import org.mariacf.tempusremedium.core.schedule.dismissCalendarOffer
 import org.mariacf.tempusremedium.core.schedule.logCourseDose
 import org.mariacf.tempusremedium.core.schedule.logDose
@@ -99,7 +99,7 @@ class AppViewModel(
 
     fun saveSymptom(symptom: Symptom) = update { it.upsertSymptom(symptom) }
 
-    fun deleteSymptom(id: String) = update { it.deleteSymptom(id) }
+    fun deleteSymptoms(ids: Set<String>) = update { it.deleteSymptoms(ids) }
 
     fun importMedications(medications: List<Medication>) = update { it.importMedications(medications) }
 

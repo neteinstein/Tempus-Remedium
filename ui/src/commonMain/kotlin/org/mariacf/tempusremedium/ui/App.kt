@@ -34,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.mariacf.tempusremedium.core.data.MedicationRepository
@@ -76,6 +78,7 @@ import org.mariacf.tempusremedium.ui.screens.MedicationEditor
 import org.mariacf.tempusremedium.ui.screens.MedicationTransferSection
 import org.mariacf.tempusremedium.ui.screens.MedicationsScreen
 import org.mariacf.tempusremedium.ui.screens.SettingsScreen
+import org.mariacf.tempusremedium.ui.screens.SymptomEditor
 import org.mariacf.tempusremedium.ui.screens.SymptomsScreen
 import org.mariacf.tempusremedium.ui.screens.TodayScreen
 import org.mariacf.tempusremedium.ui.screens.WidgetBanner
@@ -153,6 +156,8 @@ class PlatformUi(
     val calendar: CalendarSupport? = null,
     /** Saving and opening files, for Exportar e importar in Definições; null hides the section. */
     val files: FileTransfer? = null,
+    /** Photos attached to symptoms; null hides the photo section of a symptom. */
+    val photos: PhotoStore? = null,
 )
 
 /** Whether [ThemeMode] resolves to dark right now. */
@@ -200,6 +205,22 @@ fun App(
     }
 
     var widgetGuide by rememberSaveable { mutableStateOf(false) }
+    // null = closed, NEW = adding, otherwise the id of the symptom being edited.
+    var editingSymptomId by rememberSaveable { mutableStateOf<String?>(null) }
+    // Deleting stored photos outlives the editor or list that asked for it.
+    val scope = rememberCoroutineScope()
+    val photos = platform.photos
+
+    fun discardPhotos(ids: Collection<String>) {
+        if (photos == null || ids.isEmpty()) return
+        scope.launch { ids.forEach { photos.delete(it) } }
+    }
+
+    fun deleteSymptoms(ids: Set<String>) {
+        val photoIds = data.symptoms.filter { it.id in ids }.mapNotNull { it.photo }
+        viewModel.deleteSymptoms(ids)
+        discardPhotos(photoIds)
+    }
 
     // Re-checked on every resume: the user places widgets outside the app.
     val widgets = platform.widgets
@@ -213,6 +234,7 @@ fun App(
         if (launchRequest != null) {
             tab = Tab.TODAY
             editingId = null
+            editingSymptomId = null
         }
     }
 
@@ -243,6 +265,26 @@ fun App(
                             editingId = null
                         },
                         onClose = { editingId = null },
+                    )
+                    return@Box
+                }
+                editingSymptomId?.let { symptomId ->
+                    // A symptom deleted meanwhile (or a new one) opens empty.
+                    val symptom = data.symptoms.firstOrNull { it.id == symptomId }
+                    SymptomEditor(
+                        symptom = symptom.takeIf { symptomId != NEW },
+                        now = now,
+                        photos = photos,
+                        onSave = { saved ->
+                            viewModel.saveSymptom(saved)
+                            editingSymptomId = null
+                        },
+                        onDelete = { deleted ->
+                            viewModel.deleteSymptoms(setOf(deleted.id))
+                            editingSymptomId = null
+                        },
+                        onClose = { editingSymptomId = null },
+                        onDiscardPhotos = ::discardPhotos,
                     )
                     return@Box
                 }
@@ -396,9 +438,10 @@ fun App(
                             Tab.SYMPTOMS -> {
                                 SymptomsScreen(
                                     symptoms = data.symptoms,
-                                    now = now,
-                                    onSave = viewModel::saveSymptom,
-                                    onDelete = { viewModel.deleteSymptom(it.id) },
+                                    onAdd = { editingSymptomId = NEW },
+                                    onEdit = { editingSymptomId = it.id },
+                                    onDelete = ::deleteSymptoms,
+                                    photos = photos,
                                 )
                             }
 

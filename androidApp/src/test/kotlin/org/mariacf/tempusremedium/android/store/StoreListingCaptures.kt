@@ -69,7 +69,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mariacf.tempusremedium.android.FakePhotoStore
 import org.mariacf.tempusremedium.android.R
+import org.mariacf.tempusremedium.android.samplePhoto
 import org.mariacf.tempusremedium.android.settings.AndroidSettingsExtras
 import org.mariacf.tempusremedium.android.widgets.CourseWidgetContent
 import org.mariacf.tempusremedium.android.widgets.CourseWidgetUi
@@ -94,6 +96,7 @@ import org.mariacf.tempusremedium.core.model.Schedule
 import org.mariacf.tempusremedium.core.model.Settings
 import org.mariacf.tempusremedium.core.model.Stock
 import org.mariacf.tempusremedium.core.model.StockDisplay
+import org.mariacf.tempusremedium.core.model.Symptom
 import org.mariacf.tempusremedium.core.model.ThemeMode
 import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.core.schedule.DayPlan
@@ -104,6 +107,7 @@ import org.mariacf.tempusremedium.core.schedule.planFor
 import org.mariacf.tempusremedium.core.schedule.upsertMedication
 import org.mariacf.tempusremedium.ui.App
 import org.mariacf.tempusremedium.ui.AppViewModel
+import org.mariacf.tempusremedium.ui.PhotoStore
 import org.mariacf.tempusremedium.ui.PlatformUi
 import org.mariacf.tempusremedium.ui.components.HojePanel
 import org.mariacf.tempusremedium.ui.pill.PillIcon
@@ -210,6 +214,9 @@ abstract class StoreListingCaptures(
 
     /** Evening, dark theme, blister packs: only DEITAR left. */
     @Test
+    fun symptoms() = symptomsScreen()
+
+    @Test
     fun todayDark() =
         screen("07_today_dark", at = LocalTime(21, 30)) {
             eveningDone().run { copy(settings = settings.copy(theme = ThemeMode.DARK, stockDisplay = StockDisplay.BLISTERS)) }
@@ -270,6 +277,10 @@ abstract class StoreListingCaptures(
     fun tablet7History() = historyScreen(TABLET_7_DIR)
 
     @Test
+    @Config(qualifiers = TABLET_7)
+    fun tablet7Symptoms() = symptomsScreen(TABLET_7_DIR)
+
+    @Test
     @Config(qualifiers = TABLET_10)
     fun tablet10Today() = todayScreen(TABLET_10_DIR)
 
@@ -285,6 +296,10 @@ abstract class StoreListingCaptures(
     @Config(qualifiers = TABLET_10)
     fun tablet10History() = historyScreen(TABLET_10_DIR)
 
+    @Test
+    @Config(qualifiers = TABLET_10)
+    fun tablet10Symptoms() = symptomsScreen(TABLET_10_DIR)
+
     private fun todayScreen(dir: String = "") = screen("${dir}01_today", at = LocalTime(12, 40)) { morningTaken() }
 
     private fun slotScreen(dir: String = "") =
@@ -296,6 +311,48 @@ abstract class StoreListingCaptures(
         screen("${dir}04_medications", at = LocalTime(12, 40), tab = "medications") { forms() }
 
     private fun historyScreen(dir: String = "") = screen("${dir}06_history", at = LocalTime(21, 30), tab = "history") { eveningDone() }
+
+    private fun symptomsScreen(dir: String = "") =
+        screen(
+            "${dir}11_symptoms",
+            at = LocalTime(21, 30),
+            tab = "symptoms",
+            photos =
+                FakePhotoStore(
+                    stored =
+                        mutableMapOf(RASH_PHOTO to samplePhoto()),
+                ),
+        ) {
+            // Landscape tablets are short: two days keep the list clear of the floating button.
+            eveningDone().copy(symptoms = sampleSymptoms().let { if (dir.isEmpty()) it else it.take(4) })
+        }
+
+    /** A few days of what someone on these medications might note, one with a photo of a rash. */
+    private fun sampleSymptoms(): List<Symptom> {
+        val yesterday = date.minus(DatePeriod(days = 1))
+        val before = date.minus(DatePeriod(days = 2))
+
+        fun symptom(
+            key: String,
+            day: LocalDate,
+            hour: Int,
+            minute: Int,
+            photo: String? = null,
+        ) = Symptom(
+            id = "$key-$day-$hour",
+            name = names.getValue("symptom-$key"),
+            at = LocalDateTime(day, LocalTime(hour, minute)),
+            photo = photo,
+        )
+        return listOf(
+            symptom("nausea", date, 8, 40),
+            symptom("headache", date, 15, 10),
+            symptom("rash", yesterday, 21, 15, photo = RASH_PHOTO),
+            symptom("nausea", yesterday, 8, 35),
+            symptom("dizziness", before, 13, 50),
+            symptom("tiredness", before, 18, 20),
+        )
+    }
 
     @Test
     @Config(qualifiers = "+w512dp-h250dp-xhdpi")
@@ -440,6 +497,7 @@ abstract class StoreListingCaptures(
         tab: String? = null,
         scrollToEnd: Boolean = false,
         launchRequest: LaunchRequest? = null,
+        photos: PhotoStore? = null,
         data: () -> AppData,
     ) {
         val document = MedicationRepository.json.encodeToString(AppData.serializer(), data())
@@ -454,7 +512,10 @@ abstract class StoreListingCaptures(
             val viewModel = remember { AppViewModel(repository, clock) { zone } }
             val platform =
                 remember {
-                    PlatformUi(settingsExtras = { settings, onChange -> AndroidSettingsExtras(settings, onChange, {}, {}) })
+                    PlatformUi(
+                        settingsExtras = { settings, onChange -> AndroidSettingsExtras(settings, onChange, {}, {}) },
+                        photos = photos,
+                    )
                 }
             App(repository = repository, platform = platform, launchRequest = launchRequest, viewModel = viewModel)
         }
@@ -603,6 +664,7 @@ abstract class StoreListingCaptures(
 
     companion object {
         private const val HISTORY_DAYS = 30
+        private const val RASH_PHOTO = "rash.jpg"
         private const val WIDGET_WIDTH_DP = 380
 
         /** A 7" tablet in landscape (Nexus 7 class) and a 10" one (Pixel Tablet class). */
@@ -653,9 +715,20 @@ class PortugueseStoreListingCaptures :
                     "mometasona" to "Mometasona",
                     "latanoprost" to "Latanoprost",
                     "vitamina-b12" to "Vitamina B12",
+                    "symptom-nausea" to "Náuseas",
+                    "symptom-headache" to "Dor de cabeça",
+                    "symptom-rash" to "Manchas na pele",
+                    "symptom-dizziness" to "Tonturas",
+                    "symptom-tiredness" to "Cansaço",
                 )
             },
-        tabs = mapOf("medications" to "Medicamentos", "history" to "Histórico", "settings" to "Definições"),
+        tabs =
+            mapOf(
+                "medications" to "Medicamentos",
+                "symptoms" to "Sintomas",
+                "history" to "Histórico",
+                "settings" to "Definições",
+            ),
         tagline = "As doses de hoje,\na horas.",
         byline = "por Dra. Maria Cortês Ferreira",
         homeDate = "quinta-feira, 22 de outubro",
@@ -747,9 +820,14 @@ class EnglishStoreListingCaptures :
                     "mometasona" to "Mometasone",
                     "latanoprost" to "Latanoprost",
                     "vitamina-b12" to "Vitamin B12",
+                    "symptom-nausea" to "Nausea",
+                    "symptom-headache" to "Headache",
+                    "symptom-rash" to "Skin rash",
+                    "symptom-dizziness" to "Dizziness",
+                    "symptom-tiredness" to "Tiredness",
                 )
             },
-        tabs = mapOf("medications" to "Medications", "history" to "History", "settings" to "Settings"),
+        tabs = mapOf("medications" to "Medications", "symptoms" to "Symptoms", "history" to "History", "settings" to "Settings"),
         tagline = "Today's doses,\non time.",
         byline = "by Dr Maria Cortês Ferreira",
         homeDate = "Thursday, October 22",

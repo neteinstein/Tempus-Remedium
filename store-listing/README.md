@@ -17,8 +17,8 @@ store-listing/
 │       ├── icon/1.png            512 × 512, 32-bit PNG
 │       ├── feature-graphic/1.png 1024 × 500, PNG without alpha
 │       ├── phone-screenshots/    8 × 1080 × 1920 (9:16), PNG without alpha
-│       ├── tablet-screenshots/   7" tablets: 4 × 1920 × 1080 (16:9), PNG without alpha
-│       └── large-tablet-screenshots/  10" tablets: 4 × 2560 × 1440 (16:9), PNG without alpha
+│       ├── tablet-screenshots/   7" tablets: 5 × 1920 × 1080 (16:9), PNG without alpha
+│       └── large-tablet-screenshots/  10" tablets: 5 × 2560 × 1440 (16:9), PNG without alpha
 ├── release-notes/<locale>/default.txt   "What's new" for the first release (≤ 500)
 ├── privacy-policy/
 │   ├── index.html                Bilingual, self-contained page to host
@@ -60,8 +60,8 @@ These need the owner and cannot be filled in from the repository:
 | … → App icon | `listings/<locale>/graphics/icon/1.png` (same image for both) |
 | … → Feature graphic | `listings/<locale>/graphics/feature-graphic/1.png` |
 | … → Phone screenshots | `listings/<locale>/graphics/phone-screenshots/1.png` … `8.png`, in order |
-| … → 7-inch tablet screenshots | `listings/<locale>/graphics/tablet-screenshots/1.png` … `4.png`, in order |
-| … → 10-inch tablet screenshots | `listings/<locale>/graphics/large-tablet-screenshots/1.png` … `4.png`, in order |
+| … → 7-inch tablet screenshots | `listings/<locale>/graphics/tablet-screenshots/1.png` … `5.png`, in order |
+| … → 10-inch tablet screenshots | `listings/<locale>/graphics/large-tablet-screenshots/1.png` … `5.png`, in order |
 | … → Video | YouTube URL of `docs/tempus-remedium.mp4` (pt-PT) or `video/tempus-remedium-en-US.mp4` |
 | Main store listing → Manage translations → add **English (United States) – en-US** | the `en-US` files above |
 | Release → Release notes | `release-notes/<locale>/default.txt` (between `<pt-PT>` / `<en-US>` tags) |
@@ -84,14 +84,16 @@ listing (Play takes at most 8 phone screenshots).
 | 4 | Manhã sheet: one dose taken, one to take | Marque cada dose *com um toque.* | Log each dose *with one tap.* |
 | 5 | Medicamentos: tablets, inhaler, patch, spray, drops, injection | Comprimidos, inaladores, *pensos, gotas e mais.* | Pills, inhalers, patches, *drops and more.* |
 | 6 | Hoje with an antibiotic course every 8 hours | Antibióticos de 8 em 8 horas, *até à última toma.* | Antibiotics every 8 hours, *to the last dose.* |
-| 7 | Histórico, 95 % | Os últimos 30 dias, *num relance.* | The last 30 days, *at a glance.* |
-| 8 | Home screen at night: the same widgets, dark, with blister packs | Frascos ou blisters, *de dia ou de noite.* | Jars or blister packs, *day or night.* |
+| 7 | Sintomas: three days of symptoms, one with a photo of a rash | Registe os sintomas, *com hora e foto.* | Log your symptoms, *with the time and a photo.* |
+| 8 | Histórico, 95 % | Os últimos 30 dias, *num relance.* | The last 30 days, *at a glance.* |
 
-The captures also include Hoje in the dark theme (`07_today_dark`) and Definições
-(`08_settings`); they are left out of the listing to make room for the widgets, and can be swapped
-back in through `captions.json`.
+The captures also include Hoje in the dark theme (`07_today_dark`), Definições (`08_settings`)
+and the home screen at night with the widgets, dark, with blister packs (`10_widgets_dark`, captioned
+"Frascos ou blisters, *de dia ou de noite.*" until Sintomas took its place); they are left out of
+the listing for lack of room (Play takes 8), and can be swapped back in through `captions.json`.
 
-The tablet screenshots (7" and 10", landscape) are 1, 4, 5 and 7 above, rendered at 960 × 600 dp
+The tablet screenshots (7" and 10", landscape) are 1, 4, 5, 7 and 8 above (Sintomas with two days,
+so the list stays clear of the floating button), rendered at 960 × 600 dp
 and 1280 × 800 dp, with the caption on one line. The app has no tablet layout yet, so they show the
 phone layout at full width; recapture them if one is added.
 

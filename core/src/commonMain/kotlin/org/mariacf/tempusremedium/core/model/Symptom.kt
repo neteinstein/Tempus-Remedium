@@ -10,4 +10,6 @@ data class Symptom(
     /** Free text; the Sintomas screen offers common ones. */
     val name: String,
     val at: LocalDateTime,
+    /** Id of an attached photo, kept by the platform outside the JSON document; null without one. */
+    val photo: String? = null,
 )

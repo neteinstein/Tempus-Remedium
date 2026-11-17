@@ -4,4 +4,5 @@ Primeira versão do Tempus Remedium.
 • Comprimidos, inaladores, pensos, sprays, gotas e injetáveis, cada um ao seu ritmo.
 • Tratamentos de N em N horas, até à última toma.
 • Repor em breve, em frascos ou blisters, e widgets.
+• Sintomas: registe o que sente, com hora e foto.
 • Em português, inglês, francês, alemão e espanhol.
