@@ -50,6 +50,11 @@ sealed interface CourseEnd {
     data class FinishPack(
         val packAmount: Double,
     ) : CourseEnd
+
+    /** "Até indicação médica": no end, the course goes on until it is archived or deleted. */
+    @Serializable
+    @SerialName("none")
+    data object Never : CourseEnd
 }
 
 /**
@@ -60,17 +65,20 @@ sealed interface CourseEnd {
 data class Course(
     val firstDose: LocalDateTime,
     val intervalHours: Int,
-    /** Amount of each dose, in [unit] (6.5 mL, ½ tablet...). */
-    val amount: Double,
+    /** Amount of each dose, in [unit] (6.5 mL, ½ tablet...); null when the user did not say. */
+    val amount: Double? = null,
     val unit: DoseUnit,
     val end: CourseEnd,
 ) {
-    /** Stock units used by one dose: whole tablets started, nothing for liquids. */
+    /** Stock units used by one dose: whole tablets started (one when no amount is set), nothing for liquids. */
     val stockUnitsPerDose: Int
-        get() = if (unit == DoseUnit.UNITS) ceil(amount - EPSILON).toInt().coerceAtLeast(1) else 0
+        get() = if (unit == DoseUnit.UNITS) ceil((amount ?: 1.0) - EPSILON).toInt().coerceAtLeast(1) else 0
 
-    /** Doses a pack holds, for [CourseEnd.FinishPack]. */
-    fun dosesIn(packAmount: Double): Int = if (amount <= 0) 0 else floor(packAmount / amount + EPSILON).toInt()
+    /** Doses a pack holds, for [CourseEnd.FinishPack]; none without an amount per dose. */
+    fun dosesIn(packAmount: Double): Int {
+        val amount = amount ?: return 0
+        return if (amount <= 0) 0 else floor(packAmount / amount + EPSILON).toInt()
+    }
 
     private companion object {
         const val EPSILON = 1e-9

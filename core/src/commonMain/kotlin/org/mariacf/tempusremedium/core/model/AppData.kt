@@ -110,7 +110,10 @@ data class AppData(
     val symptoms: List<Symptom> = emptyList(),
 ) {
     val activeMedications: List<Medication>
-        get() = medications.filterNot { it.archived }
+        get() = medications.filterNot { it.isArchived }
+
+    val archivedMedications: List<Medication>
+        get() = medications.filter { it.isArchived }
 
     fun medication(id: String): Medication? = medications.firstOrNull { it.id == id }
 

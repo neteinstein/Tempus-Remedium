@@ -119,9 +119,11 @@ import org.mariacf.tempusremedium.ui.resources.calc_weight_range
 import org.mariacf.tempusremedium.ui.resources.course_edit
 import org.mariacf.tempusremedium.ui.resources.course_intro
 import org.mariacf.tempusremedium.ui.resources.course_new
+import org.mariacf.tempusremedium.ui.resources.course_pack_needs_amount
 import org.mariacf.tempusremedium.ui.resources.course_suggestions
 import org.mariacf.tempusremedium.ui.resources.course_summary
 import org.mariacf.tempusremedium.ui.resources.course_summary_empty
+import org.mariacf.tempusremedium.ui.resources.course_summary_open
 import org.mariacf.tempusremedium.ui.resources.day_today
 import org.mariacf.tempusremedium.ui.resources.day_tomorrow
 import org.mariacf.tempusremedium.ui.resources.days_count
@@ -129,9 +131,10 @@ import org.mariacf.tempusremedium.ui.resources.editor_delete_confirm
 import org.mariacf.tempusremedium.ui.resources.end_kind_date
 import org.mariacf.tempusremedium.ui.resources.end_kind_days
 import org.mariacf.tempusremedium.ui.resources.end_kind_doses
+import org.mariacf.tempusremedium.ui.resources.end_kind_never
 import org.mariacf.tempusremedium.ui.resources.end_kind_pack
 import org.mariacf.tempusremedium.ui.resources.end_last_day
-import org.mariacf.tempusremedium.ui.resources.field_amount
+import org.mariacf.tempusremedium.ui.resources.field_amount_optional
 import org.mariacf.tempusremedium.ui.resources.field_color
 import org.mariacf.tempusremedium.ui.resources.field_dose_per_take
 import org.mariacf.tempusremedium.ui.resources.field_end
@@ -151,7 +154,7 @@ import org.mariacf.tempusremedium.ui.resources.unit_units
 import org.mariacf.tempusremedium.ui.resources.unit_units_short
 import org.mariacf.tempusremedium.ui.theme.TempusTheme
 
-private enum class EndKind { DAYS, DOSES, DATE, PACK }
+private enum class EndKind { DAYS, DOSES, DATE, PACK, NEVER }
 
 /** Intervals offered as one-tap chips; any other is reached with the stepper. */
 private val QuickIntervals = listOf(4, 6, 8, 12, 24)
@@ -199,6 +202,7 @@ fun CourseEditor(
                 is CourseEnd.AfterDoses -> EndKind.DOSES
                 is CourseEnd.OnDate -> EndKind.DATE
                 is CourseEnd.FinishPack -> EndKind.PACK
+                CourseEnd.Never -> EndKind.NEVER
                 else -> EndKind.DAYS
             },
         )
@@ -232,7 +236,8 @@ fun CourseEditor(
     val amountValue = parseDecimal(amount)?.takeIf { it > 0 }
     val packValue = parseDecimal(pack)?.takeIf { it > 0 }
     val draft =
-        if (firstDose != null && amountValue != null && (endKind != EndKind.PACK || packValue != null)) {
+        // The amount is optional, except to know when a pack runs out.
+        if (firstDose != null && (endKind != EndKind.PACK || (packValue != null && amountValue != null))) {
             Course(
                 firstDose = firstDose,
                 intervalHours = interval,
@@ -244,6 +249,7 @@ fun CourseEditor(
                         EndKind.DOSES -> CourseEnd.AfterDoses(doses)
                         EndKind.DATE -> CourseEnd.OnDate(firstDose.date.plus(DatePeriod(days = lastDayOffset)))
                         EndKind.PACK -> CourseEnd.FinishPack(packValue ?: 0.0)
+                        EndKind.NEVER -> CourseEnd.Never
                     },
             )
         } else {
@@ -271,6 +277,7 @@ fun CourseEditor(
                 },
             notes = notes.trim(),
             archived = medication?.archived ?: false,
+            archivePeriods = medication?.archivePeriods.orEmpty(),
             course = course,
         )
 
@@ -382,7 +389,7 @@ fun CourseEditor(
                 OutlinedTextField(
                     value = amount,
                     onValueChange = { amount = FieldInput.decimal(it) },
-                    label = { Text(stringResource(Res.string.field_amount)) },
+                    label = { Text(stringResource(Res.string.field_amount_optional)) },
                     singleLine = true,
                     shape = FieldShape,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -425,6 +432,7 @@ fun CourseEditor(
                 FrequencyChip(stringResource(Res.string.end_kind_doses), endKind == EndKind.DOSES) { endKind = EndKind.DOSES }
                 FrequencyChip(stringResource(Res.string.end_kind_date), endKind == EndKind.DATE) { endKind = EndKind.DATE }
                 FrequencyChip(stringResource(Res.string.end_kind_pack), endKind == EndKind.PACK) { endKind = EndKind.PACK }
+                FrequencyChip(stringResource(Res.string.end_kind_never), endKind == EndKind.NEVER) { endKind = EndKind.NEVER }
             }
             when (endKind) {
                 EndKind.DAYS -> {
@@ -448,6 +456,8 @@ fun CourseEditor(
                     )
                 }
 
+                EndKind.NEVER -> {}
+
                 EndKind.PACK -> {
                     OutlinedTextField(
                         value = pack,
@@ -467,7 +477,7 @@ fun CourseEditor(
                     )
                 }
             }
-            CourseSummary(draft)
+            CourseSummary(draft, packNeedsAmount = endKind == EndKind.PACK && amountValue == null)
 
             FieldTitle(stringResource(Res.string.field_shape))
             ShapePicker(shape, color, onChange = { shape = it })
@@ -541,13 +551,20 @@ fun CourseEditor(
     }
 }
 
-/** "21 tomas · última toma qua., 29 às 00:00". */
+/** "21 tomas · última toma qua., 29 às 00:00", or "Até indicação médica · primeira toma ..." for a course with no end. */
 @Composable
-private fun CourseSummary(course: Course?) {
-    val count = course?.plannedDoseCount() ?: 0
+private fun CourseSummary(
+    course: Course?,
+    packNeedsAmount: Boolean,
+) {
+    val count = if (packNeedsAmount) 0 else course?.plannedDoseCount() ?: 0
     val last = course?.plannedLastDose()
     val text =
-        if (count == 0 || last == null) {
+        if (packNeedsAmount) {
+            stringResource(Res.string.course_pack_needs_amount)
+        } else if (course != null && course.end == CourseEnd.Never) {
+            stringResource(Res.string.course_summary_open, dayLabel(course.firstDose.date), course.firstDose.time.hhmm())
+        } else if (count == 0 || last == null) {
             stringResource(Res.string.course_summary_empty)
         } else {
             stringResource(

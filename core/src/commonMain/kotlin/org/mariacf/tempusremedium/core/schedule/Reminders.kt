@@ -69,12 +69,13 @@ private fun AppData.nextSlotReminder(
  * alike: the count on the app icon's badge.
  */
 fun AppData.dueDoseCount(now: LocalDateTime): Int {
+    // Doses left pending before a medication was archived stay in Histórico, not on the badge.
     val slotDoses =
         planFor(now.date)
             .slots
             .filter { it.time <= now.time }
-            .sumOf { slot -> slot.doses.count { it.status == null } }
-    val courseDoses = courseDosesOn(now.date).count { it.at <= now && it.status == null }
+            .sumOf { slot -> slot.doses.count { it.status == null && !it.medication.isArchived } }
+    val courseDoses = courseDosesOn(now.date).count { it.at <= now && it.status == null && !it.medication.isArchived }
     return slotDoses + courseDoses
 }
 

@@ -83,6 +83,6 @@ class CourseEditorInputTest {
     }
 
     private companion object {
-        const val AMOUNT = "Quantidade"
+        const val AMOUNT = "Quantidade (opcional)"
     }
 }

@@ -244,7 +244,7 @@ private fun RowScope.SymptomLine(
 }
 
 @Composable
-private fun SelectableRow(
+internal fun SelectableRow(
     checked: Boolean,
     onToggle: () -> Unit,
     content: @Composable RowScope.() -> Unit,
@@ -269,7 +269,7 @@ private fun SelectableRow(
 
 /** A pill-shaped button in the danger red, for deleting. */
 @Composable
-private fun DangerButton(
+internal fun DangerButton(
     text: String,
     enabled: Boolean,
     onClick: () -> Unit,

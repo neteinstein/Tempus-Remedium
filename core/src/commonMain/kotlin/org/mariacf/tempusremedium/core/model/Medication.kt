@@ -1,6 +1,7 @@
 package org.mariacf.tempusremedium.core.model
 
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
 /**
@@ -71,10 +72,23 @@ data class Medication(
     /** Fraction of a tablet that one dose unit and one stock unit stand for. */
     val portion: PillPortion = PillPortion.WHOLE,
     val notes: String = "",
+    /** Archived with no date (older documents): inactive at every moment. New archives use [archivePeriods]. */
     val archived: Boolean = false,
     /** Set for a course taken every few hours (see [Course]); its slot doses are then empty. */
     val course: Course? = null,
+    /**
+     * When the medication was archived; the last one is open while it stays archived. Doses before
+     * an archive still count in Histórico, doses within one do not exist (no reminders, no alerts).
+     */
+    val archivePeriods: List<ArchivePeriod> = emptyList(),
 ) {
+    /** Archived now: left out of Medicamentos, reminders, widgets and stock alerts. */
+    val isArchived: Boolean
+        get() = archived || archivePeriods.any { it.until == null }
+
+    /** Whether doses due at [moment] exist (the medication was not archived then). */
+    fun isActiveAt(moment: LocalDateTime): Boolean = !archived && archivePeriods.none { it.contains(moment) }
+
     /** "Metformina 500mg": the name plus strength, as shown in the HOJE legend. */
     val displayName: String
         get() = if (strength.isBlank()) name else "$name $strength"
@@ -82,6 +96,15 @@ data class Medication(
     /** Whole tablets left (a started tablet does not count). */
     val stockTablets: Int?
         get() = stock?.let { it.remaining / portion.parts }
+}
+
+/** A time the medication spent archived, from [from] until [until] (null while it still is). */
+@Serializable
+data class ArchivePeriod(
+    val from: LocalDateTime,
+    val until: LocalDateTime? = null,
+) {
+    fun contains(moment: LocalDateTime): Boolean = moment >= from && (until == null || moment < until)
 }
 
 /**

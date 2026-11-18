@@ -71,10 +71,16 @@ fun AppData.planFor(date: LocalDate): DayPlan =
                     slot = slot,
                     time = settings.timeOf(slot),
                     doses =
-                        activeMedications
+                        medications
                             .filter { it.quantityAt(slot) > 0 && it.isDueOn(date) }
-                            .map { medication ->
+                            .mapNotNull { medication ->
                                 val log = log(medication.id, date, slot)
+                                // An archived medication keeps the doses due (or logged) before it was archived.
+                                if (log == null &&
+                                    !medication.isActiveAt(LocalDateTime(date, settings.timeOf(slot)))
+                                ) {
+                                    return@mapNotNull null
+                                }
                                 PlannedDose(
                                     medication = medication,
                                     quantity = log?.quantity ?: medication.quantityAt(slot),

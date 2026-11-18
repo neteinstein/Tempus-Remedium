@@ -264,6 +264,7 @@ fun MedicationEditor(
             portion = effectivePortion,
             notes = notes.trim(),
             archived = medication?.archived ?: false,
+            archivePeriods = medication?.archivePeriods.orEmpty(),
         )
 
     Column(modifier.fillMaxSize().brandBackground(TempusTheme.colors)) {

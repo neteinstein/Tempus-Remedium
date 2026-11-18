@@ -30,6 +30,7 @@ import org.mariacf.tempusremedium.core.ReferenceFixtures
 import org.mariacf.tempusremedium.core.ReferenceFixtures.date
 import org.mariacf.tempusremedium.core.dosing.CalculatorMedication
 import org.mariacf.tempusremedium.core.model.AppData
+import org.mariacf.tempusremedium.core.model.CourseEnd
 import org.mariacf.tempusremedium.core.model.DoseStatus
 import org.mariacf.tempusremedium.core.model.Frequency
 import org.mariacf.tempusremedium.core.model.Medication
@@ -52,6 +53,7 @@ import org.mariacf.tempusremedium.ui.components.NotificationsRationaleDialog
 import org.mariacf.tempusremedium.ui.components.PermissionsMissingBanner
 import org.mariacf.tempusremedium.ui.components.brandBackground
 import org.mariacf.tempusremedium.ui.pill.PillIcon
+import org.mariacf.tempusremedium.ui.screens.ArchiveScreen
 import org.mariacf.tempusremedium.ui.screens.CourseEditor
 import org.mariacf.tempusremedium.ui.screens.HistoryScreen
 import org.mariacf.tempusremedium.ui.screens.MedicationEditor
@@ -220,6 +222,65 @@ class ScreensScreenshotTest {
     fun medications() =
         capture("screen_medications") {
             MedicationsScreen(ReferenceFixtures.data.medications, onEdit = {}, onAdd = {})
+        }
+
+    /** Medicamentos with something archived (the box) and the pencil. */
+    @Test
+    fun medicationsWithArchive() =
+        capture("screen_medications_archive_button") {
+            MedicationsScreen(ReferenceFixtures.data.medications.drop(1), onEdit = {}, onAdd = {}, archivedCount = 1)
+        }
+
+    /** The pencil tapped: two selected, ready to archive or delete. */
+    @Test
+    fun medicationsSelecting() =
+        capture("screen_medications_select") {
+            MedicationsScreen(
+                ReferenceFixtures.data.medications,
+                onEdit = {},
+                onAdd = {},
+                initialSelection = setOf(ReferenceFixtures.omega3.id, ReferenceFixtures.magnesio.id),
+            )
+        }
+
+    @Test
+    fun archive() =
+        capture("screen_archive") {
+            ArchiveScreen(
+                listOf(ReferenceFixtures.metformina, ReferenceFixtures.omega3),
+                onEdit = {},
+                onRestore = {},
+                onDelete = {},
+                onClose = {},
+            )
+        }
+
+    @Test
+    fun archiveSelectingDark() =
+        capture("screen_archive_select_dark", dark = true) {
+            ArchiveScreen(
+                listOf(ReferenceFixtures.metformina, ReferenceFixtures.omega3),
+                onEdit = {},
+                onRestore = {},
+                onDelete = {},
+                onClose = {},
+                initialSelection = setOf(ReferenceFixtures.omega3.id),
+            )
+        }
+
+    /** A course with no end and no amount per dose. */
+    @Test
+    @Config(qualifiers = "+h1700dp")
+    fun courseEditorOpenEnded() =
+        capture("screen_course_editor_open_ended") {
+            val medication = CourseFixtures.amoxicilina
+            CourseEditor(
+                medication.copy(course = medication.course!!.copy(amount = null, end = CourseEnd.Never)),
+                now = ReferenceFixtures.now,
+                onSave = {},
+                onDelete = {},
+                onClose = {},
+            )
         }
 
     @Test

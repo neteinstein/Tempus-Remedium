@@ -45,12 +45,16 @@ data class CourseProgress(
     val lastLogged: CourseDose?,
     val lastDoseAt: LocalDateTime?,
 ) {
+    /** A course with no end ([CourseEnd.Never]): [total], [remaining] and [lastDoseAt] mean nothing. */
+    val isOpenEnded: Boolean
+        get() = medication.course?.end == CourseEnd.Never
+
     val isOver: Boolean
         get() = next == null
 
     /** Calendar days with doses left, today included. */
     fun remainingDays(today: LocalDate): Int =
-        if (isOver || lastDoseAt == null) 0 else (today.daysUntil(lastDoseAt.date) + 1).coerceAtLeast(0)
+        if (isOver || isOpenEnded || lastDoseAt == null) 0 else (today.daysUntil(lastDoseAt.date) + 1).coerceAtLeast(0)
 }
 
 fun Course.doseAt(index: Int): LocalDateTime = firstDose.plusHours(index.toLong() * step)
@@ -62,10 +66,12 @@ fun Course.plannedDoseCount(): Int =
         is CourseEnd.AfterDoses -> end.doses.toLong()
         is CourseEnd.OnDate -> ceilDiv(firstDose.minutesUntil(end.date.plusDays(1).atMidnight()), stepMinutes)
         is CourseEnd.FinishPack -> dosesIn(end.packAmount).toLong()
+        CourseEnd.Never -> return OPEN_ENDED_DOSES
     }.coerceIn(0, MAX_DOSES.toLong()).toInt()
 
-/** When the last dose is due if none is skipped, or null for an empty course. */
-fun Course.plannedLastDose(): LocalDateTime? = plannedDoseCount().takeIf { it > 0 }?.let { doseAt(it - 1) }
+/** When the last dose is due if none is skipped, or null for an empty or open-ended course. */
+fun Course.plannedLastDose(): LocalDateTime? =
+    if (end == CourseEnd.Never) null else plannedDoseCount().takeIf { it > 0 }?.let { doseAt(it - 1) }
 
 /** Doses in [medication]'s course. Skipping a dose of a [CourseEnd.FinishPack] course adds one at the end. */
 fun AppData.courseDoseCount(medication: Medication): Int {
@@ -93,34 +99,44 @@ fun AppData.courseDose(
 /** Every dose of [medication]'s course, in order. */
 fun AppData.courseDoses(medication: Medication): List<CourseDose> = (0 until courseDoseCount(medication)).map { courseDose(medication, it) }
 
-/** Course doses due on [date], by time, for every active medication. */
+/**
+ * Course doses due on [date], by time. An archived medication keeps the doses due (or logged)
+ * before it was archived, so that Histórico still shows them.
+ */
 fun AppData.courseDosesOn(date: LocalDate): List<CourseDose> =
-    activeMedications
+    medications
+        .filterNot { it.archived }
         .mapNotNull { medication -> medication.course?.let { medication to it } }
         .flatMap { (medication, course) ->
             val first = course.firstIndexAtOrAfter(date.atMidnight())
             val end = minOf(course.firstIndexAtOrAfter(date.plusDays(1).atMidnight()), courseDoseCount(medication))
-            (first until end).map { courseDose(medication, it) }
+            (first until end)
+                .map { courseDose(medication, it) }
+                .filter { it.status != null || medication.isActiveAt(it.at) }
         }.sortedWith(compareBy<CourseDose> { it.at }.thenBy { it.medication.name })
 
 fun AppData.courseProgress(
     medication: Medication,
     now: LocalDateTime,
 ): CourseProgress {
-    val doses = courseDoses(medication)
     val course = medication.course
+    val count = courseDoseCount(medication)
+    // Works from the logs, not from every dose: an open-ended course has no practical last one.
+    val logs = courseLogs.filter { it.medicationId == medication.id && it.index < count }
+    val logged = logs.mapTo(mutableSetOf()) { it.index }
     // The dose whose time has come most recently; earlier pending doses count as missed.
     val current = course?.let { (it.lastIndexAtOrBefore(now)).coerceAtLeast(0) } ?: 0
-    val upcoming = doses.drop(current).filter { it.status == null }
+    var nextIndex = current
+    while (nextIndex < count && nextIndex in logged) nextIndex++
     return CourseProgress(
         medication = medication,
-        total = doses.size,
-        taken = doses.count { it.status == DoseStatus.TAKEN },
-        skipped = doses.count { it.status == DoseStatus.SKIPPED },
-        next = upcoming.firstOrNull(),
-        remaining = upcoming.size,
-        lastLogged = doses.filter { it.status != null }.maxByOrNull { it.loggedAtEpochMillis ?: 0L },
-        lastDoseAt = doses.lastOrNull()?.at,
+        total = count,
+        taken = logs.count { it.status == DoseStatus.TAKEN },
+        skipped = logs.count { it.status == DoseStatus.SKIPPED },
+        next = if (course != null && nextIndex < count) courseDose(medication, nextIndex) else null,
+        remaining = (count - current - logged.count { it >= current }).coerceAtLeast(0),
+        lastLogged = logs.maxByOrNull { it.loggedAtEpochMillis }?.let { courseDose(medication, it.index) },
+        lastDoseAt = if (course != null && count > 0) course.doseAt(count - 1) else null,
     )
 }
 
@@ -154,12 +170,12 @@ private val Course.stepMinutes: Long
 
 /** Index of the first dose due at or after [moment]. */
 private fun Course.firstIndexAtOrAfter(moment: LocalDateTime): Int =
-    ceilDiv(firstDose.minutesUntil(moment), stepMinutes).coerceIn(0, MAX_DOSES.toLong()).toInt()
+    ceilDiv(firstDose.minutesUntil(moment), stepMinutes).coerceIn(0, OPEN_ENDED_DOSES.toLong()).toInt()
 
 /** Index of the last dose due at or before [moment], or -1 before the first one. */
 private fun Course.lastIndexAtOrBefore(moment: LocalDateTime): Int {
     val minutes = firstDose.minutesUntil(moment)
-    return if (minutes < 0) -1 else (minutes / stepMinutes).coerceAtMost(MAX_DOSES.toLong()).toInt()
+    return if (minutes < 0) -1 else (minutes / stepMinutes).coerceAtMost(OPEN_ENDED_DOSES.toLong()).toInt()
 }
 
 private fun ceilDiv(
@@ -180,3 +196,6 @@ private const val MINUTES_PER_DAY = 24L * 60
 
 /** A year of hourly doses: guards against runaway end dates. */
 private const val MAX_DOSES = 24 * 366
+
+/** Doses of a course with no end: a century of hourly doses, past any real use. */
+private const val OPEN_ENDED_DOSES = 24 * 366 * 100
