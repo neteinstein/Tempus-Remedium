@@ -439,4 +439,24 @@
     </plurals>
     <string name="symptoms_delete_photos">Angehängte Fotos werden ebenfalls gelöscht.</string>
     <string name="action_delete_selected">Löschen (%1$d)</string>
+    <string name="end_kind_never">Ohne Ende</string>
+    <string name="course_open_ended">Ohne Enddatum</string>
+    <string name="course_summary_open">Ohne Enddatum · erste Einnahme %1$s um %2$s</string>
+    <string name="course_dose_number">%1$s · Einnahme %2$d</string>
+    <string name="field_amount_optional">Menge (optional)</string>
+    <string name="course_pack_needs_amount">Geben Sie die Menge pro Einnahme an, um zu wissen, wann die Packung leer ist.</string>
+    <string name="medications_select">Medikamente bearbeiten</string>
+    <string name="archive_title">Archiv</string>
+    <string name="archive_open">Archiv öffnen</string>
+    <string name="archive_intro">Archivierte Medikamente geben keine Erinnerungen oder Warnungen mehr. Frühere Einnahmen bleiben im Verlauf.</string>
+    <string name="action_archive_selected">Archivieren (%1$d)</string>
+    <string name="action_restore_selected">Reaktivieren (%1$d)</string>
+    <plurals name="medications_delete_confirm">
+        <item quantity="one">%1$d Medikament und seinen Verlauf löschen?</item>
+        <item quantity="other">%1$d Medikamente und ihren Verlauf löschen?</item>
+    </plurals>
+    <plurals name="archive_count">
+        <item quantity="one">%1$d archiviert</item>
+        <item quantity="other">%1$d archiviert</item>
+    </plurals>
 </resources>

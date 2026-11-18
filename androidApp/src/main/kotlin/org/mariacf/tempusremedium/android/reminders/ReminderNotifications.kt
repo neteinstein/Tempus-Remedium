@@ -21,6 +21,7 @@ import org.jetbrains.compose.resources.getString
 import org.mariacf.tempusremedium.android.MainActivity
 import org.mariacf.tempusremedium.android.R
 import org.mariacf.tempusremedium.core.model.AppData
+import org.mariacf.tempusremedium.core.model.CourseEnd
 import org.mariacf.tempusremedium.core.model.DoseUnit
 import org.mariacf.tempusremedium.core.model.Settings
 import org.mariacf.tempusremedium.core.model.TimeSlot
@@ -37,6 +38,7 @@ import org.mariacf.tempusremedium.ui.resources.channel_low_stock
 import org.mariacf.tempusremedium.ui.resources.channel_reminders
 import org.mariacf.tempusremedium.ui.resources.channel_reminders_alarm
 import org.mariacf.tempusremedium.ui.resources.channel_reminders_alarm_fallback
+import org.mariacf.tempusremedium.ui.resources.course_dose_number
 import org.mariacf.tempusremedium.ui.resources.course_dose_of
 import org.mariacf.tempusremedium.ui.resources.decimal_separator
 import org.mariacf.tempusremedium.ui.resources.dose_ml
@@ -170,22 +172,31 @@ class ReminderNotifications(
             pending
                 .map { dose ->
                     val course = dose.medication.course!!
+                    val value = course.amount
+                    // Without an amount per dose, the line names the medication instead.
                     val amount =
-                        when (course.unit) {
-                            DoseUnit.ML -> {
-                                getString(Res.string.dose_ml, formatDecimal(course.amount, getString(Res.string.decimal_separator)))
+                        when {
+                            value == null -> {
+                                dose.medication.displayName
                             }
 
-                            DoseUnit.UNITS -> {
-                                val units = ceil(course.amount).toInt().coerceAtLeast(1)
+                            course.unit == DoseUnit.ML -> {
+                                getString(Res.string.dose_ml, formatDecimal(value, getString(Res.string.decimal_separator)))
+                            }
+
+                            else -> {
                                 getPluralString(
                                     Res.plurals.dose_units,
-                                    units,
-                                    formatDecimal(course.amount, getString(Res.string.decimal_separator)),
+                                    ceil(value).toInt().coerceAtLeast(1),
+                                    formatDecimal(value, getString(Res.string.decimal_separator)),
                                 )
                             }
                         }
-                    getString(Res.string.course_dose_of, amount, dose.index + 1, data.courseDoseCount(dose.medication))
+                    if (course.end == CourseEnd.Never) {
+                        getString(Res.string.course_dose_number, amount, dose.index + 1)
+                    } else {
+                        getString(Res.string.course_dose_of, amount, dose.index + 1, data.courseDoseCount(dose.medication))
+                    }
                 }.joinToString("\n")
         val hidden = getPluralString(Res.plurals.notification_hidden_body, pending.size, pending.size)
         val builder =

@@ -3,6 +3,7 @@ package org.mariacf.tempusremedium.core.schedule
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import org.mariacf.tempusremedium.core.model.AppData
+import org.mariacf.tempusremedium.core.model.ArchivePeriod
 import org.mariacf.tempusremedium.core.model.CourseDoseLog
 import org.mariacf.tempusremedium.core.model.DoseLog
 import org.mariacf.tempusremedium.core.model.DoseStatus
@@ -23,11 +24,55 @@ fun AppData.upsertMedication(medication: Medication): AppData =
     }
 
 /** Removes a medication and its history. */
-fun AppData.deleteMedication(id: String): AppData =
+fun AppData.deleteMedication(id: String): AppData = deleteMedications(setOf(id))
+
+/** Removes the medications with these ids and their history (the selection on Medicamentos or Arquivo). */
+fun AppData.deleteMedications(ids: Set<String>): AppData =
     copy(
-        medications = medications.filterNot { it.id == id },
-        logs = logs.filterNot { it.medicationId == id },
-        courseLogs = courseLogs.filterNot { it.medicationId == id },
+        medications = medications.filterNot { it.id in ids },
+        logs = logs.filterNot { it.medicationId in ids },
+        courseLogs = courseLogs.filterNot { it.medicationId in ids },
+    )
+
+/**
+ * Archives the medications with these ids from [at]: they leave Medicamentos, reminders, widgets
+ * and stock alerts, and their doses before [at] stay in Histórico. Already archived ones are kept as they are.
+ */
+fun AppData.archiveMedications(
+    ids: Set<String>,
+    at: LocalDateTime,
+): AppData =
+    copy(
+        medications =
+            medications.map { medication ->
+                if (medication.id !in ids || medication.isArchived) {
+                    medication
+                } else {
+                    medication.copy(archivePeriods = medication.archivePeriods + ArchivePeriod(from = at))
+                }
+            },
+    )
+
+/** Brings archived medications back from [at]: their doses while archived stay out of Histórico. */
+fun AppData.unarchiveMedications(
+    ids: Set<String>,
+    at: LocalDateTime,
+): AppData =
+    copy(
+        medications =
+            medications.map { medication ->
+                if (medication.id !in ids || !medication.isArchived) {
+                    medication
+                } else {
+                    medication.copy(
+                        archived = false,
+                        archivePeriods =
+                            medication.archivePeriods.map { period ->
+                                if (period.until == null) period.copy(until = maxOf(at, period.from)) else period
+                            },
+                    )
+                }
+            },
     )
 
 fun AppData.logDose(

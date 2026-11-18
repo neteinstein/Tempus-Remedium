@@ -84,6 +84,7 @@ import org.mariacf.tempusremedium.ui.resources.action_take_all
 import org.mariacf.tempusremedium.ui.resources.action_taken
 import org.mariacf.tempusremedium.ui.resources.action_undo
 import org.mariacf.tempusremedium.ui.resources.course_next_label
+import org.mariacf.tempusremedium.ui.resources.course_open_ended
 import org.mariacf.tempusremedium.ui.resources.course_remaining
 import org.mariacf.tempusremedium.ui.resources.courses_title
 import org.mariacf.tempusremedium.ui.resources.days_count
@@ -399,11 +400,19 @@ private fun CourseRow(
             Column(Modifier.weight(1f)) {
                 Text(medication.displayName, style = TempusTheme.type.rowTitle, color = palette.ink)
                 Text(
-                    stringResource(
-                        Res.string.course_remaining,
-                        pluralStringResource(Res.plurals.takes_count, progress.remaining, progress.remaining),
-                        pluralStringResource(Res.plurals.days_count, progress.remainingDays(now.date), progress.remainingDays(now.date)),
-                    ),
+                    if (progress.isOpenEnded) {
+                        stringResource(Res.string.course_open_ended)
+                    } else {
+                        stringResource(
+                            Res.string.course_remaining,
+                            pluralStringResource(Res.plurals.takes_count, progress.remaining, progress.remaining),
+                            pluralStringResource(
+                                Res.plurals.days_count,
+                                progress.remainingDays(now.date),
+                                progress.remainingDays(now.date),
+                            ),
+                        )
+                    },
                     style = TempusTheme.type.bodySmall,
                     color = palette.inkMute,
                 )
@@ -411,7 +420,7 @@ private fun CourseRow(
         }
         NextCourseDose(
             time = next.at.time.hhmm(),
-            detail = relativeDay(next.at.date, now.date) + " · " + course.doseLabel(),
+            detail = listOfNotNull(relativeDay(next.at.date, now.date), course.doseLabel()).joinToString(" · "),
             tint =
                 when {
                     next.at <= now -> palette.danger

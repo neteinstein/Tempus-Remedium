@@ -266,3 +266,70 @@ class CoursesTest {
         assertEquals(AppData(), MedicationRepository.json.decodeFromString(AppData.serializer(), old))
     }
 }
+
+class OpenCourseTest {
+    private val date = ReferenceFixtures.date
+
+    private fun at(
+        day: LocalDate,
+        hour: Int,
+    ) = LocalDateTime(day, LocalTime(hour, 0))
+
+    /** Every 12 hours, no end, no amount. */
+    private val course = Course(firstDose = at(date, 8), intervalHours = 12, unit = DoseUnit.UNITS, end = CourseEnd.Never)
+
+    private val medication =
+        Medication(
+            id = "continuo",
+            name = "Contínuo",
+            shape = PillShape.ROUND_SCORED,
+            color = PillColor.TEAL,
+            schedule = Schedule(doses = emptyMap(), startDate = date),
+            stock = Stock(remaining = 10),
+            course = course,
+        )
+
+    private val data = AppData(medications = listOf(medication))
+
+    @Test
+    fun anOpenEndedCourseGoesOnAndHasNoLastDose() {
+        assertNull(course.plannedLastDose())
+        val inTwoYears = LocalDate(2028, 10, 22)
+        assertEquals(listOf(at(inTwoYears, 8), at(inTwoYears, 20)), data.courseDosesOn(inTwoYears).map { it.at })
+        val progress = data.courseProgress(medication, at(inTwoYears, 9))
+        assertTrue(progress.isOpenEnded)
+        assertFalse(progress.isOver)
+        // The 08:00 dose is overdue, so it is still the next one.
+        assertEquals(at(inTwoYears, 8), progress.next!!.at)
+        assertEquals(
+            at(inTwoYears, 20),
+            data
+                .logCourseDose(
+                    medication.id,
+                    progress.next!!.index,
+                    DoseStatus.TAKEN,
+                    1L,
+                ).courseProgress(medication, at(inTwoYears, 9))
+                .next!!
+                .at,
+        )
+        assertEquals(0, progress.remainingDays(inTwoYears))
+        assertEquals(at(date, 20), data.nextReminder(at(date, 9))!!.at)
+    }
+
+    @Test
+    fun withoutAnAmountADoseUsesOneUnitAndCannotFinishAPack() {
+        assertEquals(1, course.stockUnitsPerDose)
+        assertEquals(0, course.copy(unit = DoseUnit.ML).stockUnitsPerDose)
+        assertEquals(0, course.dosesIn(20.0))
+        assertEquals(0, course.copy(end = CourseEnd.FinishPack(20.0)).plannedDoseCount())
+        val taken = data.logCourseDose(medication.id, 0, DoseStatus.TAKEN, 1L)
+        assertEquals(9, taken.medication(medication.id)!!.stock!!.remaining)
+    }
+
+    @Test
+    fun theNewFieldsSurviveTheJsonDocument() {
+        val json = kotlinx.serialization.json.Json
+        assertEquals(data, json.decodeFromString(AppData.serializer(), json.encodeToString(AppData.serializer(), data)))
+    }
+}

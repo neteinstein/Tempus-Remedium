@@ -470,4 +470,24 @@
     </plurals>
     <string name="symptoms_delete_photos">As fotos anexadas também são apagadas.</string>
     <string name="action_delete_selected">Apagar (%1$d)</string>
+    <string name="end_kind_never">Sem fim</string>
+    <string name="course_open_ended">Sem data de fim</string>
+    <string name="course_summary_open">Sem data de fim · primeira toma %1$s às %2$s</string>
+    <string name="course_dose_number">%1$s · toma %2$d</string>
+    <string name="field_amount_optional">Quantidade (opcional)</string>
+    <string name="course_pack_needs_amount">Indique a quantidade por toma para saber quando acaba a embalagem.</string>
+    <string name="medications_select">Editar medicamentos</string>
+    <string name="archive_title">Arquivo</string>
+    <string name="archive_open">Abrir o arquivo</string>
+    <string name="archive_intro">Os medicamentos arquivados não dão lembretes nem alertas. As tomas anteriores continuam no Histórico.</string>
+    <string name="action_archive_selected">Arquivar (%1$d)</string>
+    <string name="action_restore_selected">Reativar (%1$d)</string>
+    <plurals name="medications_delete_confirm">
+        <item quantity="one">Apagar %1$d medicamento e o seu histórico?</item>
+        <item quantity="other">Apagar %1$d medicamentos e o seu histórico?</item>
+    </plurals>
+    <plurals name="archive_count">
+        <item quantity="one">%1$d arquivado</item>
+        <item quantity="other">%1$d arquivados</item>
+    </plurals>
 </resources>

@@ -51,6 +51,7 @@ import org.mariacf.tempusremedium.ui.components.hhmm
 import org.mariacf.tempusremedium.ui.components.shortLabel
 import org.mariacf.tempusremedium.ui.resources.Res
 import org.mariacf.tempusremedium.ui.resources.course_next
+import org.mariacf.tempusremedium.ui.resources.course_open_ended
 import org.mariacf.tempusremedium.ui.resources.course_remaining
 import org.mariacf.tempusremedium.ui.resources.day_label
 import org.mariacf.tempusremedium.ui.resources.days_count
@@ -104,14 +105,19 @@ data class CourseWidgetUi(
                                     Res.string.course_next,
                                     relativeDay(next.at.date, now.date),
                                     next.at.time.hhmm(),
-                                    doseLabel(medication.course!!),
-                                ),
+                                    // "Próxima toma hoje às 16:00 · 6 mL"; without an amount, the time alone.
+                                    doseLabel(medication.course!!) ?: "",
+                                ).removeSuffix(" · "),
                             remaining =
-                                getString(
-                                    Res.string.course_remaining,
-                                    getPluralString(Res.plurals.takes_count, progress.remaining, progress.remaining),
-                                    getPluralString(Res.plurals.days_count, days, days),
-                                ),
+                                if (progress.isOpenEnded) {
+                                    getString(Res.string.course_open_ended)
+                                } else {
+                                    getString(
+                                        Res.string.course_remaining,
+                                        getPluralString(Res.plurals.takes_count, progress.remaining, progress.remaining),
+                                        getPluralString(Res.plurals.days_count, days, days),
+                                    )
+                                },
                         )
                     },
             )
@@ -133,11 +139,12 @@ data class CourseWidgetUi(
                 else -> getString(Res.string.day_label, getString(date.dayOfWeek.shortLabel), date.day)
             }
 
-        private suspend fun doseLabel(course: Course): String {
-            val amount = formatDecimal(course.amount, getString(Res.string.decimal_separator))
+        private suspend fun doseLabel(course: Course): String? {
+            val value = course.amount ?: return null
+            val amount = formatDecimal(value, getString(Res.string.decimal_separator))
             return when (course.unit) {
                 DoseUnit.ML -> getString(Res.string.dose_ml, amount)
-                DoseUnit.UNITS -> getPluralString(Res.plurals.dose_units, ceil(course.amount).toInt().coerceAtLeast(1), amount)
+                DoseUnit.UNITS -> getPluralString(Res.plurals.dose_units, ceil(value).toInt().coerceAtLeast(1), amount)
             }
         }
     }

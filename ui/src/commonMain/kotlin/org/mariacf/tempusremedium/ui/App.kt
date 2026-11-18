@@ -71,6 +71,7 @@ import org.mariacf.tempusremedium.ui.resources.nav_medications
 import org.mariacf.tempusremedium.ui.resources.nav_settings
 import org.mariacf.tempusremedium.ui.resources.nav_symptoms
 import org.mariacf.tempusremedium.ui.resources.nav_today
+import org.mariacf.tempusremedium.ui.screens.ArchiveScreen
 import org.mariacf.tempusremedium.ui.screens.CourseEditor
 import org.mariacf.tempusremedium.ui.screens.HistoryScreen
 import org.mariacf.tempusremedium.ui.screens.LaunchRequest
@@ -205,6 +206,8 @@ fun App(
     }
 
     var widgetGuide by rememberSaveable { mutableStateOf(false) }
+    // Arquivo, opened from Medicamentos; editing one of its medications returns to it.
+    var showArchive by rememberSaveable { mutableStateOf(false) }
     // null = closed, NEW = adding, otherwise the id of the symptom being edited.
     var editingSymptomId by rememberSaveable { mutableStateOf<String?>(null) }
     // Deleting stored photos outlives the editor or list that asked for it.
@@ -233,6 +236,7 @@ fun App(
     LaunchedEffect(launchRequest) {
         if (launchRequest != null) {
             tab = Tab.TODAY
+            showArchive = false
             editingId = null
             editingSymptomId = null
         }
@@ -299,6 +303,19 @@ fun App(
                             editingId = null
                         },
                         onClose = { editingId = null },
+                    )
+                    return@Box
+                }
+                val archived = data.archivedMedications
+                // Emptied (all reactivated or deleted), the archive closes for good.
+                LaunchedEffect(archived.isEmpty()) { if (archived.isEmpty()) showArchive = false }
+                if (showArchive && archived.isNotEmpty()) {
+                    ArchiveScreen(
+                        medications = archived,
+                        onEdit = { editingId = it.id },
+                        onRestore = viewModel::unarchiveMedications,
+                        onDelete = viewModel::deleteMedications,
+                        onClose = { showArchive = false },
                     )
                     return@Box
                 }
@@ -428,10 +445,14 @@ fun App(
 
                             Tab.MEDICATIONS -> {
                                 MedicationsScreen(
-                                    medications = data.medications,
+                                    medications = data.activeMedications,
                                     onEdit = { editingId = it.id },
                                     onAdd = { editingId = NEW },
                                     onAddCourse = { editingId = NEW_COURSE },
+                                    archivedCount = archived.size,
+                                    onOpenArchive = { showArchive = true },
+                                    onArchive = viewModel::archiveMedications,
+                                    onDelete = viewModel::deleteMedications,
                                 )
                             }
 

@@ -457,4 +457,24 @@
     </plurals>
     <string name="symptoms_delete_photos">Attached photos are deleted too.</string>
     <string name="action_delete_selected">Delete (%1$d)</string>
+    <string name="end_kind_never">No end</string>
+    <string name="course_open_ended">No end date</string>
+    <string name="course_summary_open">No end date · first dose %1$s at %2$s</string>
+    <string name="course_dose_number">%1$s · dose %2$d</string>
+    <string name="field_amount_optional">Amount (optional)</string>
+    <string name="course_pack_needs_amount">Enter the amount per dose to know when the pack runs out.</string>
+    <string name="medications_select">Edit medications</string>
+    <string name="archive_title">Archive</string>
+    <string name="archive_open">Open the archive</string>
+    <string name="archive_intro">Archived medications give no reminders or alerts. Their earlier doses stay in History.</string>
+    <string name="action_archive_selected">Archive (%1$d)</string>
+    <string name="action_restore_selected">Restore (%1$d)</string>
+    <plurals name="medications_delete_confirm">
+        <item quantity="one">Delete %1$d medication and its history?</item>
+        <item quantity="other">Delete %1$d medications and their history?</item>
+    </plurals>
+    <plurals name="archive_count">
+        <item quantity="one">%1$d archived</item>
+        <item quantity="other">%1$d archived</item>
+    </plurals>
 </resources>

@@ -192,10 +192,11 @@ private fun sheetMedication(
     var frequencyNote: String? = null
     if (course != null) {
         val interval = intervalLabel(course.intervalHours)
-        val amount = doseLabel(course.amount, course.unit)
-        doses = listOf(SheetDose(time = "", label = interval, amount = amount))
+        val amount = course.doseLabel()
+        // A course without an amount per dose prints a dash in the amount column.
+        doses = listOf(SheetDose(time = "", label = interval, amount = amount ?: "—"))
         slots = emptyMap()
-        courseLine = "$interval · $amount"
+        courseLine = listOfNotNull(interval, amount).joinToString(" · ")
         details += stringResource(Res.string.pdf_first_dose) to dateTime(course.firstDose)
         course.plannedLastDose()?.let { details += stringResource(Res.string.pdf_last_dose) to dateTime(it) }
     } else {

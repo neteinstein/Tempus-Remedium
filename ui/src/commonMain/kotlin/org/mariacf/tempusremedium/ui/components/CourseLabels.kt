@@ -67,8 +67,9 @@ fun doseLabel(
         DoseUnit.UNITS -> pluralStringResource(Res.plurals.dose_units, ceil(amount).toInt().coerceAtLeast(1), amount.decimal())
     }
 
+/** The amount of each dose, or null when the course does not set one. */
 @Composable
-fun Course.doseLabel(): String = doseLabel(amount, unit)
+fun Course.doseLabel(): String? = amount?.let { doseLabel(it, unit) }
 
 /** "De 8 em 8 horas". */
 @Composable

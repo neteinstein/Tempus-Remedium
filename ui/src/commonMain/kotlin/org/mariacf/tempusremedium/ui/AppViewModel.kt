@@ -21,13 +21,16 @@ import org.mariacf.tempusremedium.core.model.Settings
 import org.mariacf.tempusremedium.core.model.Symptom
 import org.mariacf.tempusremedium.core.model.TimeSlot
 import org.mariacf.tempusremedium.core.schedule.acknowledgeStockAlert
+import org.mariacf.tempusremedium.core.schedule.archiveMedications
 import org.mariacf.tempusremedium.core.schedule.deleteMedication
+import org.mariacf.tempusremedium.core.schedule.deleteMedications
 import org.mariacf.tempusremedium.core.schedule.deleteSymptoms
 import org.mariacf.tempusremedium.core.schedule.dismissCalendarOffer
 import org.mariacf.tempusremedium.core.schedule.logCourseDose
 import org.mariacf.tempusremedium.core.schedule.logDose
 import org.mariacf.tempusremedium.core.schedule.logSlot
 import org.mariacf.tempusremedium.core.schedule.refill
+import org.mariacf.tempusremedium.core.schedule.unarchiveMedications
 import org.mariacf.tempusremedium.core.schedule.undoCourseDose
 import org.mariacf.tempusremedium.core.schedule.undoDose
 import org.mariacf.tempusremedium.core.schedule.upsertMedication
@@ -96,6 +99,12 @@ class AppViewModel(
     fun saveMedication(medication: Medication) = update { it.upsertMedication(medication) }
 
     fun deleteMedication(id: String) = update { it.deleteMedication(id) }
+
+    fun deleteMedications(ids: Set<String>) = update { it.deleteMedications(ids) }
+
+    fun archiveMedications(ids: Set<String>) = update { it.archiveMedications(ids, currentTime()) }
+
+    fun unarchiveMedications(ids: Set<String>) = update { it.unarchiveMedications(ids, currentTime()) }
 
     fun saveSymptom(symptom: Symptom) = update { it.upsertSymptom(symptom) }
 

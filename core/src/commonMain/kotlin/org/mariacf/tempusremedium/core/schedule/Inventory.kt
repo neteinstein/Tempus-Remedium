@@ -34,7 +34,7 @@ object Inventory {
 
     fun isLow(medication: Medication): Boolean {
         val stock = medication.stock ?: return false
-        return !medication.archived && stock.remaining <= threshold(medication)
+        return !medication.isArchived && stock.remaining <= threshold(medication)
     }
 }
 
