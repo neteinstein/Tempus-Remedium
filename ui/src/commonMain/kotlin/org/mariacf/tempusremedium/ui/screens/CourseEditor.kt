@@ -551,7 +551,7 @@ fun CourseEditor(
     }
 }
 
-/** "21 tomas · última toma qua., 29 às 00:00", or "Sem data de fim · primeira toma ..." for a course with no end. */
+/** "21 tomas · última toma qua., 29 às 00:00", or "Até indicação médica · primeira toma ..." for a course with no end. */
 @Composable
 private fun CourseSummary(
     course: Course?,

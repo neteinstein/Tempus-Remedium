@@ -439,9 +439,9 @@
     </plurals>
     <string name="symptoms_delete_photos">Angehängte Fotos werden ebenfalls gelöscht.</string>
     <string name="action_delete_selected">Löschen (%1$d)</string>
-    <string name="end_kind_never">Ohne Ende</string>
-    <string name="course_open_ended">Ohne Enddatum</string>
-    <string name="course_summary_open">Ohne Enddatum · erste Einnahme %1$s um %2$s</string>
+    <string name="end_kind_never">Bis auf ärztliche Anweisung</string>
+    <string name="course_open_ended">Bis auf ärztliche Anweisung</string>
+    <string name="course_summary_open">Bis auf ärztliche Anweisung · erste Einnahme %1$s um %2$s</string>
     <string name="course_dose_number">%1$s · Einnahme %2$d</string>
     <string name="field_amount_optional">Menge (optional)</string>
     <string name="course_pack_needs_amount">Geben Sie die Menge pro Einnahme an, um zu wissen, wann die Packung leer ist.</string>

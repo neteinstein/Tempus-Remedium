@@ -439,9 +439,9 @@
     </plurals>
     <string name="symptoms_delete_photos">Les photos jointes sont aussi supprimées.</string>
     <string name="action_delete_selected">Supprimer (%1$d)</string>
-    <string name="end_kind_never">Sans fin</string>
-    <string name="course_open_ended">Sans date de fin</string>
-    <string name="course_summary_open">Sans date de fin · première prise %1$s à %2$s</string>
+    <string name="end_kind_never">Jusqu’à avis médical</string>
+    <string name="course_open_ended">Jusqu’à avis médical</string>
+    <string name="course_summary_open">Jusqu’à avis médical · première prise %1$s à %2$s</string>
     <string name="course_dose_number">%1$s · prise %2$d</string>
     <string name="field_amount_optional">Quantité (facultatif)</string>
     <string name="course_pack_needs_amount">Indiquez la quantité par prise pour savoir quand la boîte sera finie.</string>

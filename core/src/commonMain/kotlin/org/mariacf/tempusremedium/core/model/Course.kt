@@ -51,7 +51,7 @@ sealed interface CourseEnd {
         val packAmount: Double,
     ) : CourseEnd
 
-    /** No end: the course goes on until it is archived or deleted. */
+    /** "Até indicação médica": no end, the course goes on until it is archived or deleted. */
     @Serializable
     @SerialName("none")
     data object Never : CourseEnd
