@@ -399,6 +399,7 @@
     <string name="symptom_field_name">Symptom</string>
     <string name="symptom_when">Wann</string>
     <string name="day_yesterday">Gestern</string>
+    <string name="day_pick">Tag wählen</string>
     <string name="symptom_at">%1$s · %2$s</string>
     <string name="settings_symptoms_in_history">Im Verlauf anzeigen</string>
     <string name="settings_symptoms_in_history_body">Zeigt die Symptome jedes Tages neben den Dosen.</string>

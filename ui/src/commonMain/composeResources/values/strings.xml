@@ -430,6 +430,7 @@
     <string name="symptom_field_name">Sintoma</string>
     <string name="symptom_when">Quando</string>
     <string name="day_yesterday">Ontem</string>
+    <string name="day_pick">Escolher dia</string>
     <string name="symptom_at">%1$s · %2$s</string>
     <string name="settings_symptoms_in_history">Mostrar no Histórico</string>
     <string name="settings_symptoms_in_history_body">Lista os sintomas de cada dia junto às doses.</string>

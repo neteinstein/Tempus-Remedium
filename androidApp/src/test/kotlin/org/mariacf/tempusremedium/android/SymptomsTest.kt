@@ -2,6 +2,7 @@ package org.mariacf.tempusremedium.android
 
 import android.app.Application
 import androidx.compose.runtime.remember
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
@@ -120,6 +121,29 @@ class SymptomsTest {
             repository.data.value.symptoms
                 .single()
                 .name,
+        )
+    }
+
+    @Test
+    fun picksAnOlderDayFromTheCalendar() {
+        val repository = show(ReferenceFixtures.data)
+        composeRule.onNodeWithText("Sintomas").performClick()
+        composeRule.onNodeWithText("+  Registar sintoma").performClick()
+        composeRule.onNodeWithText("Sintoma").performTextReplacement("Formigueiro")
+        composeRule.onNodeWithText("Escolher dia").performScrollTo().performClick()
+        // Tomorrow cannot be chosen.
+        composeRule.onNode(hasText("sexta-feira, 23 de outubro de 2026") and hasAnyAncestor(isDialog())).assertIsNotEnabled()
+        composeRule.onNode(hasText("quinta-feira, 15 de outubro de 2026") and hasAnyAncestor(isDialog())).performClick()
+        composeRule.onNode(hasText("OK") and hasAnyAncestor(isDialog())).performClick()
+        composeRule.onNodeWithText("quinta-feira, 15 de outubro").assertExists()
+        composeRule.onNodeWithText("Guardar").performClick()
+        composeRule.waitForIdle()
+
+        assertEquals(
+            LocalDate(2026, 10, 15),
+            repository.data.value.symptoms
+                .single()
+                .at.date,
         )
     }
 
