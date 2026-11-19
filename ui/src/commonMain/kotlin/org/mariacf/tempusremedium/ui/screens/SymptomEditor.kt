@@ -15,14 +15,19 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,15 +64,17 @@ import org.mariacf.tempusremedium.ui.components.BrandButton
 import org.mariacf.tempusremedium.ui.components.SoftButton
 import org.mariacf.tempusremedium.ui.components.SymptomPhoto
 import org.mariacf.tempusremedium.ui.components.brandBackground
-import org.mariacf.tempusremedium.ui.components.dayLabel
+import org.mariacf.tempusremedium.ui.components.longDateLabel
 import org.mariacf.tempusremedium.ui.resources.Res
 import org.mariacf.tempusremedium.ui.resources.action_back
 import org.mariacf.tempusremedium.ui.resources.action_cancel
 import org.mariacf.tempusremedium.ui.resources.action_choose_photo
 import org.mariacf.tempusremedium.ui.resources.action_delete
+import org.mariacf.tempusremedium.ui.resources.action_ok
 import org.mariacf.tempusremedium.ui.resources.action_remove_photo
 import org.mariacf.tempusremedium.ui.resources.action_save
 import org.mariacf.tempusremedium.ui.resources.action_take_photo
+import org.mariacf.tempusremedium.ui.resources.day_pick
 import org.mariacf.tempusremedium.ui.resources.day_today
 import org.mariacf.tempusremedium.ui.resources.day_yesterday
 import org.mariacf.tempusremedium.ui.resources.field_time
@@ -156,6 +163,7 @@ fun SymptomEditor(
     var busy by remember { mutableStateOf(false) }
     var photoFailed by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
+    var pickingDay by remember { mutableStateOf(false) }
 
     val day = LocalDate.parse(date)
     val parsedTime = FieldInput.parseTimeDigits(time)
@@ -262,10 +270,12 @@ fun SymptomEditor(
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 FrequencyChip(stringResource(Res.string.day_today), day == today) { date = today.toString() }
                 FrequencyChip(stringResource(Res.string.day_yesterday), day == yesterday) { date = yesterday.toString() }
-                // An older symptom keeps its own day as a third choice.
-                if (startedAt.date != today && startedAt.date != yesterday) {
-                    FrequencyChip(dayLabel(startedAt.date), day == startedAt.date) { date = startedAt.date.toString() }
-                }
+                // Any other day comes from the calendar; once chosen, the chip shows it.
+                val otherDay = day != today && day != yesterday
+                FrequencyChip(
+                    if (otherDay) longDateLabel(day) else stringResource(Res.string.day_pick),
+                    selected = otherDay,
+                ) { pickingDay = true }
             }
             TimeField(
                 digits = time,
@@ -333,6 +343,18 @@ fun SymptomEditor(
         }
     }
 
+    if (pickingDay) {
+        SymptomDayPicker(
+            initial = day,
+            today = today,
+            onPick = {
+                date = it.toString()
+                pickingDay = false
+            },
+            onDismiss = { pickingDay = false },
+        )
+    }
+
     if (confirmDelete && symptom != null) {
         DeleteSymptomsDialog(
             count = 1,
@@ -343,6 +365,64 @@ fun SymptomEditor(
                 finish(EditorOutcome.DELETED)
             },
             onDismiss = { confirmDelete = false },
+        )
+    }
+}
+
+private const val MILLIS_PER_DAY = 86_400_000L
+
+/** Calendar for the symptom's day: from a year before [today] up to [today]. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SymptomDayPicker(
+    initial: LocalDate,
+    today: LocalDate,
+    onPick: (LocalDate) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val earliest = today.minus(DatePeriod(years = 1))
+    val firstMillis = earliest.toEpochDays() * MILLIS_PER_DAY
+    val lastMillis = today.toEpochDays() * MILLIS_PER_DAY
+    val state =
+        rememberDatePickerState(
+            initialSelectedDateMillis = initial.toEpochDays() * MILLIS_PER_DAY,
+            yearRange = earliest.year..today.year,
+            selectableDates =
+                object : SelectableDates {
+                    override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis in firstMillis..lastMillis
+
+                    override fun isSelectableYear(year: Int): Boolean = year in earliest.year..today.year
+                },
+        )
+    val palette = TempusTheme.colors
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = { state.selectedDateMillis?.let { onPick(LocalDate.fromEpochDays(it / MILLIS_PER_DAY)) } },
+                enabled = state.selectedDateMillis != null,
+            ) {
+                Text(stringResource(Res.string.action_ok), style = TempusTheme.type.button, color = palette.accent)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.action_cancel), style = TempusTheme.type.button, color = palette.inkSoft)
+            }
+        },
+        colors = DatePickerDefaults.colors(containerColor = palette.background),
+    ) {
+        DatePicker(
+            state = state,
+            showModeToggle = false,
+            colors =
+                DatePickerDefaults.colors(
+                    containerColor = palette.background,
+                    selectedDayContainerColor = palette.accent,
+                    todayDateBorderColor = palette.accent,
+                    todayContentColor = palette.accent,
+                    selectedYearContainerColor = palette.accent,
+                ),
         )
     }
 }
