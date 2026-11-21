@@ -112,6 +112,9 @@
     <string name="install_home_screen">Instala la app: toca Compartir y luego «Añadir a pantalla de inicio».</string>
     <string name="install_store">Instala la app para Android, con recordatorios y widgets.</string>
     <string name="install_store_action">Instalar</string>
+    <string name="install_browser">Instala la app en este dispositivo, para abrirla como las demás.</string>
+    <string name="install_browser_computer">Instala la app en este ordenador. También hay una app para Android, con recordatorios y widgets.</string>
+    <string name="install_dock">Instala la app: en el menú Archivo, elige «Añadir al Dock». También hay una app para Android, con recordatorios y widgets.</string>
     <string name="install_banner_close">Cerrar aviso de instalación</string>
     <string name="calendar_offer">Con la app cerrada no hay avisos. Añada los recordatorios al calendario del teléfono.</string>
     <string name="calendar_offer_action">Añadir</string>

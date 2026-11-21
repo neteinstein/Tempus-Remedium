@@ -112,6 +112,9 @@
     <string name="install_home_screen">Installez l’app : touchez Partager, puis « Sur l’écran d’accueil ».</string>
     <string name="install_store">Installez l’app Android, avec rappels et widgets.</string>
     <string name="install_store_action">Installer</string>
+    <string name="install_browser">Installez l’app sur cet appareil, pour l’ouvrir comme les autres.</string>
+    <string name="install_browser_computer">Installez l’app sur cet ordinateur. Il existe aussi une app Android, avec rappels et widgets.</string>
+    <string name="install_dock">Installez l’app : dans le menu Fichier, choisissez « Ajouter au Dock ». Il existe aussi une app Android, avec rappels et widgets.</string>
     <string name="install_banner_close">Fermer l’astuce d’installation</string>
     <string name="calendar_offer">Aucune alerte quand l’app est fermée. Ajoutez les rappels au calendrier du téléphone.</string>
     <string name="calendar_offer_action">Ajouter</string>

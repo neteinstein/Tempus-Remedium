@@ -127,7 +127,7 @@ interface CalendarSupport {
     fun cancel()
 }
 
-/** What the web suggests installing, by the phone it runs on. */
+/** What the web suggests installing, by the device and browser it runs on. */
 sealed interface InstallPrompt {
     /** iPhone or iPad browser: add the web app to the home screen through Share. */
     data object HomeScreen : InstallPrompt
@@ -136,6 +136,18 @@ sealed interface InstallPrompt {
     class Store(
         val open: () -> Unit,
     ) : InstallPrompt
+
+    /**
+     * A browser that installs web apps in one tap (Chrome, Edge…) on anything but Android. On a
+     * computer, [onComputer] also reminds that the Android app does more.
+     */
+    class Browser(
+        val onComputer: Boolean,
+        val install: () -> Unit,
+    ) : InstallPrompt
+
+    /** Safari on a Mac: File › Add to Dock, with the same reminder of the Android app. */
+    data object Dock : InstallPrompt
 }
 
 /** What a platform adds to the shared app (Android: reminders and widgets; web: storage notice). */
@@ -151,8 +163,11 @@ class PlatformUi(
     /** Asks for the first missing permission (the system dialog, or its settings screen). */
     val requestPermissions: () -> Unit = {},
     val widgets: WidgetSupport? = null,
-    /** Shown at the top until the user closes it (web in a phone's browser). */
-    val installPrompt: InstallPrompt? = null,
+    /**
+     * Shown at the top until the user closes it (web in a browser tab). Read in composition, so
+     * platforms back it with snapshot state (a browser may offer installing only after a while).
+     */
+    val installPrompt: () -> InstallPrompt? = { null },
     /** The calendar standing in for reminders with the app closed (web). */
     val calendar: CalendarSupport? = null,
     /** Saving and opening files, for Exportar e importar in Definições; null hides the section. */
@@ -322,7 +337,7 @@ fun App(
                 val showPermissionsBanner =
                     permissionsMissing && data.settings.remindersEnabled && data.activeMedications.isNotEmpty()
                 val showWidgetBanner = !widgetPlaced && data.medications.isNotEmpty() && !data.settings.widgetPromptDismissed
-                val installPrompt = platform.installPrompt?.takeUnless { data.settings.installPromptDismissed }
+                val installPrompt = platform.installPrompt()?.takeUnless { data.settings.installPromptDismissed }
                 Scaffold(
                     containerColor = Color.Transparent,
                     topBar = {

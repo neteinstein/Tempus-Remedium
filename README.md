@@ -92,7 +92,7 @@ calm blues, frosted cards, and a light and a dark theme.
 | "Add the widget" bar and a step-by-step guide (home and lock screen), with one-tap pinning where the launcher allows it | ✅ | — |
 | Permissões section in Definições: a missing reminder permission (notifications, on-time alarms) shows in red, with a red bar on top that leads there | ✅ | — |
 | Installable on the home screen, works offline (manifest and service worker) | — | ✅ |
-| Install bar in a phone's browser: on iPhone/iPad, how to add the app to the home screen; on Android, a link to the native app on Google Play | — | ✅ |
+| Install bar in a browser tab: on iPhone/iPad, how to add the app to the home screen; on Android, a link to the native app on Google Play; elsewhere, an Install button for the browser's own install dialog (Chrome, Edge…) or, in Safari on a Mac, File › Add to Dock; on a computer it also mentions the Android app | — | ✅ |
 | Data storage | On the device | In the browser (localStorage, marked persistent where the browser allows) |
 
 ### The web version on iPhone

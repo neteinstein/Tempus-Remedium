@@ -28,6 +28,9 @@ import org.jetbrains.compose.resources.stringResource
 import org.mariacf.tempusremedium.ui.InstallPrompt
 import org.mariacf.tempusremedium.ui.resources.Res
 import org.mariacf.tempusremedium.ui.resources.install_banner_close
+import org.mariacf.tempusremedium.ui.resources.install_browser
+import org.mariacf.tempusremedium.ui.resources.install_browser_computer
+import org.mariacf.tempusremedium.ui.resources.install_dock
 import org.mariacf.tempusremedium.ui.resources.install_home_screen
 import org.mariacf.tempusremedium.ui.resources.install_store
 import org.mariacf.tempusremedium.ui.resources.install_store_action
@@ -35,7 +38,8 @@ import org.mariacf.tempusremedium.ui.theme.TempusTheme
 
 /**
  * The web's bar at the top of the app: on an iPhone or iPad, how to add it to the home screen;
- * on Android, the native app on the store.
+ * on Android, the native app on the store; elsewhere, installing the web app from the browser,
+ * on a computer with a reminder that the Android app does more.
  */
 @Composable
 fun InstallBanner(
@@ -43,23 +47,35 @@ fun InstallBanner(
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val store = prompt as? InstallPrompt.Store
+    val text =
+        when (prompt) {
+            InstallPrompt.HomeScreen -> Res.string.install_home_screen
+            is InstallPrompt.Store -> Res.string.install_store
+            is InstallPrompt.Browser -> if (prompt.onComputer) Res.string.install_browser_computer else Res.string.install_browser
+            InstallPrompt.Dock -> Res.string.install_dock
+        }
+    val action =
+        when (prompt) {
+            is InstallPrompt.Store -> prompt.open
+            is InstallPrompt.Browser -> prompt.install
+            InstallPrompt.HomeScreen, InstallPrompt.Dock -> null
+        }
     Row(
         modifier
             .fillMaxWidth()
             .background(TempusTheme.colors.brandBrush)
             .windowInsetsPadding(WindowInsets.statusBars)
-            .then(if (store != null) Modifier.clickable(role = Role.Button, onClick = store.open) else Modifier)
+            .then(if (action != null) Modifier.clickable(role = Role.Button, onClick = action) else Modifier)
             .padding(start = 20.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            stringResource(if (store != null) Res.string.install_store else Res.string.install_home_screen),
+            stringResource(text),
             style = TempusTheme.type.button,
             color = Color.White,
             modifier = Modifier.weight(1f).padding(vertical = 12.dp),
         )
-        if (store != null) {
+        if (action != null) {
             Spacer(Modifier.width(12.dp))
             Text(
                 stringResource(Res.string.install_store_action),
