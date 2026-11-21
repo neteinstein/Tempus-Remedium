@@ -126,6 +126,9 @@
     <string name="install_home_screen">Instale a app: toque em Partilhar e depois em «Adicionar ao ecrã principal».</string>
     <string name="install_store">Instale a app para Android, com lembretes e widgets.</string>
     <string name="install_store_action">Instalar</string>
+    <string name="install_browser">Instale a app neste dispositivo, para a abrir como as outras.</string>
+    <string name="install_browser_computer">Instale a app neste computador. Também há uma app para Android, com lembretes e widgets.</string>
+    <string name="install_dock">Instale a app: no menu Ficheiro, escolha «Adicionar à Dock». Também há uma app para Android, com lembretes e widgets.</string>
     <string name="install_banner_close">Fechar aviso de instalação</string>
     <string name="calendar_offer">Com a app fechada não há avisos. Adicione os lembretes ao calendário do telemóvel.</string>
     <string name="calendar_offer_action">Adicionar</string>

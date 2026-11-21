@@ -73,12 +73,22 @@ private const val SPLASH_FADE_MS = 320L
 /** The native app, which has the reminders and widgets the web lacks. */
 private const val STORE_URL = "https://play.google.com/store/apps/details?id=org.mariacf.tempusremedium"
 
-/** In a phone's browser, what to install instead: the home screen web app (iOS) or the native app (Android). */
+/** True while the browser offers to install the web app (see watchInstallable). */
+private var installable by mutableStateOf(false)
+
+/**
+ * In a browser tab, what to install: the native app on Android; elsewhere the web app, through
+ * the browser's own dialog where it has one, else the steps (Share on iPhone and iPad, File ›
+ * Add to Dock in Safari on a Mac). On a computer the bar also mentions the Android app.
+ * Browsers that cannot install web apps get no bar. Reads [installable], so it is read in composition.
+ */
 private fun installPrompt(): InstallPrompt? =
     when {
         isStandalone() -> null
         isIos() -> InstallPrompt.HomeScreen
         isAndroid() -> InstallPrompt.Store { window.open(STORE_URL, "_blank") }
+        installable -> InstallPrompt.Browser(onComputer = !isMobile(), install = ::promptInstall)
+        isMacSafari() -> InstallPrompt.Dock
         else -> null
     }
 
@@ -172,13 +182,14 @@ fun main() {
                 listOf(Res.string.settings_browser_storage, Res.string.settings_web_reduced).forEach { Note(stringResource(it)) }
             },
             onDarkThemeChange = { dark -> setThemeColor(if (dark) THEME_COLOR_DARK else THEME_COLOR_LIGHT) },
-            installPrompt = installPrompt(),
+            installPrompt = ::installPrompt,
             calendar = calendar,
             files = WebFileTransfer,
             photos = WebPhotoStore,
         )
     // A container of its own: the viewport takes over its element, and the splash must stay visible.
     persistStorage()
+    watchInstallable { installable = it }
     var launchRequest by mutableStateOf(launchRequestFromAddress())
     clearQuery()
     ComposeViewport(document.getElementById("app")!!) {

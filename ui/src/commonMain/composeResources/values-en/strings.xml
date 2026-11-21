@@ -123,6 +123,9 @@
     <string name="install_home_screen">Install the app: tap Share, then “Add to Home Screen”.</string>
     <string name="install_store">Get the Android app, with reminders and widgets.</string>
     <string name="install_store_action">Install</string>
+    <string name="install_browser">Install the app on this device, to open it like your other apps.</string>
+    <string name="install_browser_computer">Install the app on this computer. There is also an Android app, with reminders and widgets.</string>
+    <string name="install_dock">Install the app: in the File menu, choose “Add to Dock”. There is also an Android app, with reminders and widgets.</string>
     <string name="install_banner_close">Close install tip</string>
     <string name="calendar_offer">There are no alerts with the app closed. Add the reminders to your phone’s calendar.</string>
     <string name="calendar_offer_action">Add</string>

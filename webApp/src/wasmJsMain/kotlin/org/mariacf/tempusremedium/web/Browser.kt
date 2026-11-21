@@ -11,6 +11,48 @@ external fun isIos(): Boolean
 @JsFun("() => /Android/i.test(navigator.userAgent)")
 external fun isAndroid(): Boolean
 
+/** A phone or tablet, as opposed to a computer (iPadOS reports itself as a Mac, but with touch). */
+@JsFun(
+    "() => /Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)",
+)
+external fun isMobile(): Boolean
+
+/** Safari 17+ on a Mac, which installs web apps through File › Add to Dock but has no install event. */
+@JsFun(
+    """() => {
+        const ua = navigator.userAgent;
+        const version = /Version\/(\d+)[.\d]* Safari\//.exec(ua);
+        return /Macintosh/.test(ua) && navigator.maxTouchPoints <= 1 && !/Chrome|Chromium|Edg|Firefox|OPR/.test(ua) &&
+            version !== null && Number(version[1]) >= 17;
+    }""",
+)
+external fun isMacSafari(): Boolean
+
+/**
+ * Calls [onChange] now and each time the browser's offer to install the web app comes or goes
+ * (the beforeinstallprompt and appinstalled events, caught in index.html).
+ */
+@JsFun(
+    """(onChange) => {
+        const update = () => onChange(!!window.__installEvent);
+        window.addEventListener('tempus-installable', update);
+        update();
+    }""",
+)
+external fun watchInstallable(onChange: (Boolean) -> Unit)
+
+/** Shows the browser's install dialog. An offer can be used once, so it is dropped (the browser may make another). */
+@JsFun(
+    """() => {
+        const event = window.__installEvent;
+        if (!event) return;
+        event.prompt().catch(() => {});
+        window.__installEvent = null;
+        window.dispatchEvent(new Event('tempus-installable'));
+    }""",
+)
+external fun promptInstall()
+
 /** Opened from the home screen icon rather than in a browser tab. */
 @JsFun("() => window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches")
 external fun isStandalone(): Boolean

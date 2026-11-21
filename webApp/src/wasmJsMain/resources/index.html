@@ -46,6 +46,16 @@
         @media (prefers-reduced-motion: reduce) { #splash img { animation: none; } }
     </style>
     <script>
+        // The browser's offer to install the web app (Chrome, Edge…), kept for the app's own install bar
+        // (see watchInstallable in Browser.kt). It can come before the Wasm app has loaded. Android
+        // browsers are left alone: the app suggests the native Android app there instead.
+        (function () {
+            var changed = function (event) { window.__installEvent = event; window.dispatchEvent(new Event('tempus-installable')); };
+            if (!/Android/i.test(navigator.userAgent)) {
+                window.addEventListener('beforeinstallprompt', function (event) { event.preventDefault(); changed(event); });
+            }
+            window.addEventListener('appinstalled', function () { changed(null); });
+        })();
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
         }

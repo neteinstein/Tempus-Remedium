@@ -112,6 +112,9 @@
     <string name="install_home_screen">App installieren: Tippen Sie auf „Teilen“ und dann auf „Zum Home-Bildschirm“.</string>
     <string name="install_store">Installieren Sie die Android-App mit Erinnerungen und Widgets.</string>
     <string name="install_store_action">Installieren</string>
+    <string name="install_browser">Installieren Sie die App auf diesem Gerät, um sie wie Ihre anderen Apps zu öffnen.</string>
+    <string name="install_browser_computer">Installieren Sie die App auf diesem Computer. Es gibt auch eine Android-App mit Erinnerungen und Widgets.</string>
+    <string name="install_dock">App installieren: Wählen Sie im Menü „Ablage“ den Befehl „Zum Dock hinzufügen“. Es gibt auch eine Android-App mit Erinnerungen und Widgets.</string>
     <string name="install_banner_close">Installationshinweis schließen</string>
     <string name="calendar_offer">Bei geschlossener App gibt es keine Hinweise. Fügen Sie die Erinnerungen zum Kalender des Telefons hinzu.</string>
     <string name="calendar_offer_action">Hinzufügen</string>
