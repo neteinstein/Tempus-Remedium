@@ -21,7 +21,7 @@ roborazzi = "1.79.0"
 kover = "0.9.11"
 ktlintGradle = "14.2.0"
 ktlint = "1.8.0"
-playPublisher = "4.1.1"
+playPublisher = "4.1.2"
 compose-rules = "0.6.8"
 
 android-compileSdk = "37"
