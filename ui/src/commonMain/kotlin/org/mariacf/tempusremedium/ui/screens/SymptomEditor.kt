@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -53,6 +54,7 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.mariacf.tempusremedium.core.input.Collation
 import org.mariacf.tempusremedium.core.input.FieldInput
+import org.mariacf.tempusremedium.core.input.SymptomNames
 import org.mariacf.tempusremedium.core.model.Symptom
 import org.mariacf.tempusremedium.core.model.newSymptomId
 import org.mariacf.tempusremedium.core.schedule.EditorOutcome
@@ -108,7 +110,8 @@ import org.mariacf.tempusremedium.ui.resources.symptoms_delete_confirm
 import org.mariacf.tempusremedium.ui.resources.symptoms_delete_photos
 import org.mariacf.tempusremedium.ui.theme.TempusTheme
 
-/** Common symptoms, offered as chips in alphabetical order of the language in use; the name stays free text. */
+/** Common symptoms, offered as chips in alphabetical order of the language in use. Several can be
+ * picked at once (they join the field as "Náuseas, Vómitos"); the name stays free text. */
 private val SuggestedSymptoms: List<StringResource> =
     listOf(
         Res.string.symptom_nausea,
@@ -167,7 +170,7 @@ fun SymptomEditor(
 
     val day = LocalDate.parse(date)
     val parsedTime = FieldInput.parseTimeDigits(time)
-    val canSave = name.isNotBlank() && parsedTime != null && !busy
+    val canSave = SymptomNames.split(name).isNotEmpty() && parsedTime != null && !busy
 
     fun finish(outcome: EditorOutcome) {
         onDiscardPhotos(discardedPhotos(original, photo, outcome))
@@ -230,7 +233,7 @@ fun SymptomEditor(
                             onSave(
                                 Symptom(
                                     id = symptom?.id ?: newSymptomId(),
-                                    name = name.trim(),
+                                    name = SymptomNames.normalize(name),
                                     at = LocalDateTime(day, at),
                                     photo = photo,
                                 ),
@@ -247,6 +250,8 @@ fun SymptomEditor(
         Column(
             Modifier
                 .fillMaxSize()
+                // Keeps the focused field above the keyboard (edge-to-edge, so adjustResize alone does nothing).
+                .imePadding()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -262,7 +267,7 @@ fun SymptomEditor(
             val suggestions = SuggestedSymptoms.map { stringResource(it) }
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Collation.sort(suggestions) { it }.forEach { label ->
-                    FrequencyChip(label, selected = name.trim() == label) { name = label }
+                    FrequencyChip(label, selected = SymptomNames.contains(name, label)) { name = SymptomNames.toggle(name, label) }
                 }
             }
 
