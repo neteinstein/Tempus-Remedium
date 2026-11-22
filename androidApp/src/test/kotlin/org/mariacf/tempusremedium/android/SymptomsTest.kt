@@ -5,6 +5,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.test.isToggleable
@@ -100,6 +101,24 @@ class SymptomsTest {
     }
 
     @Test
+    fun picksSeveralCommonSymptomsAtOnce() {
+        val repository = show(ReferenceFixtures.data)
+        composeRule.onNodeWithText("Sintomas").performClick()
+        composeRule.onNodeWithText("+  Registar sintoma").performClick()
+        composeRule.onNodeWithText("Vómitos").performScrollTo().performClick()
+        composeRule.onNodeWithText("Náuseas").performScrollTo().performClick()
+        composeRule.onNodeWithText("Guardar").performClick()
+        composeRule.waitForIdle()
+
+        assertEquals(
+            "Vómitos, Náuseas",
+            repository.data.value.symptoms
+                .single()
+                .name,
+        )
+    }
+
+    @Test
     fun addsATypedSymptomYesterdayAtAnotherHour() {
         val repository = show(ReferenceFixtures.data)
         composeRule.onNodeWithText("Sintomas").performClick()
@@ -153,6 +172,8 @@ class SymptomsTest {
         composeRule.onNodeWithText("Sintomas").performClick()
         composeRule.onNodeWithText("Tonturas").performClick()
         composeRule.onNodeWithText("Editar sintoma").assertExists()
+        // Chips toggle: take Tonturas out (the chip, not the field showing it), then add Dor de cabeça.
+        composeRule.onNode(hasText("Tonturas") and !hasSetTextAction()).performScrollTo().performClick()
         composeRule.onNodeWithText("Dor de cabeça").performScrollTo().performClick()
         composeRule.onNodeWithText("Guardar").performClick()
         composeRule.waitForIdle()
