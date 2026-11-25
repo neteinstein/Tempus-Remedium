@@ -2,7 +2,7 @@
 
 The pipeline follows the project owner's standard Android + KMP pipeline: PR checks in parallel
 jobs, signed releases from `main` to GitHub Releases and the Play Console, and the web build on
-GitHub Pages and Cloudflare Pages (both paused for now). Where this project deviates from that standard, the last section says why.
+Cloudflare Pages (free plan). Where this project deviates from that standard, the last section says why.
 
 ## Workflows
 
@@ -10,7 +10,7 @@ GitHub Pages and Cloudflare Pages (both paused for now). Where this project devi
 | --- | --- | --- |
 | PR Checks | `.github/workflows/pr.yml` | Pull requests into `main` or `develop` (opened, synchronised, reopened) |
 | Release | `.github/workflows/release.yml` | Pushes to `main`; manual run |
-| Deploy Web | `.github/workflows/deploy-web.yml` | Pushes to `main`; manual run. **Paused:** each target runs only when its variable is `true` |
+| Deploy Web | `.github/workflows/deploy-web.yml` | Pushes to `main`; manual run. Runs only when `DEPLOY_CLOUDFLARE_PAGES` is `true` |
 | PR title | `.github/workflows/pr-title.yml` | Pull requests (opened, edited, updated) |
 | Dependabot | `.github/dependabot.yml` | Weekly `gradle` and `github-actions` update PRs |
 
@@ -62,23 +62,30 @@ On every push to `main`:
 
 ### Deploy Web
 
-Builds the Wasm distribution once and deploys it to two targets in parallel jobs. A target's job
-only runs when its variable is `true`, and the build is skipped while neither is. **GitHub Pages is
-on** (`DEPLOY_GITHUB_PAGES` = `true`, Pages source = GitHub Actions); Cloudflare Pages is paused.
+Builds the Wasm distribution and uploads it to the **Cloudflare Pages** project `tempus-remedium`
+(free plan, Direct Upload) with `cloudflare/wrangler-action` (`pages deploy … --branch=main`, so each
+push to `main` is a production deployment). The site is served at https://tempus-remedium.pages.dev/.
+The job only runs when `DEPLOY_CLOUDFLARE_PAGES` is `true`.
 
-| Target | Switch (variable) | One-time setup |
-| --- | --- | --- |
-| GitHub Pages (`actions/deploy-pages`, https://neteinstein.github.io/Tempus-Remedium/) | `DEPLOY_GITHUB_PAGES` = `true` | *Settings → Pages → Build and deployment → Source* = **GitHub Actions** |
-| Cloudflare Pages (`cloudflare/wrangler-action`, `pages deploy`) | `DEPLOY_CLOUDFLARE_PAGES` = `true` | Create a **Direct Upload** Pages project; set `CLOUDFLARE_PAGES_PROJECT` to its name and add the `CLOUDFLARE_API_TOKEN` (*Account → Cloudflare Pages → Edit*) and `CLOUDFLARE_ACCOUNT_ID` secrets |
+One-time setup:
 
-The site uses relative paths, so the same build works under the GitHub Pages subpath and at the root
-of `<project>.pages.dev`.
+1. The Pages project exists already (`cf pages create --name tempus-remedium --production-branch main`).
+   To use another name, create it the same way and set `CLOUDFLARE_PAGES_PROJECT`.
+2. Create an API token (*My Profile → API Tokens → Create Token → Custom*, permission
+   *Account → Cloudflare Pages → Edit*, scoped to the account) and add it as the
+   `CLOUDFLARE_API_TOKEN` secret; add the account ID as the `CLOUDFLARE_ACCOUNT_ID` secret.
+3. Set the `DEPLOY_CLOUDFLARE_PAGES` variable to `true`.
+
+The site uses relative paths, so it also works under a subpath if it is ever served from one.
+
+The web build used to be on GitHub Pages; that deploy was removed. Turn GitHub Pages off under
+*Settings → Pages* and delete the `DEPLOY_GITHUB_PAGES` variable.
 
 The site is an installable web app: `manifest.webmanifest`, `sw.js` and the `precache.json` that
 `wasmJsBrowserDistribution` writes (every file of the build, so the installed app opens offline).
 The same task stamps `sw.js` with a version made from the build's contents: each deploy gets its own
 cache, the app's files are served from it first, and the old cache is removed once the new worker
-takes over. The service worker needs HTTPS, which both targets serve; its scope is the folder the
+takes over. The service worker needs HTTPS, which Cloudflare Pages serves; its scope is the folder the
 site is in.
 
 ### PR title
@@ -97,10 +104,9 @@ fix, docs, style, refactor, perf, test, build, ci, chore or revert).
 | `ANDROID_PUBLISHER_CREDENTIALS` | secret, optional | Release | The JSON of a Play Console service account key with release permission for this app, pasted into the secret as is (not a file path). `scripts/play-credentials.py` also accepts it base64-encoded, quoted or with a BOM, validates it and writes it to a temporary file for the publish step |
 | `PLAY_TRACK` | variable, optional | Release | Play track to publish to (default `internal`) |
 | `CODECOV_TOKEN` | secret, optional | PR Checks | Codecov upload token |
-| `DEPLOY_GITHUB_PAGES` | variable, optional | Deploy Web | `true` turns on the GitHub Pages deploy (off when unset) |
 | `DEPLOY_CLOUDFLARE_PAGES` | variable, optional | Deploy Web | `true` turns on the Cloudflare Pages deploy (off when unset) |
-| `CLOUDFLARE_PAGES_PROJECT` | variable, optional | Deploy Web | Cloudflare Pages project name |
-| `CLOUDFLARE_API_TOKEN` | secret, optional | Deploy Web | API token with Cloudflare Pages edit permission |
+| `CLOUDFLARE_PAGES_PROJECT` | variable, optional | Deploy Web | Cloudflare Pages project name (default `tempus-remedium`) |
+| `CLOUDFLARE_API_TOKEN` | secret, optional | Deploy Web | API token with *Account → Cloudflare Pages → Edit* |
 | `CLOUDFLARE_ACCOUNT_ID` | secret, optional | Deploy Web | Cloudflare account ID |
 
 Until the four signing secrets are set, **Release fails on every push to `main`** at its first
@@ -115,7 +121,7 @@ falling back to debug signing and `1` / `1.0.0` locally.
 | Platform | Status |
 | --- | --- |
 | Android | Release builds are minified (R8 full mode), resource-shrunk and signed with the upload key from the secrets. Published on GitHub Releases (APK + AAB + mapping) and, once configured, to the Play Console's internal track. PRs build a debug APK and a debug-signed minified release. |
-| Web | No signing. Static Wasm site, deployable to GitHub Pages and Cloudflare Pages from `main`; both deploys paused for now. |
+| Web | No signing. Static Wasm site, deployed to Cloudflare Pages (https://tempus-remedium.pages.dev/) from `main`. |
 | iOS | No app, no signing. The PR's iOS job is disabled; compile locally. |
 
 ## Play Console
