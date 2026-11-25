@@ -1,14 +1,10 @@
 name: Deploy Web
 
-# Deploys webApp's wasmJs production build to GitHub Pages and Cloudflare Pages, in parallel, on
-# every push to `main`. Both targets are paused for now: each deploy job only runs when its repo
-# variable is 'true' (Settings -> Secrets and variables -> Actions -> Variables), and the build is
-# skipped while neither is set. Setup for each target is in CI_CD.md.
-#
-# - DEPLOY_GITHUB_PAGES: needs Settings -> Pages -> Source = "GitHub Actions" (actions/deploy-pages
-#   only takes effect under that source setting).
-# - DEPLOY_CLOUDFLARE_PAGES: needs the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets and the
-#   CLOUDFLARE_PAGES_PROJECT variable (an existing Direct Upload project).
+# Builds webApp's wasmJs production distribution and deploys it to Cloudflare Pages (free plan,
+# Direct Upload project) on every push to `main`. The job only runs when the DEPLOY_CLOUDFLARE_PAGES
+# repo variable is 'true' (Settings -> Secrets and variables -> Actions -> Variables). It needs the
+# CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets; CLOUDFLARE_PAGES_PROJECT overrides the
+# project name (default tempus-remedium). Setup is in CI_CD.md.
 
 on:
   push:
@@ -28,10 +24,13 @@ env:
   DIST_DIR: webApp/build/dist/wasmJs/productionExecutable
 
 jobs:
-  build:
-    name: Build wasmJs distribution
-    if: vars.DEPLOY_GITHUB_PAGES == 'true' || vars.DEPLOY_CLOUDFLARE_PAGES == 'true'
+  deploy-cloudflare-pages:
+    name: Deploy to Cloudflare Pages
+    if: vars.DEPLOY_CLOUDFLARE_PAGES == 'true'
     runs-on: ubuntu-latest
+    environment:
+      name: cloudflare-pages
+      url: ${{ steps.deployment.outputs.deployment-url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -60,58 +59,10 @@ jobs:
           done
           exit 1
 
-      - name: Upload web distribution
-        uses: actions/upload-artifact@v7
-        with:
-          name: web-dist
-          path: ${{ env.DIST_DIR }}
-          if-no-files-found: error
-
-      - name: Setup Pages
-        if: vars.DEPLOY_GITHUB_PAGES == 'true'
-        uses: actions/configure-pages@v6
-
-      - name: Upload Pages artifact
-        if: vars.DEPLOY_GITHUB_PAGES == 'true'
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: ${{ env.DIST_DIR }}
-
-  deploy-github-pages:
-    name: Deploy to GitHub Pages
-    needs: build
-    if: vars.DEPLOY_GITHUB_PAGES == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
-
-  deploy-cloudflare-pages:
-    name: Deploy to Cloudflare Pages
-    needs: build
-    if: vars.DEPLOY_CLOUDFLARE_PAGES == 'true'
-    runs-on: ubuntu-latest
-    environment:
-      name: cloudflare-pages
-      url: ${{ steps.deployment.outputs.deployment-url }}
-    steps:
-      - name: Download web distribution
-        uses: actions/download-artifact@v8
-        with:
-          name: web-dist
-          path: dist
-
       - name: Deploy to Cloudflare Pages
         id: deployment
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }} --branch=main
+          command: pages deploy ${{ env.DIST_DIR }} --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT || 'tempus-remedium' }} --branch=main --commit-hash=${{ github.sha }}
