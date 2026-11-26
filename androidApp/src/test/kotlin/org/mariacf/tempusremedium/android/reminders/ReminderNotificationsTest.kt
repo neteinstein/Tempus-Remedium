@@ -6,7 +6,6 @@ import android.app.Notification
 import android.app.NotificationManager
 import android.media.AudioAttributes
 import androidx.core.app.NotificationCompat
-import androidx.core.content.IntentCompat
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.runBlocking
@@ -69,18 +68,14 @@ class ReminderNotificationsTest {
             assertEquals(ReminderNotifications.CHANNEL_REMINDERS, notification.channelId)
             assertFalse(notification.flags and Notification.FLAG_INSISTENT != 0)
             assertEquals(Notification.CATEGORY_REMINDER, notification.category)
-            assertTrue(rung().isEmpty())
         }
 
-    /** The reminders handed to [AlarmRingService], in order, with the sound to ring. */
-    private fun rung(): List<Pair<Notification, String?>> =
-        generateSequence { shadowOf(context).nextStartedService }
-            .filter { it.component?.className == AlarmRingService::class.java.name }
-            .map { IntentCompat.getParcelableExtra(it, "notification", Notification::class.java)!! to it.getStringExtra("sound") }
-            .toList()
+    private val system = context.getSystemService(NotificationManager::class.java)
+
+    private fun insistent(notification: Notification) = notification.flags and Notification.FLAG_INSISTENT != 0
 
     @Test
-    fun alarmRemindersRingOnTheAlarmStreamPastSilentMode() =
+    fun alarmRemindersRingOnTheAlarmStreamUntilHandled() =
         runBlocking {
             val data = ReferenceFixtures.data.copy(settings = Settings(alarmReminders = true))
             notifications.showSlot(data, ReferenceFixtures.date, TimeSlot.MORNING)
@@ -89,47 +84,47 @@ class ReminderNotificationsTest {
                 LocalDateTime(ReferenceFixtures.date, LocalTime(16, 0)),
             )
 
-            val rung = rung()
+            val rung = listOf(posted(TimeSlot.MORNING), manager.getNotification(ReminderNotifications.COURSE_NOTIFICATION_ID))
             assertEquals(
                 listOf("Manhã · 08:00", "Amoxicilina 250 mg/5 mL · 16:00"),
-                rung.map { it.first.extras.getString(Notification.EXTRA_TITLE) },
+                rung.map { it.extras.getString(Notification.EXTRA_TITLE) },
             )
-            for ((notification, sound) in rung) {
-                assertEquals(ReminderNotifications.CHANNEL_REMINDERS_RINGING, notification.channelId)
+            for (notification in rung) {
+                // The system plays the channel's sound over and over: no service, nothing for
+                // Android to mute while the app is in the background.
+                assertEquals(ReminderNotifications.CHANNEL_REMINDERS_ALARM, notification.channelId)
                 assertEquals(Notification.CATEGORY_ALARM, notification.category)
-                assertNotNull(notification.deleteIntent)
-                assertNull(sound)
+                assertTrue(insistent(notification))
             }
-            // The service rings; the channel's own sound would follow the ringer mode.
-            assertTrue(manager.allNotifications.isEmpty())
-            val channel =
-                context
-                    .getSystemService(NotificationManager::class.java)
-                    .getNotificationChannel(ReminderNotifications.CHANNEL_REMINDERS_RINGING)
-            assertNull(channel.sound)
+            val channel = system.getNotificationChannel(ReminderNotifications.CHANNEL_REMINDERS_ALARM)
+            assertNotNull(channel.sound)
+            assertEquals(AudioAttributes.USAGE_ALARM, channel.audioAttributes.usage)
             assertEquals(NotificationManager.IMPORTANCE_HIGH, channel.importance)
+            assertTrue(channel.shouldVibrate())
         }
 
     @Test
-    fun remindersThatFollowThePhonesModeAreNotAlarms() =
+    fun remindersThatFollowThePhonesModeRingOnTheNotificationStream() =
         runBlocking {
             val data = ReferenceFixtures.data.copy(settings = Settings(alarmReminders = true, alarmOverridesSilence = false))
             notifications.showSlot(data, ReferenceFixtures.date, TimeSlot.MORNING)
 
-            val started = shadowOf(context).nextStartedService
-            assertFalse(started.getBooleanExtra("override_silence", true))
-            val notification = IntentCompat.getParcelableExtra(started, "notification", Notification::class.java)!!
+            val notification = posted(TimeSlot.MORNING)
             assertEquals(Notification.CATEGORY_REMINDER, notification.category)
+            assertTrue(insistent(notification))
+            val channel = system.getNotificationChannel(notification.channelId)
+            assertEquals(ReminderNotifications.alarmChannelId(null, overridesSilence = false), channel.id)
+            assertEquals(AudioAttributes.USAGE_NOTIFICATION, channel.audioAttributes.usage)
+            assertNull(system.getNotificationChannel(ReminderNotifications.CHANNEL_REMINDERS_ALARM))
         }
 
     @Test
     fun alarmIsTheDefault() = assertTrue(Settings().alarmReminders)
 
     @Test
-    fun aChosenSoundRingsAndGetsItsOwnFallbackChannel() =
+    fun aChosenSoundGetsItsOwnChannel() =
         runBlocking {
             val sound = "content://media/internal/audio/media/42"
-            val system = context.getSystemService(NotificationManager::class.java)
             notifications.ensureChannels(Settings())
             notifications.showSlot(
                 ReferenceFixtures.data.copy(settings = Settings(alarmSound = sound)),
@@ -137,8 +132,8 @@ class ReminderNotificationsTest {
                 TimeSlot.MORNING,
             )
 
-            assertEquals(sound, rung().single().second)
             val channelId = ReminderNotifications.alarmChannelId(sound)
+            assertEquals(channelId, posted(TimeSlot.MORNING).channelId)
             assertEquals(sound, system.getNotificationChannel(channelId).sound.toString())
             assertEquals(AudioAttributes.USAGE_ALARM, system.getNotificationChannel(channelId).audioAttributes.usage)
             val alarmChannels =
@@ -148,6 +143,27 @@ class ReminderNotificationsTest {
                     )
                 }
             assertEquals(listOf(channelId), alarmChannels)
+        }
+
+    @Test
+    fun openingTheAppSilencesRingingRemindersAndKeepsThem() =
+        runBlocking {
+            notifications.showSlot(ReferenceFixtures.data, ReferenceFixtures.date, TimeSlot.MORNING)
+            assertTrue(insistent(posted(TimeSlot.MORNING)))
+
+            notifications.silenceRinging()
+
+            val notification = posted(TimeSlot.MORNING)
+            assertFalse(insistent(notification))
+            assertEquals("Manhã · 08:00", notification.extras.getString(Notification.EXTRA_TITLE))
+        }
+
+    @Test
+    fun takingTheDoseRemovesTheRingingReminder() =
+        runBlocking {
+            notifications.showSlot(ReferenceFixtures.data, ReferenceFixtures.date, TimeSlot.MORNING)
+            notifications.cancelSlot(TimeSlot.MORNING)
+            assertTrue(manager.allNotifications.isEmpty())
         }
 
     @Test

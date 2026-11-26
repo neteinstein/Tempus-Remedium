@@ -18,7 +18,6 @@ readonly KEPT_CLASSES=(
     "org.mariacf.tempusremedium.android.MainActivity"
     "org.mariacf.tempusremedium.android.reminders.ReminderReceiver"
     "org.mariacf.tempusremedium.android.reminders.RescheduleReceiver"
-    "org.mariacf.tempusremedium.android.reminders.AlarmRingService"
     "org.mariacf.tempusremedium.android.widgets.HojeWidgetReceiver"
     "org.mariacf.tempusremedium.android.widgets.ReporEmBreveWidgetReceiver"
 )

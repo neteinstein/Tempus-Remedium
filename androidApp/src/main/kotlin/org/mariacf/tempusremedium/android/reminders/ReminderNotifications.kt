@@ -2,10 +2,12 @@ package org.mariacf.tempusremedium.android.reminders
 
 import android.Manifest
 import android.app.Notification
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
@@ -37,7 +39,7 @@ import org.mariacf.tempusremedium.ui.resources.action_taken
 import org.mariacf.tempusremedium.ui.resources.channel_low_stock
 import org.mariacf.tempusremedium.ui.resources.channel_reminders
 import org.mariacf.tempusremedium.ui.resources.channel_reminders_alarm
-import org.mariacf.tempusremedium.ui.resources.channel_reminders_alarm_fallback
+import org.mariacf.tempusremedium.ui.resources.channel_reminders_alarm_follow
 import org.mariacf.tempusremedium.ui.resources.course_dose_number
 import org.mariacf.tempusremedium.ui.resources.course_dose_of
 import org.mariacf.tempusremedium.ui.resources.decimal_separator
@@ -57,8 +59,8 @@ class ReminderNotifications(
     private val manager = NotificationManagerCompat.from(context)
 
     /**
-     * Creates the channels. With [settings], also the fallback alarm channel for the chosen sound,
-     * and deletes the ones left from earlier sounds.
+     * Creates the channels. With [settings], also the alarm channel for the chosen sound and mode,
+     * and deletes the ones left from earlier choices.
      */
     suspend fun ensureChannels(settings: Settings? = null) {
         manager.createNotificationChannel(
@@ -73,25 +75,20 @@ class ReminderNotifications(
                 .setName(getString(Res.string.channel_low_stock))
                 .build(),
         )
-        // Alarm reminders: AlarmRingService plays the sound on the alarm stream, so the channel is
-        // silent (its sound would follow the ringer mode and Do Not Disturb).
-        manager.createNotificationChannel(
-            NotificationChannelCompat
-                .Builder(CHANNEL_REMINDERS_RINGING, NotificationManagerCompat.IMPORTANCE_HIGH)
-                .setName(getString(Res.string.channel_reminders_alarm))
-                .setSound(null, null)
-                .setVibrationEnabled(false)
-                .build(),
-        )
+        // Left from versions that rang alarm reminders from a foreground service.
+        manager.deleteNotificationChannel(LEGACY_CHANNEL_REMINDERS_RINGING)
         if (settings == null) return
-        // Used only when the ringing service cannot start (no exact alarm behind the reminder).
-        // A channel's sound cannot change once created, so each alarm sound has its own channel.
-        val alarmChannel = alarmChannelId(settings.alarmSound)
+        // Alarm reminders: the system plays the channel's sound, repeated (insistent) until the
+        // reminder is handled. On the alarm stream it rings in silent mode and passes Do Not Disturb
+        // when alarms are allowed; on the notification stream it follows the phone's mode. A
+        // channel's sound cannot change once created, so each sound and mode has its own channel.
+        val overrides = settings.alarmOverridesSilence
+        val alarmChannel = alarmChannelId(settings.alarmSound, overrides)
         manager.createNotificationChannel(
             NotificationChannelCompat
                 .Builder(alarmChannel, NotificationManagerCompat.IMPORTANCE_HIGH)
-                .setName(getString(Res.string.channel_reminders_alarm_fallback))
-                .setSound(alarmSound(settings.alarmSound), AlarmRingService.ALARM_AUDIO)
+                .setName(getString(if (overrides) Res.string.channel_reminders_alarm else Res.string.channel_reminders_alarm_follow))
+                .setSound(alarmSound(settings.alarmSound), if (overrides) ALARM_AUDIO else FOLLOW_AUDIO)
                 .setVibrationEnabled(true)
                 .setVibrationPattern(ALARM_VIBRATION)
                 .build(),
@@ -132,7 +129,6 @@ class ReminderNotifications(
                 .setContentText(names)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(names))
                 .setCategory(category(data))
-                .setDeleteIntent(ReminderReceiver.silenceIntent(context))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
                 .setContentIntent(openApp(MainActivity.EXTRA_SLOT, slot.name, slot.ordinal))
@@ -207,7 +203,6 @@ class ReminderNotifications(
                 .setContentText(body)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(body))
                 .setCategory(category(data))
-                .setDeleteIntent(ReminderReceiver.silenceIntent(context))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
                 .setContentIntent(openApp(EXTRA_NONE, "", COURSE_REQUEST))
@@ -232,10 +227,23 @@ class ReminderNotifications(
 
     fun cancelCourseDoses() = cancelReminder(COURSE_NOTIFICATION_ID)
 
-    /** A ringing reminder is the ringing service's notification: the service cancels it. */
-    private fun cancelReminder(id: Int) {
-        AlarmRingService.silence(context, id)
-        manager.cancel(id)
+    private fun cancelReminder(id: Int) = manager.cancel(id)
+
+    /**
+     * Stops the sound of the reminders that are ringing and leaves them on screen. Updating a
+     * notification does not stop an insistent sound; cancelling it does, so each one is cancelled
+     * and posted again, silent.
+     */
+    fun silenceRinging() {
+        val system = context.getSystemService(NotificationManager::class.java) ?: return
+        if (!canPost()) return
+        for (active in system.activeNotifications) {
+            if (active.notification.flags and Notification.FLAG_INSISTENT == 0) continue
+            val quiet = NotificationCompat.Builder(context, active.notification).setSilent(true).build()
+            quiet.flags = quiet.flags and Notification.FLAG_INSISTENT.inv()
+            system.cancel(active.tag, active.id)
+            system.notify(active.tag, active.id, quiet)
+        }
     }
 
     /** "Repor em breve — Ómega 3 · Restam 3" */
@@ -254,7 +262,12 @@ class ReminderNotifications(
         post(LOW_STOCK_ID_BASE + item.medication.id.hashCode(), builder)
     }
 
-    private fun reminderChannel(data: AppData) = if (data.settings.alarmReminders) CHANNEL_REMINDERS_RINGING else CHANNEL_REMINDERS
+    private fun reminderChannel(data: AppData) =
+        if (data.settings.alarmReminders) {
+            alarmChannelId(data.settings.alarmSound, data.settings.alarmOverridesSilence)
+        } else {
+            CHANNEL_REMINDERS
+        }
 
     private fun alarmSound(chosen: String?): Uri? =
         chosen?.toUri()
@@ -271,9 +284,8 @@ class ReminderNotifications(
         }
 
     /**
-     * With alarm reminders on in [settings], [AlarmRingService] shows and rings the reminder. When
-     * Android does not let it start, the reminder goes to the alarm channel with its own sound,
-     * repeated (insistent) until it is acted on, dismissed or the shade is opened.
+     * With alarm reminders on in [settings], the reminder rings with its channel's sound, repeated
+     * (insistent) until it is taken, snoozed or dismissed, the shade is opened or the app is opened.
      */
     private fun post(
         id: Int,
@@ -286,8 +298,7 @@ class ReminderNotifications(
             return
         }
         if (settings?.alarmReminders == true) {
-            if (AlarmRingService.ring(context, id, builder.build(), settings.alarmSound, settings.alarmOverridesSilence)) return
-            val notification = builder.setChannelId(alarmChannelId(settings.alarmSound)).build()
+            val notification = builder.build()
             notification.flags = notification.flags or Notification.FLAG_INSISTENT
             manager.notify(id, notification)
             return
@@ -312,7 +323,7 @@ class ReminderNotifications(
     companion object {
         const val CHANNEL_REMINDERS = "reminders"
         const val CHANNEL_REMINDERS_ALARM = "reminders_alarm"
-        const val CHANNEL_REMINDERS_RINGING = "reminders_ringing"
+        private const val LEGACY_CHANNEL_REMINDERS_RINGING = "reminders_ringing"
         const val CHANNEL_LOW_STOCK = "low_stock"
         private val ALARM_VIBRATION = longArrayOf(0, 800, 600, 800, 600)
         private const val LOW_STOCK_ID_BASE = 1_000
@@ -321,13 +332,34 @@ class ReminderNotifications(
         const val COURSE_NOTIFICATION_ID = 200
         private const val EXTRA_NONE = "none"
 
+        /** Alarm reminders that ring whatever the phone's mode. */
+        val ALARM_AUDIO: AudioAttributes =
+            AudioAttributes
+                .Builder()
+                .setUsage(AudioAttributes.USAGE_ALARM)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build()
+
+        /** Alarm reminders that follow the phone's mode: silent mode and Do Not Disturb mute them. */
+        val FOLLOW_AUDIO: AudioAttributes =
+            AudioAttributes
+                .Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build()
+
         fun slotNotificationId(slot: TimeSlot) = 100 + slot.ordinal
 
-        /** The fallback alarm channel for a chosen sound ([CHANNEL_REMINDERS_ALARM] for the device's alarm sound). */
-        fun alarmChannelId(sound: String?): String =
-            when (sound) {
-                null -> CHANNEL_REMINDERS_ALARM
-                else -> CHANNEL_REMINDERS_ALARM + "_" + sound.hashCode().toUInt().toString(16)
-            }
+        /**
+         * The alarm channel for a chosen sound (null: the device's alarm sound) and mode:
+         * [CHANNEL_REMINDERS_ALARM] for the device's alarm sound ringing whatever the phone's mode.
+         */
+        fun alarmChannelId(
+            sound: String?,
+            overridesSilence: Boolean = true,
+        ): String {
+            val base = if (overridesSilence) CHANNEL_REMINDERS_ALARM else "${CHANNEL_REMINDERS_ALARM}_follow"
+            return if (sound == null) base else base + "_" + sound.hashCode().toUInt().toString(16)
+        }
     }
 }
